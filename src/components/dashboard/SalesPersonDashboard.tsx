@@ -5,7 +5,7 @@ import MetricsCard from './MetricsCard';
 import DealCard from './DealCard';
 import { PipelineSummary } from './PipelineTracker';
 import ActivityTimeline from './ActivityTimeline';
-import { Car, Target, TrendingUp, Plus, Filter, Clock, Users, ClipboardList } from 'lucide-react';
+import { Car, Target, TrendingUp, IndianRupee, Plus, Filter, Clock } from 'lucide-react';
 
 const SalesPersonDashboard: React.FC = () => {
   const { searchQuery, stageFilter, setStageFilter, setShowNewDealForm, deals } = useDashboard();
@@ -83,19 +83,27 @@ const SalesPersonDashboard: React.FC = () => {
       </div>
 
       {/* Metrics */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
+        <MetricsCard
+          title="Active Deals"
+          value={String(myDeals.filter(d => d.status === 'active').length)}
+          subtitle="In pipeline"
+          trend={12}
+          icon={<Car className="w-5 h-5" />}
+          color="#3b82f6"
+        />
         <MetricsCard
           title="All Leads"
           value={String(myDeals.length)}
           subtitle="Total enquiries"
-          trend={12}
+          trend={15}
           icon={<Users className="w-5 h-5" />}
-          color="#3b82f6"
+          color="#6366f1"
         />
         <MetricsCard
           title="Total Bookings"
           value={String(myDeals.filter(d => d.stage !== 'Account').length)}
-          subtitle="Booked units"
+          subtitle="Units booked"
           trend={8}
           icon={<ClipboardList className="w-5 h-5" />}
           color="#8b5cf6"
@@ -103,10 +111,18 @@ const SalesPersonDashboard: React.FC = () => {
         <MetricsCard
           title="Total Delivery"
           value={String(myDeals.filter(d => d.status === 'completed').length)}
-          subtitle="Cars delivered"
+          subtitle="Units delivered"
           trend={5}
           icon={<Car className="w-5 h-5" />}
           color="#10b981"
+        />
+        <MetricsCard
+          title="Conversion"
+          value={`${currentSP.conversionRate}%`}
+          subtitle="Lead to sale"
+          trend={5}
+          icon={<TrendingUp className="w-5 h-5" />}
+          color="#f59e0b"
         />
         <MetricsCard
           title="Month Progress"
