@@ -1,0 +1,164 @@
+import React from 'react';
+import { useDashboard } from '@/contexts/DashboardContext';
+import { salespeople, deals as allDeals, activities, formatCurrency, DEAL_STAGES, STAGE_COLORS, DealStage } from '@/data/dummyData';
+import MetricsCard from './MetricsCard';
+import DealCard from './DealCard';
+import { PipelineSummary } from './PipelineTracker';
+import ActivityTimeline from './ActivityTimeline';
+import { Car, Target, TrendingUp, IndianRupee, Plus, Filter, Clock } from 'lucide-react';
+
+const SalesPersonDashboard: React.FC = () => {
+  const { searchQuery, stageFilter, setStageFilter, setShowNewDealForm, deals } = useDashboard();
+  
+  // Current salesperson: Vikram Singh (sp-1)
+  const currentSP = salespeople.find(sp => sp.id === 'sp-1')!;
+  const myDeals = deals.filter(d => d.salespersonId === 'sp-1');
+  const progressPercent = Math.round((currentSP.achieved / currentSP.monthlyTarget) * 100);
+
+  const filteredDeals = myDeals.filter(deal => {
+    const matchesSearch = !searchQuery || 
+      deal.customerName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      deal.carModel.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      deal.id.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesStage = stageFilter === 'All' || deal.stage === stageFilter;
+    return matchesSearch && matchesStage;
+  });
+
+  const myActivities = activities.filter(a => a.user === 'Vikram Singh').slice(0, 6);
+
+  return (
+    <div className="space-y-6">
+      {/* Welcome Banner */}
+      <div className="bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-800 rounded-2xl p-6 text-white relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -mr-20 -mt-20" />
+        <div className="absolute bottom-0 left-1/2 w-40 h-40 bg-white/5 rounded-full -mb-20" />
+        <div className="relative">
+          <div className="flex items-center gap-3 mb-2">
+            <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center text-lg font-bold">
+              VS
+            </div>
+            <div>
+              <h2 className="text-xl font-bold">Welcome back, Vikram!</h2>
+              <p className="text-blue-200 text-sm">Alpha Squad • Sales Executive</p>
+            </div>
+          </div>
+          <div className="mt-4 flex flex-wrap gap-6">
+            <div>
+              <p className="text-blue-200 text-xs">Monthly Target</p>
+              <p className="text-2xl font-bold">{formatCurrency(currentSP.monthlyTarget)}</p>
+            </div>
+            <div>
+              <p className="text-blue-200 text-xs">Achieved</p>
+              <p className="text-2xl font-bold">{formatCurrency(currentSP.achieved)}</p>
+            </div>
+            <div>
+              <p className="text-blue-200 text-xs">Progress</p>
+              <div className="flex items-center gap-2 mt-1">
+                <div className="w-32 h-2 bg-white/20 rounded-full overflow-hidden">
+                  <div className="h-full bg-white rounded-full" style={{ width: `${progressPercent}%` }} />
+                </div>
+                <span className="text-sm font-bold">{progressPercent}%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Metrics */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <MetricsCard
+          title="Active Deals"
+          value={String(myDeals.filter(d => d.status === 'active').length)}
+          subtitle="In pipeline"
+          trend={12}
+          icon={<Car className="w-5 h-5" />}
+          color="#3b82f6"
+        />
+        <MetricsCard
+          title="Revenue"
+          value={formatCurrency(currentSP.achieved)}
+          subtitle="This month"
+          trend={8}
+          icon={<IndianRupee className="w-5 h-5" />}
+          color="#10b981"
+        />
+        <MetricsCard
+          title="Conversion"
+          value={`${currentSP.conversionRate}%`}
+          subtitle="Lead to sale"
+          trend={5}
+          icon={<TrendingUp className="w-5 h-5" />}
+          color="#8b5cf6"
+        />
+        <MetricsCard
+          title="Target"
+          value={`${progressPercent}%`}
+          subtitle={`${formatCurrency(currentSP.monthlyTarget - currentSP.achieved)} remaining`}
+          trend={-3}
+          icon={<Target className="w-5 h-5" />}
+          color="#ff6b35"
+        />
+      </div>
+
+      {/* Pipeline Summary */}
+      <PipelineSummary deals={myDeals} onStageClick={(stage) => setStageFilter(stage)} />
+
+      {/* Deals Section */}
+      <div>
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg font-bold text-gray-900">My Deals ({filteredDeals.length})</h3>
+          <div className="flex items-center gap-2">
+            {/* Stage Filter */}
+            <div className="flex items-center gap-1 bg-gray-50 rounded-xl p-1">
+              <button
+                onClick={() => setStageFilter('All')}
+                className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-all ${
+                  stageFilter === 'All' ? 'bg-white shadow-sm text-gray-900' : 'text-gray-500 hover:text-gray-700'
+                }`}
+              >
+                All
+              </button>
+              {DEAL_STAGES.map(stage => (
+                <button
+                  key={stage}
+                  onClick={() => setStageFilter(stage)}
+                  className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-all hidden md:block ${
+                    stageFilter === stage ? 'bg-white shadow-sm text-gray-900' : 'text-gray-500 hover:text-gray-700'
+                  }`}
+                >
+                  {stage}
+                </button>
+              ))}
+            </div>
+            <button
+              onClick={() => setShowNewDealForm(true)}
+              className="flex items-center gap-1.5 px-4 py-2 bg-blue-600 text-white text-sm font-semibold rounded-xl hover:bg-blue-700 transition-colors"
+            >
+              <Plus className="w-4 h-4" />
+              <span className="hidden sm:inline">New Deal</span>
+            </button>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+          {filteredDeals.map(deal => (
+            <DealCard key={deal.id} deal={deal} />
+          ))}
+        </div>
+
+        {filteredDeals.length === 0 && (
+          <div className="text-center py-12 bg-gray-50 rounded-2xl">
+            <Car className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+            <p className="text-gray-500 font-medium">No deals found</p>
+            <p className="text-sm text-gray-400 mt-1">Try adjusting your filters</p>
+          </div>
+        )}
+      </div>
+
+      {/* Activity */}
+      <ActivityTimeline activities={myActivities.length > 0 ? myActivities : activities.slice(0, 5)} />
+    </div>
+  );
+};
+
+export default SalesPersonDashboard;
