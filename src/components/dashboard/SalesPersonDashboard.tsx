@@ -33,37 +33,51 @@ const SalesPersonDashboard: React.FC = () => {
       <div className="bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-800 rounded-2xl p-6 text-white relative overflow-hidden">
         <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -mr-20 -mt-20" />
         <div className="absolute bottom-0 left-1/2 w-40 h-40 bg-white/5 rounded-full -mb-20" />
-        <div className="relative">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center text-lg font-bold">
-              VS
-            </div>
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div>
-              <h2 className="text-xl font-bold">Welcome back, Vikram!</h2>
-              <p className="text-blue-200 text-sm">Alpha Squad • Sales Executive</p>
-            </div>
-          </div>
-          <div className="mt-4 flex flex-wrap gap-6">
-            <div>
-              <p className="text-blue-200 text-xs">Car Target</p>
-              <p className="text-2xl font-bold">{CAR_TARGET} <span className="text-sm font-medium opacity-70">Cars</span></p>
-            </div>
-            <div>
-              <p className="text-blue-200 text-xs">Cars Sold</p>
-              <p className="text-2xl font-bold">{currentSP.dealsCount} <span className="text-sm font-medium opacity-70">Cars</span></p>
-            </div>
-            <div>
-              <p className="text-blue-200 text-xs">Progress</p>
-              <div className="flex items-center gap-2 mt-1">
-                <div className="w-32 h-2 bg-white/20 rounded-full overflow-hidden">
-                  <div className="h-full bg-white rounded-full" style={{ width: `${progressPercent}%` }} />
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-14 h-14 rounded-2xl bg-white/20 flex items-center justify-center text-xl font-bold backdrop-blur-md border border-white/30 shadow-inner">
+                  VS
                 </div>
-                <span className="text-sm font-bold">{progressPercent}%</span>
+                <div>
+                  <h2 className="text-2xl font-black tracking-tight">Welcome back, Vikram!</h2>
+                  <p className="text-blue-200 text-sm font-medium">Alpha Squad • Sales Executive</p>
+                </div>
+              </div>
+
+              <div className="flex flex-wrap gap-8 items-end">
+                <div>
+                  <p className="text-blue-100/60 text-[10px] font-bold uppercase tracking-widest mb-1">Car Target</p>
+                  <p className="text-2xl font-black">{CAR_TARGET} <span className="text-sm font-medium opacity-60">Units</span></p>
+                </div>
+                <div>
+                  <p className="text-blue-100/60 text-[10px] font-bold uppercase tracking-widest mb-1">Cars Sold</p>
+                  <p className="text-2xl font-black">{currentSP.dealsCount} <span className="text-sm font-medium opacity-60">Units</span></p>
+                </div>
+                <div>
+                  <p className="text-blue-100/60 text-[10px] font-bold uppercase tracking-widest mb-1">Month Progress</p>
+                  <div className="flex items-center gap-3 mt-1 bg-white/10 px-3 py-2 rounded-xl border border-white/10">
+                    <div className="w-24 h-1.5 bg-white/20 rounded-full overflow-hidden">
+                      <div className="h-full bg-white rounded-full" style={{ width: `${progressPercent}%` }} />
+                    </div>
+                    <span className="text-xs font-black">{progressPercent}%</span>
+                  </div>
+                </div>
               </div>
             </div>
-            <div className="pl-6 border-l border-white/10">
-              <p className="text-blue-200 text-xs">Total Incentive</p>
-              <p className="text-2xl font-black text-emerald-400">₹{formatCurrency(28500).replace('₹', '')}</p>
+
+            <div className="bg-white/10 backdrop-blur-xl p-6 rounded-[2rem] border border-white/20 flex flex-col items-center justify-center min-w-[180px] text-center shadow-2xl relative">
+              <div className="absolute top-2 right-2">
+                <div className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+              </div>
+              <p className="text-blue-100/80 text-[10px] font-black uppercase tracking-widest mb-2">Total Incentive</p>
+              <div className="flex items-baseline gap-1">
+                <span className="text-sm font-bold text-emerald-400">₹</span>
+                <span className="text-4xl font-black text-white tracking-tighter">
+                  {formatCurrency(28500).replace('₹', '').replace('.00', '')}
+                </span>
+              </div>
+              <p className="text-[9px] text-blue-200/60 mt-2 font-medium">Earned this month</p>
             </div>
           </div>
         </div>
