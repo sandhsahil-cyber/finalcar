@@ -188,7 +188,6 @@ export const deals: Deal[] = [
   { id: 'D-2007', customerName: 'Ishani Roy', customerPhone: '+91 99887 76687', carModel: 'Hyundai Alcazar', carVariant: 'Platinum', color: 'Titan Grey', stage: 'Accessories', status: 'completed', amount: 2150000, downPayment: 600000, salespersonId: 'sp-10', teamId: 'team-3', createdAt: '2026-03-05', updatedAt: '2026-04-02', expectedDelivery: '2026-04-02', notes: 'Delivered successfully', stageProgress: createStageProgress('Accessories'), accessoriesAmount: 45000 },
   { id: 'D-2008', customerName: 'Kabir Singh', customerPhone: '+91 99887 76688', carModel: 'Hyundai Creta', carVariant: 'SX', color: 'Abyss Black', stage: 'Accessories', status: 'completed', amount: 1550000, downPayment: 400000, salespersonId: 'sp-10', teamId: 'team-3', createdAt: '2026-03-08', updatedAt: '2026-04-05', expectedDelivery: '2026-04-05', notes: 'Delivered successfully', stageProgress: createStageProgress('Accessories'), accessoriesAmount: 35000 },
 ];
-];
 
 export const activities: Activity[] = [
   { id: 'act-1', type: 'deal_created', message: 'New deal created for Geeta Rani - Hyundai Creta EX', user: 'Sanjay Pillai', timestamp: '2026-04-10T14:30:00', dealId: 'D-1016' },
