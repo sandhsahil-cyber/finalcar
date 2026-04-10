@@ -85,31 +85,31 @@ const SalesPersonDashboard: React.FC = () => {
       {/* Metrics */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <MetricsCard
-          title="Active Deals"
-          value={String(myDeals.filter(d => d.status === 'active').length)}
-          subtitle="In pipeline"
+          title="All Leads"
+          value={String(myDeals.length)}
+          subtitle="Total enquiries"
           trend={12}
-          icon={<Car className="w-5 h-5" />}
+          icon={<Users className="w-5 h-5" />}
           color="#3b82f6"
         />
         <MetricsCard
-          title="Revenue"
-          value={formatCurrency(currentSP.achieved)}
-          subtitle="This month"
+          title="Total Bookings"
+          value={String(myDeals.filter(d => d.stage !== 'Account').length)}
+          subtitle="Booked units"
           trend={8}
-          icon={<IndianRupee className="w-5 h-5" />}
-          color="#10b981"
-        />
-        <MetricsCard
-          title="Conversion"
-          value={`${currentSP.conversionRate}%`}
-          subtitle="Lead to sale"
-          trend={5}
-          icon={<TrendingUp className="w-5 h-5" />}
+          icon={<ClipboardList className="w-5 h-5" />}
           color="#8b5cf6"
         />
         <MetricsCard
-          title="Target"
+          title="Total Delivery"
+          value={String(myDeals.filter(d => d.status === 'completed').length)}
+          subtitle="Cars delivered"
+          trend={5}
+          icon={<Car className="w-5 h-5" />}
+          color="#10b981"
+        />
+        <MetricsCard
+          title="Month Progress"
           value={`${progressPercent}%`}
           subtitle={`${CAR_TARGET - currentSP.dealsCount} cars remaining`}
           trend={-3}
