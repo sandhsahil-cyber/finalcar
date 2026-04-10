@@ -5,7 +5,7 @@ import MetricsCard from './MetricsCard';
 import DealCard from './DealCard';
 import { PipelineSummary } from './PipelineTracker';
 import ActivityTimeline from './ActivityTimeline';
-import { Car, Target, TrendingUp, IndianRupee, Plus, Filter, Clock } from 'lucide-react';
+import { Car, Target, TrendingUp, Plus, Filter, Clock, Users, ClipboardList } from 'lucide-react';
 
 const SalesPersonDashboard: React.FC = () => {
   const { searchQuery, stageFilter, setStageFilter, setShowNewDealForm, deals } = useDashboard();
