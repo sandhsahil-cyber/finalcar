@@ -156,8 +156,55 @@ const SalesPersonDashboard: React.FC = () => {
         )}
       </div>
 
-      {/* Activity */}
-      <ActivityTimeline activities={myActivities.length > 0 ? myActivities : activities.slice(0, 5)} />
+      {/* Activity and Incentives */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2">
+          <ActivityTimeline activities={myActivities.length > 0 ? myActivities : activities.slice(0, 5)} />
+        </div>
+        
+        <div className="bg-white rounded-3xl border border-gray-100 p-6 shadow-sm overflow-hidden">
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="font-bold text-gray-900 flex items-center gap-2">
+              <TrendingUp className="w-5 h-5 text-emerald-500" /> Incentive Earnings
+            </h3>
+            <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full">LIVE TRACKING</span>
+          </div>
+
+          <div className="space-y-4">
+            <div className="p-4 bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl text-white">
+              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Total Incentive Earned</p>
+              <p className="text-2xl font-black">₹{formatCurrency(28500).replace('₹', '')}</p>
+              <p className="text-[9px] text-gray-400 mt-1">Estimated for current month deliveries</p>
+            </div>
+
+            <div className="space-y-3">
+              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Model-wise Earnings</p>
+              {[
+                { model: 'Grand Vitara', count: 3, incentive: 5000, color: 'blue' },
+                { model: 'Fronx', count: 2, incentive: 3500, color: 'indigo' },
+                { model: 'Swift', count: 3, incentive: 2000, color: 'orange' },
+              ].map((item, i) => (
+                <div key={i} className="flex items-center justify-between p-3 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors">
+                  <div className="flex items-center gap-3">
+                    <div className={`w-8 h-8 rounded-lg bg-${item.color}-100 flex items-center justify-center`}>
+                      <Car className={`w-4 h-4 text-${item.color}-600`} />
+                    </div>
+                    <div>
+                      <p className="text-xs font-bold text-gray-900">{item.model}</p>
+                      <p className="text-[9px] text-gray-500">{item.count} Deliveries</p>
+                    </div>
+                  </div>
+                  <p className="text-xs font-bold text-emerald-600">+{formatCurrency(item.count * item.incentive)}</p>
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-6 p-4 border border-dashed border-gray-200 rounded-2xl">
+              <p className="text-[10px] text-gray-500 text-center italic">"Deliver 2 more Fronx to unlock an extra ₹5,000 bonus!"</p>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
