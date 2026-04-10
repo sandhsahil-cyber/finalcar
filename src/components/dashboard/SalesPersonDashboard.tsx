@@ -13,7 +13,8 @@ const SalesPersonDashboard: React.FC = () => {
   // Current salesperson: Vikram Singh (sp-1)
   const currentSP = salespeople.find(sp => sp.id === 'sp-1')!;
   const myDeals = deals.filter(d => d.salespersonId === 'sp-1');
-  const progressPercent = Math.round((currentSP.achieved / currentSP.monthlyTarget) * 100);
+  const CAR_TARGET = 15; // Defining car target
+  const progressPercent = Math.round((currentSP.dealsCount / CAR_TARGET) * 100);
 
   const filteredDeals = myDeals.filter(deal => {
     const matchesSearch = !searchQuery || 
@@ -44,12 +45,12 @@ const SalesPersonDashboard: React.FC = () => {
           </div>
           <div className="mt-4 flex flex-wrap gap-6">
             <div>
-              <p className="text-blue-200 text-xs">Monthly Target</p>
-              <p className="text-2xl font-bold">{formatCurrency(currentSP.monthlyTarget)}</p>
+              <p className="text-blue-200 text-xs">Car Target</p>
+              <p className="text-2xl font-bold">{CAR_TARGET} <span className="text-sm font-medium opacity-70">Cars</span></p>
             </div>
             <div>
-              <p className="text-blue-200 text-xs">Achieved</p>
-              <p className="text-2xl font-bold">{formatCurrency(currentSP.achieved)}</p>
+              <p className="text-blue-200 text-xs">Cars Sold</p>
+              <p className="text-2xl font-bold">{currentSP.dealsCount} <span className="text-sm font-medium opacity-70">Cars</span></p>
             </div>
             <div>
               <p className="text-blue-200 text-xs">Progress</p>
@@ -93,7 +94,7 @@ const SalesPersonDashboard: React.FC = () => {
         <MetricsCard
           title="Target"
           value={`${progressPercent}%`}
-          subtitle={`${formatCurrency(currentSP.monthlyTarget - currentSP.achieved)} remaining`}
+          subtitle={`${CAR_TARGET - currentSP.dealsCount} cars remaining`}
           trend={-3}
           icon={<Target className="w-5 h-5" />}
           color="#ff6b35"
