@@ -1,21 +1,22 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useDashboard } from '@/contexts/DashboardContext';
 import { salespeople, deals as allDeals, activities, formatCurrency, DEAL_STAGES, STAGE_COLORS, DealStage } from '@/data/dummyData';
 import MetricsCard from './MetricsCard';
 import DealCard from './DealCard';
 import { PipelineSummary } from './PipelineTracker';
 import ActivityTimeline from './ActivityTimeline';
-import { Car, Target, TrendingUp, Plus, Filter, Clock, Users, ClipboardList, Shield, Package, ArrowRight } from 'lucide-react';
+import { Car, Target, TrendingUp, Plus, Filter, Clock, Users, ClipboardList, Shield, Package, ArrowRight, QrCode, X } from 'lucide-react';
 
 const SalesPersonDashboard: React.FC = () => {
   const { searchQuery, stageFilter, setStageFilter, setShowNewDealForm, deals } = useDashboard();
+  const [showQRModal, setShowQRModal] = useState(false);
 
   // Current salesperson: Vikram Singh (sp-1)
   const currentSP = salespeople.find(sp => sp.id === 'sp-1')!;
   const myDeals = deals.filter(d => d.salespersonId === 'sp-1');
   const CAR_TARGET = 15; // Defining car target
   const progressPercent = Math.round((currentSP.dealsCount / CAR_TARGET) * 100);
-  
+
   // Derived metrics
   const totalLeads = myDeals.length;
   const totalBookings = myDeals.filter(d => d.stage !== 'Account').length;
@@ -153,20 +154,44 @@ const SalesPersonDashboard: React.FC = () => {
         </div>
       </div>
 
-      {/* Secondary Metrics */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      {/* Individual Lead Metrics */}
+      <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
         <MetricsCard
-          title="Active Deals"
+          title="Car Exchange"
           value={String(myDeals.filter(d => d.status === 'active').length)}
-          subtitle="Currently in process"
+          subtitle="In pipeline"
           trend={12}
           icon={<Car className="w-5 h-5" />}
           color="#3b82f6"
         />
         <MetricsCard
+          title="All Leads"
+          value={String(myDeals.length)}
+          subtitle="Total enquiries"
+          trend={15}
+          icon={<Users className="w-5 h-5" />}
+          color="#6366f1"
+        />
+        <MetricsCard
+          title="Total Bookings"
+          value={String(myDeals.filter(d => d.stage !== 'Account').length)}
+          subtitle="Units booked"
+          trend={8}
+          icon={<ClipboardList className="w-5 h-5" />}
+          color="#8b5cf6"
+        />
+        <MetricsCard
+          title="Total Delivery"
+          value={String(totalDeliveries)}
+          subtitle="Units delivered"
+          trend={5}
+          icon={<Car className="w-5 h-5" />}
+          color="#10b981"
+        />
+        <MetricsCard
           title="Conversion"
           value={`${currentSP.conversionRate}%`}
-          subtitle="Lead to sale ratio"
+          subtitle="Lead to sale"
           trend={5}
           icon={<TrendingUp className="w-5 h-5" />}
           color="#f59e0b"
@@ -174,7 +199,7 @@ const SalesPersonDashboard: React.FC = () => {
         <MetricsCard
           title="Month Progress"
           value={`${progressPercent}%`}
-          subtitle={`${CAR_TARGET - currentSP.dealsCount} units to goal`}
+          subtitle={`${CAR_TARGET - currentSP.dealsCount} cars remaining`}
           trend={-3}
           icon={<Target className="w-5 h-5" />}
           color="#ff6b35"
@@ -207,13 +232,22 @@ const SalesPersonDashboard: React.FC = () => {
                 </button>
               ))}
             </div>
-            <button
-              onClick={() => setShowNewDealForm(true)}
-              className="flex items-center gap-1.5 px-4 py-2 bg-blue-600 text-white text-sm font-semibold rounded-xl hover:bg-blue-700 transition-colors"
-            >
-              <Plus className="w-4 h-4" />
-              <span className="hidden sm:inline">New Deal</span>
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setShowQRModal(true)}
+                className="flex items-center gap-1.5 px-4 py-2 bg-indigo-50 text-indigo-600 text-sm font-semibold rounded-xl hover:bg-indigo-100 transition-colors border border-indigo-100"
+              >
+                <QrCode className="w-4 h-4" />
+                <span className="hidden sm:inline">Walking Lead</span>
+              </button>
+              <button
+                onClick={() => setShowNewDealForm(true)}
+                className="flex items-center gap-1.5 px-4 py-2 bg-blue-600 text-white text-sm font-semibold rounded-xl hover:bg-blue-700 transition-colors"
+              >
+                <Plus className="w-4 h-4" />
+                <span className="hidden sm:inline">Add Lead</span>
+              </button>
+            </div>
           </div>
         </div>
 
@@ -221,16 +255,59 @@ const SalesPersonDashboard: React.FC = () => {
           {filteredDeals.map(deal => (
             <DealCard key={deal.id} deal={deal} />
           ))}
+          {filteredDeals.length === 0 && (
+            <div className="text-center py-20 bg-gray-50 rounded-3xl border border-dashed border-gray-200">
+              <div className="w-16 h-16 bg-white rounded-2xl shadow-sm flex items-center justify-center mx-auto mb-4">
+                <Filter className="w-8 h-8 text-gray-300" />
+              </div>
+              <h3 className="text-lg font-bold text-gray-900">No deals found</h3>
+              <p className="text-sm text-gray-400 mt-1">Try adjusting your filters</p>
+            </div>
+          )}
         </div>
-
-        {filteredDeals.length === 0 && (
-          <div className="text-center py-12 bg-gray-50 rounded-2xl">
-            <Car className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-            <p className="text-gray-500 font-medium">No deals found</p>
-            <p className="text-sm text-gray-400 mt-1">Try adjusting your filters</p>
-          </div>
-        )}
       </div>
+
+      {/* Walking Lead QR Modal */}
+      {showQRModal && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm transition-all duration-300">
+          <div className="bg-white rounded-[2.5rem] w-full max-w-sm overflow-hidden shadow-2xl relative animate-in fade-in zoom-in duration-300">
+            <button 
+              onClick={() => setShowQRModal(false)}
+              className="absolute top-6 right-6 p-2 bg-gray-100 hover:bg-gray-200 rounded-full transition-colors group"
+            >
+              <X className="w-5 h-5 text-gray-500 group-hover:rotate-90 transition-transform duration-300" />
+            </button>
+
+            <div className="p-8 text-center pt-12">
+              <div className="w-16 h-16 bg-indigo-50 rounded-3xl flex items-center justify-center mx-auto mb-6">
+                <QrCode className="w-8 h-8 text-indigo-600" />
+              </div>
+              <h2 className="text-2xl font-black text-gray-900 mb-2">Registration QR</h2>
+              <p className="text-gray-500 text-sm mb-8 px-4">
+                Let the customer scan this to fill in their own basic details and interest
+              </p>
+
+              <div className="bg-gray-50 p-6 rounded-[2rem] border border-gray-100 mb-8 aspect-square flex items-center justify-center relative group">
+                <div className="absolute inset-0 bg-white/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center rounded-[2rem] z-10 backdrop-blur-[2px]">
+                   <span className="text-xs font-black text-indigo-600 bg-white px-4 py-2 rounded-full shadow-lg">SCAN TO START</span>
+                </div>
+                <img 
+                  src="/lead_registration_qr_1775851859990.png" 
+                  alt="Registration QR Code"
+                  className="w-full h-full object-contain rounded-2xl mix-blend-multiply"
+                />
+              </div>
+
+              <button
+                onClick={() => setShowQRModal(false)}
+                className="w-full py-4 bg-gray-900 text-white font-bold rounded-2xl hover:bg-black transition-colors"
+              >
+                Done
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Activity and Incentives */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
