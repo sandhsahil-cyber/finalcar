@@ -1,8 +1,10 @@
 import React from 'react';
 import { Landmark, FileCheck, Search, ArrowRight, UserPlus, FileSearch } from 'lucide-react';
-import { deals, formatCurrency, formatFullCurrency } from '@/data/dummyData';
+import { formatCurrency, formatFullCurrency } from '@/data/dummyData';
+import { useDashboard } from '@/contexts/DashboardContext';
 
 const FinanceDashboard = () => {
+    const { deals } = useDashboard();
     // Dynamic Finance Stats
     const financeDeals = deals.filter(d => d.financeType);
     const logged = financeDeals.length;

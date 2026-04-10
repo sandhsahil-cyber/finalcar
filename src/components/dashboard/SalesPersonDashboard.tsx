@@ -8,12 +8,12 @@ import ActivityTimeline from './ActivityTimeline';
 import { Car, Target, TrendingUp, Plus, Filter, Clock, Users, ClipboardList, Shield, Package, ArrowRight, QrCode, X } from 'lucide-react';
 
 const SalesPersonDashboard: React.FC = () => {
-  const { searchQuery, stageFilter, setStageFilter, setShowNewDealForm, deals } = useDashboard();
+  const { searchQuery, stageFilter, setStageFilter, setShowNewDealForm, deals, currentUserId } = useDashboard();
   const [showQRModal, setShowQRModal] = useState(false);
 
-  // Current salesperson: Vikram Singh (sp-1)
-  const currentSP = salespeople.find(sp => sp.id === 'sp-1')!;
-  const myDeals = deals.filter(d => d.salespersonId === 'sp-1');
+  // Current salesperson mapping for demo
+  const currentSP = salespeople.find(sp => sp.id === currentUserId) || salespeople[0];
+  const myDeals = deals.filter(d => d.salespersonId === currentUserId);
   const CAR_TARGET = 15; // Defining car target
   const progressPercent = Math.round((currentSP.dealsCount / CAR_TARGET) * 100);
 

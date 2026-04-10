@@ -16,10 +16,12 @@ import {
     UploadCloud,
     Briefcase
 } from 'lucide-react';
-import { deals, formatCurrency } from '@/data/dummyData';
+import { formatCurrency } from '@/data/dummyData';
+import { useDashboard } from '@/contexts/DashboardContext';
 import MetricsCard from './MetricsCard';
 
 const InsuranceDashboard: React.FC = () => {
+    const { deals } = useDashboard();
     const [filterQuery, setFilterQuery] = useState('');
     const [showIssueModal, setShowIssueModal] = useState(false);
     const [selectedLead, setSelectedLead] = useState<any>(null);

@@ -6,12 +6,14 @@ import {
     ArrowRightLeft
 } from 'lucide-react';
 import {
-    deals, salespeople, showroomExpenses, staffPayroll,
+    salespeople, showroomExpenses, staffPayroll,
     formatCurrency, formatFullCurrency
 } from '@/data/dummyData';
+import { useDashboard } from '@/contexts/DashboardContext';
 import MetricsCard from './MetricsCard';
 
 const AccountDashboard: React.FC = () => {
+    const { deals } = useDashboard();
     const [filterQuery, setFilterQuery] = useState('');
     const [selectedDeal, setSelectedDeal] = useState<any>(null);
     const [paymentMode, setPaymentMode] = useState<'Cash' | 'Finance' | 'Online'>('Online');
