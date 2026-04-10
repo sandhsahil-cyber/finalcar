@@ -27,7 +27,7 @@ const roles: { value: UserRole; label: string; sublabel: string; icon: React.Ele
 ];
 
 const Header: React.FC = () => {
-  const { currentRole, setCurrentRole, searchQuery, setSearchQuery, sidebarCollapsed, setSidebarCollapsed } = useDashboard();
+  const { currentRole, setCurrentRole, setCurrentUserId, searchQuery, setSearchQuery, sidebarCollapsed, setSidebarCollapsed } = useDashboard();
   const { isAuthenticated, profile, setShowLoginModal, isLoading } = useAuth();
   const [showRoleMenu, setShowRoleMenu] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
@@ -57,6 +57,17 @@ const Header: React.FC = () => {
 
   const displayName = isAuthenticated && profile ? profile.full_name : currentRoleConfig.sublabel;
   const displayRole = isAuthenticated && profile ? roles.find(r => r.value === profile.role)?.label || currentRoleConfig.label : currentRoleConfig.label;
+
+  const handleRoleChange = (roleValue: UserRole) => {
+    setCurrentRole(roleValue);
+    
+    // Auto-switch UserID for Demo Data mapping
+    if (roleValue === 'salesperson') setCurrentUserId('sp-1');
+    else if (roleValue === 'teamleader') setCurrentUserId('tl-1');
+    else setCurrentUserId('sm-1');
+    
+    setShowRoleMenu(false);
+  };
 
   return (
     <header className="sticky top-0 z-30 bg-white/80 backdrop-blur-xl border-b border-gray-100">
@@ -161,14 +172,14 @@ const Header: React.FC = () => {
                 )}
                 <div className="p-3 border-b border-gray-100">
                   <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                    {isAuthenticated ? 'Switch Role (Demo)' : 'Switch Role (Demo)'}
+                    Demio Multi-Role Switcher
                   </p>
                 </div>
                 {roles.map(role => {
                   const Icon = role.icon;
                   const isActive = currentRole === role.value;
                   return (
-                    <button key={role.value} onClick={() => { setCurrentRole(role.value); setShowRoleMenu(false); }}
+                    <button key={role.value} onClick={() => handleRoleChange(role.value)}
                       className={`w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors ${isActive ? 'bg-gray-50' : ''}`}>
                       <div className="w-9 h-9 rounded-full flex items-center justify-center" style={{ backgroundColor: `${role.color}15` }}>
                         <Icon className="w-4 h-4" style={{ color: role.color }} />
