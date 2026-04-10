@@ -20,8 +20,8 @@ interface DashboardContextType {
   setActiveView: (view: string) => void;
   searchQuery: string;
   setSearchQuery: (query: string) => void;
-  stageFilter: DealStage | 'All';
-  setStageFilter: (stage: DealStage | 'All') => void;
+  stageFilter: DealStage | 'All' | 'Booking';
+  setStageFilter: (stage: DealStage | 'All' | 'Booking') => void;
   statusFilter: string;
   setStatusFilter: (status: string) => void;
 }
@@ -38,7 +38,7 @@ export const DashboardProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [activeView, setActiveView] = useState('dashboard');
   const [searchQuery, setSearchQuery] = useState('');
-  const [stageFilter, setStageFilter] = useState<DealStage | 'All'>('All');
+  const [stageFilter, setStageFilter] = useState<DealStage | 'All' | 'Booking'>('All');
   const [statusFilter, setStatusFilter] = useState('all');
 
   const updateDealStage = useCallback((dealId: string, newStage: DealStage) => {
