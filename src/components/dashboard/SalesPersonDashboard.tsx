@@ -5,7 +5,7 @@ import MetricsCard from './MetricsCard';
 import DealCard from './DealCard';
 import { PipelineSummary } from './PipelineTracker';
 import ActivityTimeline from './ActivityTimeline';
-import { Car, Target, TrendingUp, Plus, Filter, Clock, Users, ClipboardList } from 'lucide-react';
+import { Car, Target, TrendingUp, Plus, Filter, Clock, Users, ClipboardList, Shield, Package, ArrowRight } from 'lucide-react';
 
 const SalesPersonDashboard: React.FC = () => {
   const { searchQuery, stageFilter, setStageFilter, setShowNewDealForm, deals } = useDashboard();
@@ -15,6 +15,11 @@ const SalesPersonDashboard: React.FC = () => {
   const myDeals = deals.filter(d => d.salespersonId === 'sp-1');
   const CAR_TARGET = 15; // Defining car target
   const progressPercent = Math.round((currentSP.dealsCount / CAR_TARGET) * 100);
+  
+  // Derived metrics
+  const totalLeads = myDeals.length;
+  const totalBookings = myDeals.filter(d => d.stage !== 'Account').length;
+  const totalDeliveries = myDeals.filter(d => d.status === 'completed').length;
 
   const filteredDeals = myDeals.filter(deal => {
     const matchesSearch = !searchQuery ||
@@ -82,56 +87,70 @@ const SalesPersonDashboard: React.FC = () => {
         </div>
       </div>
 
-      {/* Metrics */}
-      <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
-        <MetricsCard
-          title="Active Deals"
-          value={String(myDeals.filter(d => d.status === 'active').length)}
-          subtitle="In pipeline"
-          trend={12}
-          icon={<Car className="w-5 h-5" />}
-          color="#3b82f6"
-        />
-        <MetricsCard
-          title="All Leads"
-          value={String(myDeals.length)}
-          subtitle="Total enquiries"
-          trend={15}
-          icon={<Users className="w-5 h-5" />}
-          color="#6366f1"
-        />
-        <MetricsCard
-          title="Total Bookings"
-          value={String(myDeals.filter(d => d.stage !== 'Account').length)}
-          subtitle="Units booked"
-          trend={8}
-          icon={<ClipboardList className="w-5 h-5" />}
-          color="#8b5cf6"
-        />
-        <MetricsCard
-          title="Total Delivery"
-          value={String(myDeals.filter(d => d.status === 'completed').length)}
-          subtitle="Units delivered"
-          trend={5}
-          icon={<Car className="w-5 h-5" />}
-          color="#10b981"
-        />
-        <MetricsCard
-          title="Conversion"
-          value={`${currentSP.conversionRate}%`}
-          subtitle="Lead to sale"
-          trend={5}
-          icon={<TrendingUp className="w-5 h-5" />}
-          color="#f59e0b"
-        />
-        <MetricsCard
-          title="Month Progress"
-          value={`${progressPercent}%`}
-          subtitle={`${CAR_TARGET - currentSP.dealsCount} cars remaining`}
-          trend={-3}
-          icon={<Target className="w-5 h-5" />}
-          color="#ff6b35"
-        />
+      {/* Operational Metrics Blocks */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        {/* Block 1: Sales Funnel Summary */}
+        <div className="bg-white rounded-3xl border border-gray-100 p-5 shadow-sm hover:shadow-md transition-shadow">
+          <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-4">Car Sales Funnel</p>
+          <div className="flex items-center justify-between">
+            <div className="text-center flex-1">
+              <p className="text-2xl font-black text-gray-900">{totalLeads}</p>
+              <p className="text-[10px] text-gray-500 font-bold">ALL LEADS</p>
+            </div>
+            <ArrowRight className="w-4 h-4 text-gray-200" />
+            <div className="text-center flex-1">
+              <p className="text-2xl font-black text-blue-600">{totalBookings}</p>
+              <p className="text-[10px] text-gray-500 font-bold">BOOKINGS</p>
+            </div>
+            <ArrowRight className="w-4 h-4 text-gray-200" />
+            <div className="text-center flex-1">
+              <p className="text-2xl font-black text-emerald-600">{totalDeliveries}</p>
+              <p className="text-[10px] text-gray-500 font-bold">DELIVERIES</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Block 2: Finance Status */}
+        <div className="bg-white rounded-3xl border border-gray-100 p-5 shadow-sm hover:shadow-md transition-shadow flex items-center gap-4">
+          <div className="w-12 h-12 rounded-2xl bg-indigo-50 flex items-center justify-center flex-shrink-0">
+            <Shield className="w-6 h-6 text-indigo-500" />
+          </div>
+          <div className="flex-1">
+            <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-1">Finance Processing</p>
+            <div className="flex items-center gap-4 mt-2">
+              <div>
+                <p className="text-xl font-black text-indigo-700">05</p>
+                <p className="text-[9px] font-bold text-gray-500 uppercase">In-House</p>
+              </div>
+              <div className="h-8 w-px bg-gray-100" />
+              <div>
+                <p className="text-xl font-black text-gray-400">03</p>
+                <p className="text-[9px] font-bold text-gray-500 uppercase">3rd Party</p>
+              </div>
+              <div className="ml-auto text-right">
+                <p className="text-xs font-black text-gray-900">80%</p>
+                <p className="text-[8px] text-gray-400 uppercase font-bold">Approved</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Block 3: Accessories Performance */}
+        <div className="bg-white rounded-3xl border border-gray-100 p-5 shadow-sm hover:shadow-md transition-shadow flex items-center gap-4">
+          <div className="w-12 h-12 rounded-2xl bg-orange-50 flex items-center justify-center flex-shrink-0">
+            <Package className="w-6 h-6 text-orange-500" />
+          </div>
+          <div className="flex-1">
+            <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-1">Accessories Revenue</p>
+            <div className="flex items-center justify-between mt-1">
+              <p className="text-xl font-black text-orange-600">₹{formatCurrency(385000).replace('₹', '')}</p>
+              <span className="text-[9px] font-bold text-gray-400 uppercase tracking-tighter">Goal: 5.0L</span>
+            </div>
+            <div className="w-full h-1.5 bg-gray-100 rounded-full mt-2 overflow-hidden">
+              <div className="h-full bg-orange-500 rounded-full" style={{ width: '77%' }} />
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Pipeline Summary */}
