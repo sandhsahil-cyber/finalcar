@@ -64,12 +64,11 @@ const Sidebar: React.FC = () => {
           </div>
         </div>
 
-        {/* Role Badge */}
-        <div className={`mx-3 mt-4 mb-2 p-3 rounded-xl ${sidebarCollapsed ? 'flex justify-center' : ''}`} style={{ backgroundColor: `${role.color}20` }}>
+        <div className={`mx-3 mt-4 mb-2 p-3 rounded-xl shadow-lg border border-white/10 ${sidebarCollapsed ? 'flex justify-center' : ''}`} style={{ backgroundColor: role.color }}>
           <div className="flex items-center gap-2">
-            <RoleIcon className="w-5 h-5 flex-shrink-0" style={{ color: role.color }} />
+            <RoleIcon className="w-5 h-5 flex-shrink-0 text-white" />
             {!sidebarCollapsed && (
-              <span className="text-xs font-semibold" style={{ color: role.color }}>{role.label}</span>
+              <span className="text-xs font-bold text-white uppercase tracking-wider">{role.label}</span>
             )}
           </div>
         </div>
