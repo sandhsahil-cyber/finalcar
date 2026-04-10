@@ -75,24 +75,30 @@ const Sidebar: React.FC = () => {
 
         {/* Menu */}
         <nav className="flex-1 px-3 py-2 space-y-1 overflow-y-auto">
-          {menuItems.map(item => {
-            const isActive = activeView === item.id;
-            const Icon = item.icon;
-            return (
-              <button
-                key={item.id}
-                onClick={() => setActiveView(item.id)}
-                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
-                  isActive
-                    ? 'bg-white/10 text-white'
-                    : 'text-gray-400 hover:text-white hover:bg-white/5'
-                } ${sidebarCollapsed ? 'justify-center' : ''}`}
-              >
-                <Icon className={`w-5 h-5 flex-shrink-0 ${isActive ? 'text-orange-400' : ''}`} />
-                {!sidebarCollapsed && <span>{item.label}</span>}
-              </button>
-            );
-          })}
+          {menuItems
+            .filter(item => {
+              if (currentRole === 'salesperson') {
+                return !['team', 'targets', 'reports'].includes(item.id);
+              }
+              return true;
+            })
+            .map(item => {
+              const isActive = activeView === item.id;
+              const Icon = item.icon;
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => setActiveView(item.id)}
+                  className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${isActive
+                      ? 'bg-white/10 text-white'
+                      : 'text-gray-400 hover:text-white hover:bg-white/5'
+                    } ${sidebarCollapsed ? 'justify-center' : ''}`}
+                >
+                  <Icon className={`w-5 h-5 flex-shrink-0 ${isActive ? 'text-orange-400' : ''}`} />
+                  {!sidebarCollapsed && <span>{item.label}</span>}
+                </button>
+              );
+            })}
         </nav>
 
         {/* Bottom */}
