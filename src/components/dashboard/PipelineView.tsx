@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useDashboard } from '@/contexts/DashboardContext';
 import { DEAL_STAGES, STAGE_COLORS, formatCurrency, DealStage, formatFullCurrency } from '@/data/dummyData';
 import DealCard from './DealCard';
-import { Plus, ArrowRight, Wallet, FileText, CheckCircle2, Landmark, ShieldCheck, Package, ClipboardCheck, Receipt, Landmark as Bank } from 'lucide-react';
+import { Plus, ArrowRight, Wallet, FileText, CheckCircle2, Landmark, ShieldCheck, Package, ClipboardCheck, Receipt, Truck, Landmark as Bank } from 'lucide-react';
 
 const PipelineView: React.FC = () => {
     const { deals, searchQuery, currentRole, setShowNewDealForm, currentUserId } = useDashboard();
