@@ -27,7 +27,16 @@ const SalesPersonDashboard: React.FC = () => {
       deal.customerName.toLowerCase().includes(searchQuery.toLowerCase()) ||
       deal.carModel.toLowerCase().includes(searchQuery.toLowerCase()) ||
       deal.id.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesStage = stageFilter === 'All' || deal.stage === stageFilter;
+    
+    let matchesStage = false;
+    if (stageFilter === 'All') {
+      matchesStage = true;
+    } else if (stageFilter === 'Booking') {
+      matchesStage = deal.stage !== 'Account'; // Bookings are everything past initial account
+    } else {
+      matchesStage = deal.stage === stageFilter;
+    }
+    
     return matchesSearch && matchesStage;
   });
 
@@ -209,30 +218,45 @@ const SalesPersonDashboard: React.FC = () => {
 
       {/* Deals Section */}
       <div>
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-bold text-gray-900">My Deals ({filteredDeals.length})</h3>
-          <div className="flex items-center gap-2">
-            {/* Stage Filter */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+          <div className="flex items-center gap-3">
+            <h3 className="text-xl font-bold text-gray-900">My Deals</h3>
+            <span className="px-2.5 py-0.5 bg-gray-100 text-gray-600 text-xs font-bold rounded-full">
+              {filteredDeals.length}
+            </span>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2">
+            {/* Lead Filters */}
             <div className="flex items-center gap-1 bg-gray-50 rounded-xl p-1">
               <button
                 onClick={() => setStageFilter('All')}
-                className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-all ${stageFilter === 'All' ? 'bg-white shadow-sm text-gray-900' : 'text-gray-500 hover:text-gray-700'
+                className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all ${stageFilter === 'All' ? 'bg-white shadow-sm text-gray-900' : 'text-gray-500 hover:text-gray-700'
                   }`}
               >
-                All
+                All Leads
               </button>
+              <button
+                onClick={() => setStageFilter('Booking')}
+                className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all ${stageFilter === 'Booking' ? 'bg-white shadow-sm text-gray-900' : 'text-gray-500 hover:text-gray-700'
+                  }`}
+              >
+                Booking Leads
+              </button>
+              <div className="w-px h-4 bg-gray-200 mx-1 hidden md:block" />
               {DEAL_STAGES.map(stage => (
                 <button
                   key={stage}
                   onClick={() => setStageFilter(stage)}
-                  className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-all hidden md:block ${stageFilter === stage ? 'bg-white shadow-sm text-gray-900' : 'text-gray-500 hover:text-gray-700'
+                  className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-all hidden lg:block ${stageFilter === stage ? 'bg-white shadow-sm text-gray-900' : 'text-gray-500 hover:text-gray-700'
                     }`}
                 >
                   {stage}
                 </button>
               ))}
             </div>
-            <div className="flex items-center gap-2">
+
+            <div className="flex items-center gap-2 ml-auto">
               <button
                 onClick={() => setShowQRModal(true)}
                 className="flex items-center gap-1.5 px-4 py-2 bg-indigo-50 text-indigo-600 text-sm font-semibold rounded-xl hover:bg-indigo-100 transition-colors border border-indigo-100"
