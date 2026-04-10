@@ -9,7 +9,7 @@ import { Car, Target, TrendingUp, IndianRupee, Plus, Filter, Clock } from 'lucid
 
 const SalesPersonDashboard: React.FC = () => {
   const { searchQuery, stageFilter, setStageFilter, setShowNewDealForm, deals } = useDashboard();
-  
+
   // Current salesperson: Vikram Singh (sp-1)
   const currentSP = salespeople.find(sp => sp.id === 'sp-1')!;
   const myDeals = deals.filter(d => d.salespersonId === 'sp-1');
@@ -17,7 +17,7 @@ const SalesPersonDashboard: React.FC = () => {
   const progressPercent = Math.round((currentSP.dealsCount / CAR_TARGET) * 100);
 
   const filteredDeals = myDeals.filter(deal => {
-    const matchesSearch = !searchQuery || 
+    const matchesSearch = !searchQuery ||
       deal.customerName.toLowerCase().includes(searchQuery.toLowerCase()) ||
       deal.carModel.toLowerCase().includes(searchQuery.toLowerCase()) ||
       deal.id.toLowerCase().includes(searchQuery.toLowerCase());
@@ -60,6 +60,10 @@ const SalesPersonDashboard: React.FC = () => {
                 </div>
                 <span className="text-sm font-bold">{progressPercent}%</span>
               </div>
+            </div>
+            <div className="pl-6 border-l border-white/10">
+              <p className="text-blue-200 text-xs">Total Incentive</p>
+              <p className="text-2xl font-black text-emerald-400">₹{formatCurrency(28500).replace('₹', '')}</p>
             </div>
           </div>
         </div>
@@ -113,9 +117,8 @@ const SalesPersonDashboard: React.FC = () => {
             <div className="flex items-center gap-1 bg-gray-50 rounded-xl p-1">
               <button
                 onClick={() => setStageFilter('All')}
-                className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-all ${
-                  stageFilter === 'All' ? 'bg-white shadow-sm text-gray-900' : 'text-gray-500 hover:text-gray-700'
-                }`}
+                className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-all ${stageFilter === 'All' ? 'bg-white shadow-sm text-gray-900' : 'text-gray-500 hover:text-gray-700'
+                  }`}
               >
                 All
               </button>
@@ -123,9 +126,8 @@ const SalesPersonDashboard: React.FC = () => {
                 <button
                   key={stage}
                   onClick={() => setStageFilter(stage)}
-                  className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-all hidden md:block ${
-                    stageFilter === stage ? 'bg-white shadow-sm text-gray-900' : 'text-gray-500 hover:text-gray-700'
-                  }`}
+                  className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-all hidden md:block ${stageFilter === stage ? 'bg-white shadow-sm text-gray-900' : 'text-gray-500 hover:text-gray-700'
+                    }`}
                 >
                   {stage}
                 </button>
@@ -161,7 +163,7 @@ const SalesPersonDashboard: React.FC = () => {
         <div className="lg:col-span-2">
           <ActivityTimeline activities={myActivities.length > 0 ? myActivities : activities.slice(0, 5)} />
         </div>
-        
+
         <div className="bg-white rounded-3xl border border-gray-100 p-6 shadow-sm overflow-hidden">
           <div className="flex items-center justify-between mb-6">
             <h3 className="font-bold text-gray-900 flex items-center gap-2">
