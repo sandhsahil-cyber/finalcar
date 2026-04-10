@@ -31,7 +31,7 @@ const menuItems = [
 
 const Sidebar: React.FC = () => {
   const { sidebarCollapsed, setSidebarCollapsed, activeView, setActiveView, currentRole } = useDashboard();
-  const role = roleConfig[currentRole];
+  const role = roleConfig[currentRole as keyof typeof roleConfig] || roleConfig.salesmanager;
   const RoleIcon = role.icon;
 
   return (

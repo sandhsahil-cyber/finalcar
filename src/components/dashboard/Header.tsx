@@ -151,7 +151,7 @@ const Header: React.FC = () => {
             </button>
 
             {showRoleMenu && (
-              <div className="absolute right-0 top-full mt-2 w-72 bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+              <div className="absolute right-0 top-full mt-2 w-72 bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-y-auto max-h-[80vh] scrollbar-thin scrollbar-thumb-gray-200">
                 {isAuthenticated && profile && (
                   <div className="p-4 border-b border-gray-100 bg-gray-50">
                     <p className="text-sm font-bold text-gray-900">{profile.full_name}</p>
