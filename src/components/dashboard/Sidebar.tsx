@@ -3,7 +3,8 @@ import { useDashboard } from '@/contexts/DashboardContext';
 import {
   LayoutDashboard, Car, Users, BarChart3, FileText, Settings, Bell,
   ChevronLeft, ChevronRight, LogOut, Shield, UserCircle, Briefcase,
-  Target, ClipboardList, TrendingUp, Wallet, ShieldCheck, Package
+  Target, ClipboardList, TrendingUp, Wallet, ShieldCheck, Package,
+  Landmark, Truck
 } from 'lucide-react';
 
 const roleConfig = {
@@ -14,6 +15,9 @@ const roleConfig = {
   rto: { label: 'RTO Department', color: '#6366f1', icon: ClipboardList },
   insurance: { label: 'Insurance Dept.', color: '#0ea5e9', icon: ShieldCheck },
   accessories: { label: 'Accessories Dept.', color: '#f43f5e', icon: Package },
+  finance: { label: 'Finance Dept.', color: '#8b5cf6', icon: Landmark },
+  pdi: { label: 'PDI Workshop', color: '#10b981', icon: Truck },
+  ceo: { label: 'CEO & Owner', color: '#1a202c', icon: TrendingUp },
 };
 
 const menuItems = [

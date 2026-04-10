@@ -1,7 +1,7 @@
 // Types
 export type DealStage = 'Account' | 'Finance' | 'RTO' | 'PDI' | 'Accessories';
 export type DealStatus = 'active' | 'completed' | 'pending' | 'blocked';
-export type UserRole = 'salesperson' | 'teamleader' | 'salesmanager' | 'accounts' | 'rto' | 'insurance' | 'accessories';
+export type UserRole = 'salesperson' | 'teamleader' | 'salesmanager' | 'accounts' | 'rto' | 'insurance' | 'accessories' | 'finance' | 'pdi' | 'ceo';
 
 export interface Deal {
   id: string;

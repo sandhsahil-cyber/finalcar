@@ -7,7 +7,10 @@ import {
   X, Check, AlertTriangle, Info, CheckCircle2, AlertCircle, LogIn, Wallet,
   ClipboardList,
   ShieldCheck,
-  Package
+  Package,
+  Landmark,
+  Truck,
+  TrendingUp
 } from 'lucide-react';
 
 const roles: { value: UserRole; label: string; sublabel: string; icon: React.ElementType; color: string }[] = [
@@ -17,7 +20,10 @@ const roles: { value: UserRole; label: string; sublabel: string; icon: React.Ele
   { value: 'accounts', label: 'Accounts & Finance', sublabel: 'Mehta Ji (Fin-Head)', icon: Wallet, color: '#10b981' },
   { value: 'rto', label: 'RTO Department', sublabel: 'Sharma Ji (Reg. Specialist)', icon: ClipboardList, color: '#6366f1' },
   { value: 'insurance', label: 'Insurance Dept.', sublabel: 'Verma Ji (Policy Expert)', icon: ShieldCheck, color: '#0ea5e9' },
-  { value: 'accessories', label: 'Accessories Dept.', sublabel: 'Suresh Pal (Fit-Lead)', icon: Package, color: '#f43f5e' }
+  { value: 'accessories', label: 'Accessories Dept.', sublabel: 'Suresh Pal (Fit-Lead)', icon: Package, color: '#f43f5e' },
+  { value: 'finance', label: 'Finance Dept.', sublabel: 'HDFC & SBI Partners', icon: Landmark, color: '#8b5cf6' },
+  { value: 'pdi', label: 'PDI Workshop', sublabel: 'Quality Assurance', icon: Truck, color: '#10b981' },
+  { value: 'ceo', label: 'CEO & Owner', sublabel: 'Group Executive', icon: TrendingUp, color: '#1a202c' }
 ];
 
 const Header: React.FC = () => {
