@@ -26,7 +26,7 @@ const InsuranceDashboard: React.FC = () => {
 
     // Dynamic Business Logic
     const inHouseInsurance = deals.filter(d => d.insurancePartner).length;
-    const pendingApproval = deals.filter(d => !d.status === 'completed' && d.stage === 'RTO').length;
+    const pendingApproval = deals.filter(d => d.status !== 'completed' && d.stage === 'RTO').length;
     const totalProcessed = deals.filter(d => d.status === 'completed' || d.insurancePartner).length;
 
     const insuranceLeads = deals.map(deal => ({
