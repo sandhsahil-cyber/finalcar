@@ -22,6 +22,15 @@ const SalesPersonDashboard: React.FC = () => {
   const totalBookings = myDeals.filter(d => d.stage !== 'Account').length;
   const totalDeliveries = myDeals.filter(d => d.status === 'completed').length;
 
+  const financeInHouse = myDeals.filter(d => d.financeType === 'In-house').length;
+  const finance3rdParty = myDeals.filter(d => d.financeType === '3rd Party').length;
+  const financeApproved = myDeals.filter(d => d.financeStatus === 'Approved' || d.financeStatus === 'Disbursed').length;
+  const financeApprovalRate = myDeals.length > 0 ? Math.round((financeApproved / myDeals.filter(d => d.financeType).length || 1) * 100) : 0;
+
+  const accessoriesTotal = myDeals.reduce((sum, d) => sum + (d.accessoriesAmount || 0), 0);
+  const accessoriesTarget = 500000;
+  const accessoriesProgress = Math.min(100, Math.round((accessoriesTotal / accessoriesTarget) * 100));
+
   const filteredDeals = myDeals.filter(deal => {
     const matchesSearch = !searchQuery ||
       deal.customerName.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -129,16 +138,16 @@ const SalesPersonDashboard: React.FC = () => {
             <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-1">Finance Processing</p>
             <div className="flex items-center gap-4 mt-2">
               <div>
-                <p className="text-xl font-black text-indigo-700">05</p>
+                <p className="text-xl font-black text-indigo-700">{String(financeInHouse).padStart(2, '0')}</p>
                 <p className="text-[9px] font-bold text-gray-500 uppercase">In-House</p>
               </div>
               <div className="h-8 w-px bg-gray-100" />
               <div>
-                <p className="text-xl font-black text-gray-400">03</p>
+                <p className="text-xl font-black text-gray-400">{String(finance3rdParty).padStart(2, '0')}</p>
                 <p className="text-[9px] font-bold text-gray-500 uppercase">3rd Party</p>
               </div>
               <div className="ml-auto text-right">
-                <p className="text-xs font-black text-gray-900">80%</p>
+                <p className="text-xs font-black text-gray-900">{financeApprovalRate}%</p>
                 <p className="text-[8px] text-gray-400 uppercase font-bold">Approved</p>
               </div>
             </div>
@@ -153,11 +162,11 @@ const SalesPersonDashboard: React.FC = () => {
           <div className="flex-1">
             <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-1">Accessories Revenue</p>
             <div className="flex items-center justify-between mt-1">
-              <p className="text-xl font-black text-orange-600">₹{formatCurrency(385000).replace('₹', '')}</p>
-              <span className="text-[9px] font-bold text-gray-400 uppercase tracking-tighter">Goal: 5.0L</span>
+              <p className="text-xl font-black text-orange-600">₹{formatCurrency(accessoriesTotal).replace('₹', '')}</p>
+              <span className="text-[9px] font-bold text-gray-400 uppercase tracking-tighter">Goal: {formatCurrency(accessoriesTarget).replace('₹', '')}</span>
             </div>
             <div className="w-full h-1.5 bg-gray-100 rounded-full mt-2 overflow-hidden">
-              <div className="h-full bg-orange-500 rounded-full" style={{ width: '77%' }} />
+              <div className="h-full bg-orange-500 rounded-full" style={{ width: `${accessoriesProgress}%` }} />
             </div>
           </div>
         </div>

@@ -32,15 +32,21 @@ const AccountDashboard: React.FC = () => {
         setSelectedDeal(null);
     };
 
+    // Dynamic Accounting Stats
+    const totalLedgerInflow = deals.reduce((sum, d) => sum + (d.downPayment || 0), 0);
+    const financePending = deals.filter(d => d.financeType && d.financeStatus !== 'Disbursed').reduce((sum, d) => sum + (d.amount - (d.downPayment || 0)), 0);
+    const operatingExpenses = showroomExpenses.reduce((sum, ex) => sum + ex.amount, 0) + staffPayroll.reduce((sum, p) => sum + p.totalPayout, 0);
+    const stockAssetValue = deals.reduce((sum, d) => sum + d.amount, 0);
+
     return (
         <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
 
             {/* 1. TOP FINANCE METRICS */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                <MetricsCard title="Total Ledger Inflow" value={formatCurrency(14200000)} subtitle="Collected this month" trend={12} icon={<IndianRupee className="w-5 h-5" />} color="#10b981" />
-                <MetricsCard title="Finance Pending" value={formatCurrency(2840000)} subtitle="Awaiting Disbursement" trend={-5} icon={<Landmark className="w-5 h-5" />} color="#f59e0b" />
-                <MetricsCard title="Operating Expenses" value={formatCurrency(820000)} subtitle="Rent + Utilities" trend={2} icon={<Building2 className="w-5 h-5" />} color="#ef4444" />
-                <MetricsCard title="Stock Asset Value" value={formatCurrency(58000000)} subtitle="42 Units in Yard" icon={<PackageSearch className="w-5 h-5" />} color="#3b82f6" />
+                <MetricsCard title="Total Ledger Inflow" value={formatCurrency(totalLedgerInflow)} subtitle="Collected this month" trend={12} icon={<IndianRupee className="w-5 h-5" />} color="#10b981" />
+                <MetricsCard title="Finance Pending" value={formatCurrency(financePending)} subtitle="Awaiting Disbursement" trend={-5} icon={<Landmark className="w-5 h-5" />} color="#f59e0b" />
+                <MetricsCard title="Operating Expenses" value={formatCurrency(operatingExpenses)} subtitle="Rent + Payroll" trend={2} icon={<Building2 className="w-5 h-5" />} color="#ef4444" />
+                <MetricsCard title="Inventory Value" value={formatCurrency(stockAssetValue)} subtitle={`${deals.length} Units in pipeline`} icon={<PackageSearch className="w-5 h-5" />} color="#3b82f6" />
             </div>
 
             <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">

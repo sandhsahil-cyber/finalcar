@@ -23,10 +23,14 @@ const AccessoriesDashboard: React.FC = () => {
     const [selectedFitment, setSelectedFitment] = useState<any>(null);
 
     // Business Logic: Accessory specific leads
-    const accessoryLeads = deals.map(deal => ({
+    const totalAccessoryRevenue = deals.reduce((sum, d) => sum + (d.accessoriesAmount || 0), 0);
+    const pendingFittings = deals.filter(d => (d.accessoriesAmount || 0) > 0 && d.status !== 'completed').length;
+    const completedFittings = deals.filter(d => (d.accessoriesAmount || 0) > 0 && d.status === 'completed').length;
+
+    const accessoryLeads = deals.filter(d => (d.accessoriesAmount || 0) > 0).map(deal => ({
         ...deal,
-        fitmentStatus: deal.status === 'active' ? 'In Progress' : 'Fitting Done',
-        accessoryValue: deal.amount * 0.05, // 5% of car value in accessories
+        fitmentStatus: deal.status === 'completed' ? 'Fitting Done' : 'In Progress',
+        accessoryValue: deal.accessoriesAmount || 0,
         items: ['Floor Mats', 'Mud Flaps', 'Chrome Kit', 'Seat Covers'],
         pendingItems: deal.status === 'active' ? ['Dashcam'] : [],
     }));
@@ -37,20 +41,20 @@ const AccessoriesDashboard: React.FC = () => {
             {/* 1. SHOP FLOOR COUNTERS */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 <MetricsCard
-                    title="Total Accessory Sales" value={formatCurrency(1245000)} subtitle="Monthly Revenue"
+                    title="Total Accessory Sales" value={formatCurrency(totalAccessoryRevenue)} subtitle="Current Month Revenue"
                     icon={<ShoppingBag className="w-5 h-5" />} color="#f43f5e"
                 />
                 <MetricsCard
-                    title="Pending Fittings" value="07" subtitle="Vehicles in Bay"
+                    title="Pending Fittings" value={String(pendingFittings).padStart(2, '0')} subtitle="Vehicles in Bay"
                     icon={<Wrench className="w-5 h-5" />} color="#f59e0b"
                 />
                 <MetricsCard
-                    title="Ready for Delivery" value="19" subtitle="Fitting Completed"
+                    title="Ready for Delivery" value={String(completedFittings).padStart(2, '0')} subtitle="Fitting Completed"
                     icon={<CheckCircle2 className="w-5 h-5" />} color="#10b981"
                 />
                 <MetricsCard
-                    title="Low Stock Alerts" value="03" subtitle="Items to Reorder"
-                    icon={<AlertTriangle className="w-5 h-5" />} color="#ef4444"
+                    title="Avg Sale / Car" value={formatCurrency(totalAccessoryRevenue / (deals.filter(d => d.accessoriesAmount).length || 1))} subtitle="Productivity"
+                    icon={<AlertTriangle className="w-5 h-5" />} color="#6366f1"
                 />
             </div>
 

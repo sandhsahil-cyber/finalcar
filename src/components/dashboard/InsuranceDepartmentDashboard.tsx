@@ -24,11 +24,15 @@ const InsuranceDashboard: React.FC = () => {
     const [showIssueModal, setShowIssueModal] = useState(false);
     const [selectedLead, setSelectedLead] = useState<any>(null);
 
-    // Business Logic: Real-time status filtering
+    // Dynamic Business Logic
+    const inHouseInsurance = deals.filter(d => d.insurancePartner).length;
+    const pendingApproval = deals.filter(d => !d.status === 'completed' && d.stage === 'RTO').length;
+    const totalProcessed = deals.filter(d => d.status === 'completed' || d.insurancePartner).length;
+
     const insuranceLeads = deals.map(deal => ({
         ...deal,
-        insuranceType: Math.random() > 0.5 ? 'Self (Showroom)' : 'By Party (External)',
-        policyStatus: deal.status === 'active' ? 'Pending Approval' : 'Policy Issued',
+        insuranceType: deal.insurancePartner ? 'Self (Showroom)' : 'By Party (External)',
+        policyStatus: deal.status === 'completed' ? 'Policy Issued' : 'Pending Approval',
         premiumAmount: deal.amount * 0.035, // Approx 3.5% Premium
         expiryDate: '2027-04-10'
     }));
@@ -44,19 +48,19 @@ const InsuranceDashboard: React.FC = () => {
             {/* 1. TOP STATS COUNTERS */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                 <MetricsCard
-                    title="Total Insurance" value="48" subtitle="Processed this month"
+                    title="Total Insurance" value={String(totalProcessed).padStart(2, '0')} subtitle="Processed this month"
                     icon={<ShieldCheck className="w-5 h-5" />} color="#0ea5e9"
                 />
                 <MetricsCard
-                    title="Self (In-House)" value="32" subtitle="High Margin Revenue"
+                    title="Self (In-House)" value={String(inHouseInsurance).padStart(2, '0')} subtitle="Dealer Channel"
                     icon={<Briefcase className="w-5 h-5" />} color="#10b981"
                 />
                 <MetricsCard
-                    title="Pending Approval" value="09" subtitle="Awaiting Cover Note"
+                    title="Pending Policy" value={String(pendingApproval).padStart(2, '0')} subtitle="In Pipeline"
                     icon={<Clock className="w-5 h-5" />} color="#f59e0b"
                 />
                 <MetricsCard
-                    title="Renewals Due" value="114" subtitle="Next 30 Days"
+                    title="Conversion" value={`${Math.round((inHouseInsurance/deals.length)*100)}%`} subtitle="vs Total Sales"
                     icon={<History className="w-5 h-5" />} color="#6366f1"
                 />
             </div>
