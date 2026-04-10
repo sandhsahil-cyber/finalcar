@@ -24,7 +24,7 @@ export interface Deal {
   // New operational fields
   financeType?: 'In-house' | '3rd Party';
   financePartner?: string;
-  financeStatus?: 'Pending' | 'Approved' | 'Rejected' | 'Disbursed';
+  financeStatus?: 'Pending' | 'Approved' | 'Rejected' | 'Disbursed' | 'Searching';
   insurancePartner?: string;
   accessoriesAmount?: number;
   isExchange?: boolean;
