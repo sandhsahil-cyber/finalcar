@@ -27,7 +27,7 @@ const roles: { value: UserRole; label: string; sublabel: string; icon: React.Ele
 ];
 
 const Header: React.FC = () => {
-  const { currentRole, setCurrentRole, setCurrentUserId, searchQuery, setSearchQuery, sidebarCollapsed, setSidebarCollapsed } = useDashboard();
+  const { currentRole, setCurrentRole, setCurrentUserId, searchQuery, setSearchQuery, sidebarCollapsed, setSidebarCollapsed, salespeople, teams } = useDashboard();
   const { isAuthenticated, profile, setShowLoginModal, isLoading } = useAuth();
   const [showRoleMenu, setShowRoleMenu] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
@@ -61,10 +61,18 @@ const Header: React.FC = () => {
   const handleRoleChange = (roleValue: UserRole) => {
     setCurrentRole(roleValue);
     
-    // Auto-switch UserID for Demo Data mapping
-    if (roleValue === 'salesperson') setCurrentUserId('sp-1');
-    else if (roleValue === 'teamleader') setCurrentUserId('tl-1');
-    else setCurrentUserId('sm-1');
+    // Auto-switch UserID dynamically based on seeded data
+    if (roleValue === 'salesperson') {
+      const firstSP = salespeople.find(sp => sp.id.includes('rajkot')) || salespeople[0];
+      if (firstSP) setCurrentUserId(firstSP.id);
+    } 
+    else if (roleValue === 'teamleader') {
+      const firstTeam = teams.find(t => t.id.includes('rajkot')) || teams[0];
+      if (firstTeam) setCurrentUserId(firstTeam.leaderId);
+    }
+    else {
+      setCurrentUserId('sm-1');
+    }
     
     setShowRoleMenu(false);
   };

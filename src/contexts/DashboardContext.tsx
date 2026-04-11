@@ -1,5 +1,6 @@
-import React, { createContext, useContext, useState, useCallback } from 'react';
-import { Deal, DealStage, UserRole, deals as initialDeals, DEAL_STAGES } from '@/data/dummyData';
+import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
+import { Deal, DealStage, UserRole, DEAL_STAGES, SalesPerson, Team, Activity, Notification, CAR_MODELS } from '@/data/dummyData';
+import { api } from '@/lib/api';
 
 interface DashboardContextType {
   currentRole: UserRole;
@@ -7,7 +8,9 @@ interface DashboardContextType {
   currentUserId: string;
   setCurrentUserId: (id: string) => void;
   deals: Deal[];
+  addDeal: (dealData: Partial<Deal>) => Promise<void>;
   updateDealStage: (dealId: string, newStage: DealStage) => void;
+  updateDealStatus: (dealId: string, newStatus: string) => void;
   selectedDeal: Deal | null;
   setSelectedDeal: (deal: Deal | null) => void;
   showDealModal: boolean;
@@ -24,6 +27,10 @@ interface DashboardContextType {
   setStageFilter: (stage: DealStage | 'All' | 'Booking') => void;
   statusFilter: string;
   setStatusFilter: (status: string) => void;
+  salespeople: SalesPerson[];
+  teams: Team[];
+  activities: Activity[];
+  notifications: Notification[];
 }
 
 const DashboardContext = createContext<DashboardContextType | undefined>(undefined);
@@ -31,8 +38,34 @@ const DashboardContext = createContext<DashboardContextType | undefined>(undefin
 export const DashboardProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [currentRole, setCurrentRole] = useState<UserRole>('salesmanager');
   const [currentUserId, setCurrentUserId] = useState<string>('sm-1');
-  const [deals, setDeals] = useState<Deal[]>(initialDeals);
+  const [deals, setDeals] = useState<Deal[]>([]);
+  const [salespeople, setSalespeople] = useState<SalesPerson[]>([]);
+  const [teams, setTeams] = useState<Team[]>([]);
+  const [activities, setActivities] = useState<Activity[]>([]);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
   const [selectedDeal, setSelectedDeal] = useState<Deal | null>(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [d, sp, t, act, note] = await Promise.all([
+          api.getDeals(),
+          api.getSalespeople(),
+          api.getTeams(),
+          api.getActivities(),
+          api.getNotifications()
+        ]);
+        setDeals(d);
+        setSalespeople(sp);
+        setTeams(t);
+        setActivities(act);
+        setNotifications(note);
+      } catch (err) {
+        console.error("Failed to fetch dashboard data", err);
+      }
+    };
+    fetchData();
+  }, []);
   const [showDealModal, setShowDealModal] = useState(false);
   const [showNewDealForm, setShowNewDealForm] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -41,38 +74,89 @@ export const DashboardProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   const [stageFilter, setStageFilter] = useState<DealStage | 'All' | 'Booking'>('All');
   const [statusFilter, setStatusFilter] = useState('all');
 
-  const updateDealStage = useCallback((dealId: string, newStage: DealStage) => {
-    setDeals(prev => prev.map(deal => {
-      if (deal.id === dealId) {
-        const newStageProgress = { ...deal.stageProgress };
-        const currentIndex = DEAL_STAGES.indexOf(deal.stage);
-        const newIndex = DEAL_STAGES.indexOf(newStage);
-        
-        // Mark all previous stages as completed
-        DEAL_STAGES.forEach((stage, i) => {
-          if (i < newIndex) {
-            newStageProgress[stage] = { completed: true, date: new Date().toISOString().split('T')[0], notes: `${stage} completed` };
-          } else if (i === newIndex) {
-            newStageProgress[stage] = { completed: false, notes: `Currently in ${stage} stage` };
-          }
-        });
-
-        return {
-          ...deal,
-          stage: newStage,
-          stageProgress: newStageProgress,
-          updatedAt: new Date().toISOString().split('T')[0],
-        };
-      }
-      return deal;
-    }));
+  const updateDealStatus = useCallback(async (dealId: string, newStatus: string) => {
+    try {
+      await api.updateDeal(dealId, { status: newStatus as any });
+      setDeals(prev => prev.map(d => d.id === dealId ? { ...d, status: newStatus as any } : d));
+    } catch (err) {
+      console.error("Failed to update deal status", err);
+    }
   }, []);
+
+  const addDeal = useCallback(async (dealData: Partial<Deal>) => {
+    // Get incentive from car model
+    const carModel = CAR_MODELS.find(m => m.model === dealData.carModel);
+    const incentiveAmount = carModel?.incentive || 5000;
+
+    // Get staff info
+    const sp = salespeople.find(s => s.id === currentUserId);
+    
+    const newDeal: any = {
+      ...dealData,
+      id: `D-${Date.now()}`,
+      salespersonId: currentUserId,
+      teamId: sp?.teamId || 'team-rajkot-1',
+      createdAt: new Date().toISOString().split('T')[0],
+      updatedAt: new Date().toISOString().split('T')[0],
+      status: 'active',
+      stage: 'Account',
+      incentiveAmount,
+      incentiveStatus: 'Pending',
+      rtoNumberPlateIssued: false,
+      stageProgress: {
+        Account: { completed: true, date: new Date().toISOString().split('T')[0] },
+      }
+    };
+
+    try {
+      const savedDeal = await api.createDeal(newDeal);
+      setDeals(prev => [savedDeal, ...prev]);
+    } catch (err) {
+      console.error("Failed to add deal", err);
+    }
+  }, [currentUserId, salespeople]);
+
+  const updateDealStage = useCallback(async (dealId: string, newStage: DealStage) => {
+    const deal = deals.find(d => d.id === dealId);
+    if (!deal) return;
+
+    const newStageProgress = { ...deal.stageProgress };
+    const newIndex = DEAL_STAGES.indexOf(newStage);
+    
+    // Mark all previous stages as completed
+    DEAL_STAGES.forEach((stage, i) => {
+      if (i < newIndex) {
+        newStageProgress[stage] = { completed: true, date: new Date().toISOString().split('T')[0], notes: `${stage} completed` };
+      } else if (i === newIndex) {
+        newStageProgress[stage] = { completed: false, notes: `Currently in ${stage} stage` };
+      }
+    });
+
+    const updatedData: any = {
+      stage: newStage,
+      stageProgress: newStageProgress,
+      updatedAt: new Date().toISOString().split('T')[0],
+    };
+
+    // Auto-trigger RTO and Incentive counts based on pipeline stage
+    if (newStage === 'PDI' || newStage === 'Accessories') {
+      updatedData.rtoNumberPlateIssued = true;
+      updatedData.incentiveStatus = 'Counted';
+    }
+
+    try {
+      await api.updateDeal(dealId, updatedData);
+      setDeals(prev => prev.map(d => d.id === dealId ? { ...d, ...updatedData } : d));
+    } catch (err) {
+      console.error("Failed to update deal stage", err);
+    }
+  }, [deals]);
 
   return (
     <DashboardContext.Provider value={{
       currentRole, setCurrentRole,
       currentUserId, setCurrentUserId,
-      deals, updateDealStage,
+      deals, addDeal, updateDealStage, updateDealStatus,
       selectedDeal, setSelectedDeal,
       showDealModal, setShowDealModal,
       showNewDealForm, setShowNewDealForm,
@@ -81,6 +165,7 @@ export const DashboardProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       searchQuery, setSearchQuery,
       stageFilter, setStageFilter,
       statusFilter, setStatusFilter,
+      salespeople, teams, activities, notifications
     }}>
       {children}
     </DashboardContext.Provider>

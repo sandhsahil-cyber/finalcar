@@ -1,55 +1,118 @@
 import React, { useState } from 'react';
 import { useDashboard } from '@/contexts/DashboardContext';
-import { salespeople, deals as allDeals, activities, formatCurrency, DEAL_STAGES, STAGE_COLORS, DealStage } from '@/data/dummyData';
+import { formatCurrency, DEAL_STAGES, STAGE_COLORS, DealStage, activities } from '@/data/dummyData';
 import MetricsCard from './MetricsCard';
 import DealCard from './DealCard';
 import { PipelineSummary } from './PipelineTracker';
 import ActivityTimeline from './ActivityTimeline';
-import { Car, Target, TrendingUp, Plus, Filter, Clock, Users, ClipboardList, Shield, Package, ArrowRight, QrCode, X } from 'lucide-react';
+import NewDealForm from './NewDealForm';
+import { Car, Target, TrendingUp, Plus, Filter, Clock, Users, ClipboardList, Shield, Package, ArrowRight, QrCode, X, ShieldCheck, FileCheck, Award, CheckCircle } from 'lucide-react';
 
 const SalesPersonDashboard: React.FC = () => {
-  const { searchQuery, stageFilter, setStageFilter, setShowNewDealForm, deals, currentUserId } = useDashboard();
+  const { searchQuery, stageFilter, setStageFilter, setShowNewDealForm, deals, currentUserId, salespeople, teams } = useDashboard();
   const [showQRModal, setShowQRModal] = useState(false);
+  const [selectedMonth, setSelectedMonth] = useState('2026-04');
 
-  // Current salesperson mapping for demo
-  const currentSP = salespeople.find(sp => sp.id === currentUserId) || salespeople[0];
-  const myDeals = deals.filter(d => d.salespersonId === currentUserId);
-  const CAR_TARGET = 15; // Defining car target
-  const progressPercent = Math.round((currentSP.dealsCount / CAR_TARGET) * 100);
+  // Find if current user is an executive or team leader
+  const executive = salespeople.find(sp => sp.id === currentUserId);
+  const teamManaged = teams.find(t => t.leaderId === currentUserId);
 
-  // Derived metrics
+  let myDeals = [];
+  let userDisplayName = "";
+  let userRoleLabel = "";
+  let userAvatar = "";
+  let currentStats = { dealsCount: 0, conversionRate: 0 };
+
+  if (teamManaged) {
+    // Current user is a Team Leader
+    myDeals = deals.filter(d => d.teamId === teamManaged.id && d.createdAt.startsWith(selectedMonth));
+    userDisplayName = teamManaged.leaderName;
+    userRoleLabel = `${teamManaged.name} • Team Leader`;
+    userAvatar = teamManaged.leaderAvatar;
+    currentStats = {
+      dealsCount: myDeals.filter(d => d.status === 'completed').length,
+      conversionRate: Math.round((myDeals.filter(d => d.status === 'completed').length / (myDeals.length || 1)) * 100)
+    };
+  } else if (executive) {
+    // Current user is a Sales Executive
+    myDeals = deals.filter(d => d.salespersonId === executive.id && d.createdAt.startsWith(selectedMonth));
+    userDisplayName = executive.name;
+    const team = teams.find(t => t.id === executive.teamId);
+    userRoleLabel = team ? `${team.name} • Sales Executive` : "Sales Executive";
+    userAvatar = executive.avatar;
+    currentStats = { dealsCount: executive.dealsCount, conversionRate: executive.conversionRate };
+  } else {
+    // Fallback for demo
+    const fallbackSP = salespeople[0] || { name: 'Vikram Singh', id: 'sp-1', avatar: 'VS', dealsCount: 8, conversionRate: 75 };
+    myDeals = deals.filter(d => d.salespersonId === fallbackSP.id && d.createdAt.startsWith(selectedMonth));
+    userDisplayName = fallbackSP.name;
+    userRoleLabel = "Sales Executive";
+    userAvatar = fallbackSP.avatar;
+    currentStats = { dealsCount: fallbackSP.dealsCount, conversionRate: fallbackSP.conversionRate };
+  }
+
+  const CAR_TARGET = teamManaged ? 50 : 15;
+  const progressPercent = Math.round((currentStats.dealsCount / CAR_TARGET) * 100);
+
+  // Derived metrics with robust filtering
   const totalLeads = myDeals.length;
-  const totalBookings = myDeals.filter(d => d.stage !== 'Account').length;
+  const totalBookings = myDeals.filter(d => d.stage && d.stage !== 'Account').length;
   const totalDeliveries = myDeals.filter(d => d.status === 'completed').length;
 
   const financeInHouse = myDeals.filter(d => d.financeType === 'In-house').length;
   const finance3rdParty = myDeals.filter(d => d.financeType === '3rd Party').length;
   const financeApproved = myDeals.filter(d => d.financeStatus === 'Approved' || d.financeStatus === 'Disbursed').length;
-  const financeApprovalRate = myDeals.length > 0 ? Math.round((financeApproved / myDeals.filter(d => d.financeType).length || 1) * 100) : 0;
+  const financeApprovalRate = myDeals.length > 0 ? Math.round((financeApproved / (myDeals.filter(d => d.financeType).length || 1)) * 100) : 0;
 
   const accessoriesTotal = myDeals.reduce((sum, d) => sum + (d.accessoriesAmount || 0), 0);
   const accessoriesTarget = 500000;
   const accessoriesProgress = Math.min(100, Math.round((accessoriesTotal / accessoriesTarget) * 100));
+
+  const exchangeCount = myDeals.filter(d => d.isExchange === true).length;
+  const insuranceInHouseCount = myDeals.filter(d => d.insuranceType === 'In-house').length;
+  const insuranceSelfCount = myDeals.filter(d => d.insuranceType === 'Self').length;
+
+  // Logic Fix: Any deal in PDI or Accessories MUST be counted as RTO Done
+  const rtoDoneCount = myDeals.filter(d =>
+    d.rtoNumberPlateIssued === true || d.stage === 'PDI' || d.stage === 'Accessories'
+  ).length;
+
+  const ewCount = myDeals.filter(d => d.extendedWarranty === true).length;
+
+  // Incentive calculation: Include deals explicitly counted OR those in RTO done stages
+  const incentiveDeals = myDeals.filter(d =>
+    d.incentiveStatus === 'Counted' ||
+    d.rtoNumberPlateIssued === true ||
+    d.stage === 'PDI' ||
+    d.stage === 'Accessories'
+  );
+
+  const totalEarnedIncentive = incentiveDeals.reduce((sum, d) => sum + (d.incentiveAmount || 0), 0);
+  const totalIncentiveUnits = incentiveDeals.length;
+
+  const totalPendingIncentive = myDeals
+    .filter(d => !incentiveDeals.find(id => id.id === d.id))
+    .reduce((sum, d) => sum + (d.incentiveAmount || 0), 0);
 
   const filteredDeals = myDeals.filter(deal => {
     const matchesSearch = !searchQuery ||
       deal.customerName.toLowerCase().includes(searchQuery.toLowerCase()) ||
       deal.carModel.toLowerCase().includes(searchQuery.toLowerCase()) ||
       deal.id.toLowerCase().includes(searchQuery.toLowerCase());
-    
+
     let matchesStage = false;
     if (stageFilter === 'All') {
-      matchesStage = true;
+      matchesStage = deal.stage === 'General'; // Show ONLY general leads
     } else if (stageFilter === 'Booking') {
-      matchesStage = deal.stage !== 'Account'; // Bookings are everything past initial account
+      matchesStage = deal.stage !== 'General'; // Show ONLY booking leads
     } else {
       matchesStage = deal.stage === stageFilter;
     }
-    
+
     return matchesSearch && matchesStage;
   });
 
-  const myActivities = activities.filter(a => a.user === 'Vikram Singh').slice(0, 6);
+  const myActivities = activities.filter(a => a.user === userDisplayName).slice(0, 10);
 
   return (
     <div className="space-y-6">
@@ -61,11 +124,11 @@ const SalesPersonDashboard: React.FC = () => {
           <div>
             <div className="flex items-center gap-3 mb-4">
               <div className="w-14 h-14 rounded-2xl bg-white/20 flex items-center justify-center text-xl font-bold backdrop-blur-md border border-white/30 shadow-inner">
-                VS
+                {userAvatar}
               </div>
               <div>
-                <h2 className="text-2xl font-black tracking-tight">Welcome back, Vikram!</h2>
-                <p className="text-blue-200 text-sm font-medium">Alpha Squad • Sales Executive</p>
+                <h2 className="text-2xl font-black tracking-tight">Welcome back, {userDisplayName}!</h2>
+                <p className="text-blue-200 text-sm font-medium">{userRoleLabel}</p>
               </div>
             </div>
 
@@ -76,8 +139,14 @@ const SalesPersonDashboard: React.FC = () => {
               </div>
               <div>
                 <p className="text-blue-100/60 text-[10px] font-bold uppercase tracking-widest mb-1">Cars Sold</p>
-                <p className="text-2xl font-black">{currentSP.dealsCount} <span className="text-sm font-medium opacity-60">Units</span></p>
+                <p className="text-2xl font-black">{currentStats.dealsCount} <span className="text-sm font-medium opacity-60">Units</span></p>
               </div>
+              {teamManaged && (
+                <div>
+                  <p className="text-blue-100/60 text-[10px] font-bold uppercase tracking-widest mb-1">Team Size</p>
+                  <p className="text-2xl font-black">{teamManaged.memberCount} <span className="text-sm font-medium opacity-60">Executives</span></p>
+                </div>
+              )}
               <div>
                 <p className="text-blue-100/60 text-[10px] font-bold uppercase tracking-widest mb-1">Month Progress</p>
                 <div className="flex items-center gap-3 mt-1 bg-white/10 px-3 py-2 rounded-xl border border-white/10">
@@ -94,14 +163,14 @@ const SalesPersonDashboard: React.FC = () => {
             <div className="absolute top-2 right-2">
               <div className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
             </div>
-            <p className="text-blue-100/80 text-[10px] font-black uppercase tracking-widest mb-2">Total Incentive</p>
+            <p className="text-blue-100/80 text-[10px] font-black uppercase tracking-widest mb-2">Total Incentive Earned ({totalIncentiveUnits} Units)</p>
             <div className="flex items-baseline gap-1">
               <span className="text-sm font-bold text-emerald-400">₹</span>
               <span className="text-4xl font-black text-white tracking-tighter">
-                {formatCurrency(28500).replace('₹', '').replace('.00', '')}
+                {formatCurrency(totalEarnedIncentive).replace('₹', '').replace('.00', '')}
               </span>
             </div>
-            <p className="text-[9px] text-blue-200/60 mt-2 font-medium">Earned this month</p>
+            <p className="text-[9px] text-blue-200/60 mt-2 font-medium">Unlocked by RTO completion</p>
           </div>
         </div>
       </div>
@@ -173,15 +242,7 @@ const SalesPersonDashboard: React.FC = () => {
       </div>
 
       {/* Individual Lead Metrics */}
-      <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
-        <MetricsCard
-          title="Car Exchange"
-          value={String(myDeals.filter(d => d.status === 'active').length)}
-          subtitle="In pipeline"
-          trend={12}
-          icon={<Car className="w-5 h-5" />}
-          color="#3b82f6"
-        />
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-4">
         <MetricsCard
           title="All Leads"
           value={String(myDeals.length)}
@@ -191,24 +252,56 @@ const SalesPersonDashboard: React.FC = () => {
           color="#6366f1"
         />
         <MetricsCard
-          title="Total Bookings"
+          title="Bookings"
           value={String(myDeals.filter(d => d.stage !== 'Account').length)}
           subtitle="Units booked"
-          trend={8}
+          trend={12}
           icon={<ClipboardList className="w-5 h-5" />}
           color="#8b5cf6"
         />
         <MetricsCard
-          title="Total Delivery"
+          title="Deliveries"
           value={String(totalDeliveries)}
-          subtitle="Units delivered"
+          subtitle="Units completed"
           trend={5}
           icon={<Car className="w-5 h-5" />}
           color="#10b981"
         />
         <MetricsCard
+          title="Car Exchange"
+          value={String(exchangeCount)}
+          subtitle="Deals with exchange"
+          trend={10}
+          icon={<Car className="w-5 h-5" />}
+          color="#3b82f6"
+        />
+        <MetricsCard
+          title="Insurance"
+          value={`In-house: ${insuranceInHouseCount}`}
+          subtitle={`Self: ${insuranceSelfCount}`}
+          trend={5}
+          icon={<ShieldCheck className="w-5 h-5" />}
+          color="#6366f1"
+        />
+        <MetricsCard
+          title="RTO Done"
+          value={String(rtoDoneCount)}
+          subtitle="Plates Issued"
+          trend={rtoDoneCount > 5 ? 12 : -2}
+          icon={<FileCheck className="w-5 h-5" />}
+          color="#10b981"
+        />
+        <MetricsCard
+          title="EW Done"
+          value={String(ewCount)}
+          subtitle="Ext. Warranty Sold"
+          trend={10}
+          icon={<Award className="w-5 h-5" />}
+          color="#f43f5e"
+        />
+        <MetricsCard
           title="Conversion"
-          value={`${currentSP.conversionRate}%`}
+          value={`${currentStats.conversionRate}%`}
           subtitle="Lead to sale"
           trend={5}
           icon={<TrendingUp className="w-5 h-5" />}
@@ -217,7 +310,7 @@ const SalesPersonDashboard: React.FC = () => {
         <MetricsCard
           title="Month Progress"
           value={`${progressPercent}%`}
-          subtitle={`${CAR_TARGET - currentSP.dealsCount} cars remaining`}
+          subtitle={`${CAR_TARGET - currentStats.dealsCount} cars remaining`}
           trend={-3}
           icon={<Target className="w-5 h-5" />}
           color="#ff6b35"
@@ -236,6 +329,16 @@ const SalesPersonDashboard: React.FC = () => {
           </div>
 
           <div className="flex flex-wrap items-center gap-2">
+            {/* Month Filter */}
+            <select
+              value={selectedMonth}
+              onChange={(e) => setSelectedMonth(e.target.value)}
+              className="px-3 py-1.5 bg-white border border-gray-200 rounded-xl text-xs font-bold text-gray-700 focus:outline-none focus:ring-2 focus:ring-orange-500/20"
+            >
+              <option value="2026-03">March 2026</option>
+              <option value="2026-04">April 2026</option>
+            </select>
+
             {/* Lead Filters */}
             <div className="flex items-center gap-1 bg-gray-50 rounded-xl p-1">
               <button
@@ -285,11 +388,69 @@ const SalesPersonDashboard: React.FC = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-          {filteredDeals.map(deal => (
-            <DealCard key={deal.id} deal={deal} />
-          ))}
+          {stageFilter === 'All' ? (
+            <div className="col-span-1 md:col-span-2 xl:col-span-3 bg-white rounded-3xl border border-gray-100 overflow-hidden shadow-sm">
+              <div className="overflow-x-auto">
+                <table className="w-full text-left">
+                  <thead>
+                    <tr className="bg-gray-50/50 text-[10px] font-black text-gray-400 uppercase tracking-widest border-b border-gray-100">
+                      <th className="px-6 py-4">Customer</th>
+                      <th className="px-6 py-4">Vehicle Detail</th>
+                      <th className="px-6 py-4">Stage</th>
+                      <th className="px-6 py-4">Status</th>
+                      <th className="px-6 py-4">Next Task</th>
+                      <th className="px-6 py-4 text-right">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-50">
+                    {filteredDeals.map(deal => (
+                      <tr key={deal.id} className="group hover:bg-blue-50/30 transition-all cursor-pointer">
+                        <td className="px-6 py-4">
+                          <p className="text-sm font-bold text-gray-900">{deal.customerName}</p>
+                          <p className="text-[10px] text-gray-400">{deal.customerPhone}</p>
+                        </td>
+                        <td className="px-6 py-4">
+                          <p className="text-sm font-bold text-blue-600">{deal.carModel}</p>
+                          <p className="text-[10px] text-gray-500 font-medium">{deal.carVariant} • {deal.color}</p>
+                        </td>
+                        <td className="px-6 py-4">
+                          <span className="px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-tighter bg-gray-100 text-gray-600">
+                            {deal.stage}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="flex items-center gap-1.5">
+                            <div className={`w-1.5 h-1.5 rounded-full ${deal.status === 'active' ? 'bg-emerald-500' : 'bg-gray-400'}`} />
+                            <span className="text-[10px] font-bold text-gray-600 capitalize">{deal.status}</span>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 max-w-[200px]">
+                          <p className="text-[11px] text-gray-600 truncate italic">"{deal.nextFollowUpTask || 'No pending task'}"</p>
+                          <p className="text-[9px] text-gray-400 mt-0.5">{deal.nextFollowUpDate || '-'}</p>
+                        </td>
+                        <td className="px-6 py-4 text-right">
+                          <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <button className="p-2 text-blue-600 hover:bg-blue-50 rounded-xl transition-colors">
+                              <Plus className="w-4 h-4" />
+                            </button>
+                            <button className="p-2 text-red-600 hover:bg-red-50 rounded-xl transition-colors">
+                              <X className="w-4 h-4" />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          ) : (
+            filteredDeals.map(deal => (
+              <DealCard key={deal.id} deal={deal} />
+            ))
+          )}
           {filteredDeals.length === 0 && (
-            <div className="text-center py-20 bg-gray-50 rounded-3xl border border-dashed border-gray-200">
+            <div className="col-span-full text-center py-20 bg-gray-50 rounded-3xl border border-dashed border-gray-200">
               <div className="w-16 h-16 bg-white rounded-2xl shadow-sm flex items-center justify-center mx-auto mb-4">
                 <Filter className="w-8 h-8 text-gray-300" />
               </div>
@@ -304,7 +465,7 @@ const SalesPersonDashboard: React.FC = () => {
       {showQRModal && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm transition-all duration-300">
           <div className="bg-white rounded-[2.5rem] w-full max-w-sm overflow-hidden shadow-2xl relative animate-in fade-in zoom-in duration-300">
-            <button 
+            <button
               onClick={() => setShowQRModal(false)}
               className="absolute top-6 right-6 p-2 bg-gray-100 hover:bg-gray-200 rounded-full transition-colors group"
             >
@@ -322,10 +483,10 @@ const SalesPersonDashboard: React.FC = () => {
 
               <div className="bg-gray-50 p-6 rounded-[2rem] border border-gray-100 mb-8 aspect-square flex items-center justify-center relative group">
                 <div className="absolute inset-0 bg-white/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center rounded-[2rem] z-10 backdrop-blur-[2px]">
-                   <span className="text-xs font-black text-indigo-600 bg-white px-4 py-2 rounded-full shadow-lg">SCAN TO START</span>
+                  <span className="text-xs font-black text-indigo-600 bg-white px-4 py-2 rounded-full shadow-lg">SCAN TO START</span>
                 </div>
-                <img 
-                  src="/lead_registration_qr_1775851859990.png" 
+                <img
+                  src="/lead_registration_qr_1775851859990.png"
                   alt="Registration QR Code"
                   className="w-full h-full object-contain rounded-2xl mix-blend-multiply"
                 />
@@ -344,52 +505,156 @@ const SalesPersonDashboard: React.FC = () => {
 
       {/* Activity and Incentives */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2">
+        <div className="lg:col-span-2 space-y-6">
           <ActivityTimeline activities={myActivities.length > 0 ? myActivities : activities.slice(0, 5)} />
+
+          {teamManaged && (
+            <div className="bg-white rounded-3xl border border-gray-100 p-6 shadow-sm">
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="font-bold text-gray-900 flex items-center gap-2">
+                  <Users className="w-5 h-5 text-blue-500" /> Team Performance (10 Members)
+                </h3>
+              </div>
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="text-[10px] font-black text-gray-400 uppercase tracking-widest border-b border-gray-50">
+                      <th className="text-left pb-4">Executive</th>
+                      <th className="text-center pb-4">Leads</th>
+                      <th className="text-center pb-4">Bookings</th>
+                      <th className="text-center pb-4">Delivered</th>
+                      <th className="text-right pb-4">Incentive</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-50">
+                    {salespeople.filter(sp => sp.teamId === teamManaged.id).map(sp => {
+                      const spDeals = deals.filter(d => d.salespersonId === sp.id);
+                      const delivered = spDeals.filter(d => d.status === 'completed').length;
+
+                      // Smart calculation for incentive in table
+                      const earnedIncentive = spDeals
+                        .filter(d => d.incentiveStatus === 'Counted' || d.stage === 'PDI' || d.stage === 'Accessories')
+                        .reduce((sum, d) => sum + (d.incentiveAmount || 0), 0);
+
+                      return (
+                        <tr key={sp.id} className="group hover:bg-gray-50/50 transition-colors">
+                          <td className="py-4">
+                            <div className="flex items-center gap-3">
+                              <div className="w-8 h-8 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center text-[10px] font-bold">
+                                {sp.avatar}
+                              </div>
+                              <p className="text-sm font-bold text-gray-900">{sp.name}</p>
+                            </div>
+                          </td>
+                          <td className="text-center py-4 text-sm font-medium text-gray-600">{spDeals.length}</td>
+                          <td className="text-center py-4 text-sm font-medium text-gray-600">{spDeals.filter(d => d.stage !== 'Account').length}</td>
+                          <td className="text-center py-4">
+                            <span className={`px-2 py-1 rounded-lg text-[10px] font-bold ${delivered > 5 ? 'bg-emerald-50 text-emerald-600' : 'bg-gray-100 text-gray-600'}`}>
+                              {delivered} Units
+                            </span>
+                          </td>
+                          <td className="text-right py-4 text-sm font-black text-gray-900">₹{formatCurrency(earnedIncentive).replace('₹', '')}</td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
         </div>
 
-        <div className="bg-white rounded-3xl border border-gray-100 p-6 shadow-sm overflow-hidden">
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="font-bold text-gray-900 flex items-center gap-2">
-              <TrendingUp className="w-5 h-5 text-emerald-500" /> Incentive Earnings
-            </h3>
-            <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full">LIVE TRACKING</span>
-          </div>
-
-          <div className="space-y-4">
-            <div className="p-4 bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl text-white">
-              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Total Incentive Earned</p>
-              <p className="text-2xl font-black">₹{formatCurrency(28500).replace('₹', '')}</p>
-              <p className="text-[9px] text-gray-400 mt-1">Estimated for current month deliveries</p>
+        <div className="space-y-4">
+          {/* Daily Tasks Section */}
+          <div className="bg-white rounded-3xl border border-gray-100 p-6 shadow-sm overflow-hidden h-fit">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="font-bold text-gray-900 flex items-center gap-2">
+                <CheckCircle className="w-5 h-5 text-orange-500" /> Daily Sales Tasks
+              </h3>
+              <span className="text-[10px] font-bold text-orange-600 bg-orange-50 px-2 py-1 rounded-full">TODAY</span>
             </div>
 
             <div className="space-y-3">
-              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Model-wise Earnings</p>
-              {[
-                { model: 'Grand Vitara', count: 3, incentive: 5000, color: 'blue' },
-                { model: 'Fronx', count: 2, incentive: 3500, color: 'indigo' },
-                { model: 'Swift', count: 3, incentive: 2000, color: 'orange' },
-              ].map((item, i) => (
-                <div key={i} className="flex items-center justify-between p-3 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors">
-                  <div className="flex items-center gap-3">
-                    <div className={`w-8 h-8 rounded-lg bg-${item.color}-100 flex items-center justify-center`}>
-                      <Car className={`w-4 h-4 text-${item.color}-600`} />
-                    </div>
-                    <div>
-                      <p className="text-xs font-bold text-gray-900">{item.model}</p>
-                      <p className="text-[9px] text-gray-500">{item.count} Deliveries</p>
-                    </div>
+              {myDeals.filter(d => d.nextFollowUpDate).slice(0, 4).map((deal, idx) => (
+                <div key={idx} className="p-3 bg-gray-50 rounded-[1.25rem] border border-gray-100/50 hover:bg-orange-50/30 transition-all group cursor-pointer">
+                  <div className="flex justify-between items-start mb-1">
+                    <p className="text-xs font-bold text-gray-900 group-hover:text-orange-600 transition-colors">{deal.customerName}</p>
+                    <span className="text-[9px] font-medium text-gray-400">{deal.nextFollowUpDate}</span>
                   </div>
-                  <p className="text-xs font-bold text-emerald-600">+{formatCurrency(item.count * item.incentive)}</p>
+                  <p className="text-[10px] text-gray-600 line-clamp-2 leading-relaxed italic">"{deal.nextFollowUpTask}"</p>
+                  {deal.isExchange && (
+                    <div className="mt-2 flex items-center gap-1.5">
+                      <Car className="w-2.5 h-2.5 text-blue-500" />
+                      <span className="text-[9px] font-bold text-blue-600 uppercase">Exchange: {deal.exchangeCarDetails}</span>
+                    </div>
+                  )}
                 </div>
               ))}
+              {myDeals.filter(d => d.nextFollowUpDate).length === 0 && (
+                <div className="text-center py-8">
+                  <p className="text-xs text-gray-400">No tasks for today</p>
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="bg-white rounded-3xl border border-gray-100 p-6 shadow-sm overflow-hidden h-fit">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="font-bold text-gray-900 flex items-center gap-2">
+                <TrendingUp className="w-5 h-5 text-emerald-500" /> Incentive Earnings
+              </h3>
+              <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full">LIVE TRACKING</span>
             </div>
 
-            <div className="mt-6 p-4 border border-dashed border-gray-200 rounded-2xl">
-              <p className="text-[10px] text-gray-500 text-center italic">"Deliver 2 more Fronx to unlock an extra ₹5,000 bonus!"</p>
+            <div className="space-y-4">
+              <div className="p-4 bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl text-white shadow-lg border border-white/10">
+                <div className="flex justify-between items-start mb-1">
+                  <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Total Incentive Earned</p>
+                  <span className="text-[10px] font-black bg-emerald-500 text-white px-2 py-0.5 rounded-full">{totalIncentiveUnits} UNITS</span>
+                </div>
+                <p className="text-2xl font-black">
+                  {formatCurrency(totalEarnedIncentive)}
+                </p>
+                <p className="text-[9px] text-gray-400 mt-1">Confirmed payouts for RTO cleared units</p>
+              </div>
+
+              <div className="p-4 bg-blue-50 border border-blue-100 rounded-2xl">
+                <p className="text-[10px] font-bold text-blue-400 uppercase tracking-wider">Pending Payouts</p>
+                <p className="text-xl font-black text-blue-900">
+                  {formatCurrency(totalPendingIncentive)}
+                </p>
+                <p className="text-[9px] text-blue-400 mt-1">Awaiting RTO Plate Issuance</p>
+              </div>
+
+              <div className="space-y-3 pt-4">
+                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Model-wise Deliveries</p>
+                {['TATA Safari', 'TATA Nexon', 'TATA Punch'].map((model, i) => {
+                  const count = myDeals.filter(d => d.carModel === model && d.status === 'completed').length;
+                  const colors = ['blue', 'indigo', 'orange'];
+                  return (
+                    <div key={i} className="flex items-center justify-between p-3 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors">
+                      <div className="flex items-center gap-3">
+                        <div className={`w-8 h-8 rounded-lg bg-${colors[i]}-100 flex items-center justify-center`}>
+                          <Car className={`w-4 h-4 text-${colors[i]}-600`} />
+                        </div>
+                        <div>
+                          <p className="text-xs font-bold text-gray-900">{model}</p>
+                          <p className="text-[9px] text-gray-500">{count} Units Delivered</p>
+                        </div>
+                      </div>
+                      <p className="text-xs font-bold text-emerald-600">Active Pipeline</p>
+                    </div>
+                  );
+                })}
+              </div>
+
+              <div className="mt-6 p-4 border border-dashed border-gray-200 rounded-2xl">
+                <p className="text-[10px] text-gray-500 text-center italic">"Total leads handled in your team: {myDeals.length}"</p>
+              </div>
             </div>
           </div>
         </div>
+        <NewDealForm />
       </div>
     </div>
   );

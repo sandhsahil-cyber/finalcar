@@ -6,7 +6,7 @@ import { Plus, ArrowRight, Wallet, FileText, CheckCircle2, Landmark, ShieldCheck
 
 const PipelineView: React.FC = () => {
     const { deals, searchQuery, currentRole, setShowNewDealForm, currentUserId } = useDashboard();
-    
+
     // Determine default tab based on role
     const defaultTab = currentRole === 'salesperson' ? 'ledger' : 'kanban';
     const [activeTab, setActiveTab] = useState<'kanban' | 'ledger' | 'delivered'>(defaultTab);

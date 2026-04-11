@@ -4,7 +4,7 @@ import { CAR_MODELS, COLORS, Deal, DEAL_STAGES } from '@/data/dummyData';
 import { X, Car, User, Phone, CreditCard, FileText, ChevronRight, ChevronLeft, Check } from 'lucide-react';
 
 const NewDealForm: React.FC = () => {
-  const { showNewDealForm, setShowNewDealForm } = useDashboard();
+  const { showNewDealForm, setShowNewDealForm, addDeal } = useDashboard();
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
     customerName: '',
@@ -12,10 +12,14 @@ const NewDealForm: React.FC = () => {
     carModel: '',
     carVariant: '',
     color: '',
-    amount: '',
-    downPayment: '',
+    amount: '1000000', // Default or hidden
+    downPayment: '0',
     expectedDelivery: '',
     notes: '',
+    isExchange: false,
+    exchangeCarDetails: '',
+    nextFollowUpDate: '',
+    nextFollowUpTask: '',
   });
   const [submitted, setSubmitted] = useState(false);
 
@@ -24,24 +28,51 @@ const NewDealForm: React.FC = () => {
   const selectedCar = CAR_MODELS.find(c => c.model === formData.carModel);
   const variants = selectedCar?.variants || [];
 
-  const handleChange = (field: string, value: string) => {
+  const handleChange = (field: string, value: any) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
+    const dealData = {
+      ...formData,
+      amount: parseFloat(formData.amount) || 1000000,
+      downPayment: parseFloat(formData.downPayment) || 0,
+      expectedDelivery: formData.nextFollowUpDate, // Use follow up date as a proxy for delivery expectation
+    };
+    
+    await addDeal(dealData);
+    
     setSubmitted(true);
     setTimeout(() => {
       setSubmitted(false);
       setShowNewDealForm(false);
       setStep(1);
-      setFormData({ customerName: '', customerPhone: '', carModel: '', carVariant: '', color: '', amount: '', downPayment: '', expectedDelivery: '', notes: '' });
+      setFormData({ 
+        customerName: '', 
+        customerPhone: '', 
+        carModel: '', 
+        carVariant: '', 
+        color: '', 
+        amount: '1000000', 
+        downPayment: '0', 
+        expectedDelivery: '', 
+        notes: '',
+        isExchange: false,
+        exchangeCarDetails: '',
+        nextFollowUpDate: '',
+        nextFollowUpTask: '',
+      });
     }, 2000);
   };
 
   const canProceed = () => {
     if (step === 1) return formData.customerName && formData.customerPhone;
     if (step === 2) return formData.carModel && formData.carVariant && formData.color;
-    if (step === 3) return formData.amount && formData.downPayment;
+    if (step === 3) {
+      const basicFollowup = formData.nextFollowUpDate && formData.nextFollowUpTask;
+      if (formData.isExchange) return basicFollowup && formData.exchangeCarDetails;
+      return basicFollowup;
+    }
     return true;
   };
 
@@ -153,47 +184,61 @@ const NewDealForm: React.FC = () => {
               {step === 3 && (
                 <>
                   <div className="flex items-center gap-2 mb-3">
-                    <CreditCard className="w-4 h-4 text-orange-500" />
-                    <h3 className="text-sm font-semibold text-gray-700">Payment & Notes</h3>
+                    <FileText className="w-4 h-4 text-orange-500" />
+                    <h3 className="text-sm font-semibold text-gray-700">Exchange & Next Follow-up</h3>
                   </div>
-                  <div>
-                    <label className="text-xs font-medium text-gray-500 mb-1 block">Total Amount (INR) *</label>
-                    <input
-                      type="number"
-                      value={formData.amount}
-                      onChange={e => handleChange('amount', e.target.value)}
-                      placeholder="e.g. 1450000"
-                      className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-400"
-                    />
+                  
+                  {/* Exchange Section */}
+                  <div className="p-4 bg-gray-50 rounded-2xl border border-gray-100 mb-4">
+                    <div className="flex items-center justify-between mb-3">
+                      <div>
+                        <p className="text-sm font-bold text-gray-800">Car Exchange?</p>
+                        <p className="text-[10px] text-gray-500">Is the customer trading in an old car?</p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => handleChange('isExchange', !formData.isExchange)}
+                        className={`w-12 h-6 rounded-full transition-all relative ${formData.isExchange ? 'bg-orange-500' : 'bg-gray-300'}`}
+                      >
+                        <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${formData.isExchange ? 'left-7' : 'left-1'}`} />
+                      </button>
+                    </div>
+
+                    {formData.isExchange && (
+                      <div className="mt-3 animate-in fade-in slide-in-from-top-2">
+                        <label className="text-xs font-medium text-gray-500 mb-1 block">Old Car Details (Model, Year, Kms) *</label>
+                        <input
+                          type="text"
+                          value={formData.exchangeCarDetails}
+                          onChange={e => handleChange('exchangeCarDetails', e.target.value)}
+                          placeholder="e.g. Swift 2018 VXI, 45k kms"
+                          className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-400"
+                        />
+                      </div>
+                    )}
                   </div>
-                  <div>
-                    <label className="text-xs font-medium text-gray-500 mb-1 block">Down Payment (INR) *</label>
-                    <input
-                      type="number"
-                      value={formData.downPayment}
-                      onChange={e => handleChange('downPayment', e.target.value)}
-                      placeholder="e.g. 400000"
-                      className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-400"
-                    />
-                  </div>
-                  <div>
-                    <label className="text-xs font-medium text-gray-500 mb-1 block">Expected Delivery</label>
-                    <input
-                      type="date"
-                      value={formData.expectedDelivery}
-                      onChange={e => handleChange('expectedDelivery', e.target.value)}
-                      className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-400"
-                    />
-                  </div>
-                  <div>
-                    <label className="text-xs font-medium text-gray-500 mb-1 block">Notes</label>
-                    <textarea
-                      value={formData.notes}
-                      onChange={e => handleChange('notes', e.target.value)}
-                      placeholder="Any additional notes..."
-                      rows={3}
-                      className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-400 resize-none"
-                    />
+
+                  {/* Follow-up Section */}
+                  <div className="space-y-4">
+                    <div>
+                      <label className="text-xs font-medium text-gray-500 mb-1 block">Next Follow-up Date *</label>
+                      <input
+                        type="date"
+                        value={formData.nextFollowUpDate}
+                        onChange={e => handleChange('nextFollowUpDate', e.target.value)}
+                        className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-400"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-xs font-medium text-gray-500 mb-1 block">Next Step / Task *</label>
+                      <textarea
+                        value={formData.nextFollowUpTask}
+                        onChange={e => handleChange('nextFollowUpTask', e.target.value)}
+                        placeholder="What is the next action needed? (e.g., Home Test Drive, Finance Docs Collection)"
+                        rows={3}
+                        className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-400 resize-none"
+                      />
+                    </div>
                   </div>
                 </>
               )}

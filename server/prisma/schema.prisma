@@ -1,0 +1,106 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model Team {
+  id            String   @id
+  name          String
+  leaderId      String
+  leaderName    String
+  leaderAvatar  String
+  memberCount   Int
+  monthlyTarget Float
+  achieved      Float
+  color         String
+  salesPeople   SalesPerson[]
+  deals         Deal[]
+}
+
+model SalesPerson {
+  id             String   @id
+  name           String
+  avatar         String
+  phone          String
+  email          String
+  teamId         String
+  team           Team     @relation(fields: [teamId], references: [id])
+  monthlyTarget  Float
+  achieved       Float
+  dealsCount     Int
+  conversionRate Float
+  rating         Float
+  joinedDate     String
+  deals          Deal[]
+}
+
+model Deal {
+  id               String   @id
+  customerName     String
+  customerPhone    String
+  carModel         String
+  carVariant       String
+  color            String
+  stage            String
+  status           String
+  amount           Float
+  downPayment      Float
+  salespersonId    String
+  salesperson      SalesPerson @relation(fields: [salespersonId], references: [id])
+  teamId           String
+  team             Team       @relation(fields: [teamId], references: [id])
+  createdAt        String
+  updatedAt        String
+  expectedDelivery String
+  notes            String
+  stageProgress    String     // Stored as JSON string for simplicity in SQLite
+  
+  financeType     String?
+  financePartner  String?
+  financeStatus   String?
+  insurancePartner String?
+  insuranceType    String?    // 'In-house' | 'Self'
+  extendedWarranty Boolean?   @default(false)
+  accessoriesAmount Float?
+  isExchange      Boolean?
+  
+  // Incentive & RTO fields
+  incentiveAmount   Float?
+  incentiveStatus   String?    // 'Pending' | 'Counted'
+  rtoNumberPlateIssued Boolean? @default(false)
+  
+  // New Follow-up & Exchange fields
+  exchangeCarDetails String?
+  nextFollowUpDate   String?
+  nextFollowUpTask   String?
+}
+
+model Activity {
+  id        String   @id @default(uuid())
+  type      String
+  message   String
+  user      String
+  timestamp String
+  dealId    String?
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  title     String
+  message   String
+  type      String
+  read      Boolean  @default(false)
+  timestamp String
+}
+
+model Expense {
+  id       String @id @default(uuid())
+  label    String
+  category String
+  amount   Float
+  status   String
+}

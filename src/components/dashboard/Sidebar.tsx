@@ -22,7 +22,7 @@ const roleConfig = {
 
 const menuItems = [
   { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  { id: 'deals', label: 'Deals', icon: Car },
+  { id: 'deals', label: 'Leads', icon: Car },
   { id: 'pipeline', label: 'Pipeline', icon: TrendingUp },
   { id: 'team', label: 'Team', icon: Users },
   { id: 'targets', label: 'Targets', icon: Target },
@@ -43,11 +43,10 @@ const Sidebar: React.FC = () => {
           onClick={() => setSidebarCollapsed(true)}
         />
       )}
-      
+
       <aside
-        className={`fixed left-0 top-0 h-full bg-[#0f172a] text-white z-50 transition-all duration-300 flex flex-col ${
-          sidebarCollapsed ? '-translate-x-full lg:translate-x-0 lg:w-20' : 'translate-x-0 w-64'
-        }`}
+        className={`fixed left-0 top-0 h-full bg-[#0f172a] text-white z-50 transition-all duration-300 flex flex-col ${sidebarCollapsed ? '-translate-x-full lg:translate-x-0 lg:w-20' : 'translate-x-0 w-64'
+          }`}
       >
         {/* Logo */}
         <div className="p-4 border-b border-white/10">
@@ -90,8 +89,8 @@ const Sidebar: React.FC = () => {
                   key={item.id}
                   onClick={() => setActiveView(item.id)}
                   className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${isActive
-                      ? 'bg-white/10 text-white'
-                      : 'text-gray-400 hover:text-white hover:bg-white/5'
+                    ? 'bg-white/10 text-white'
+                    : 'text-gray-400 hover:text-white hover:bg-white/5'
                     } ${sidebarCollapsed ? 'justify-center' : ''}`}
                 >
                   <Icon className={`w-5 h-5 flex-shrink-0 ${isActive ? 'text-orange-400' : ''}`} />

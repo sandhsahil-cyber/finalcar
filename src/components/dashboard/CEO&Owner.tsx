@@ -7,12 +7,12 @@ const ExecutiveDashboard = () => {
     const totalRevenue = deals.reduce((sum, d) => sum + d.amount, 0);
     const completedDeals = deals.filter(d => d.status === 'completed');
     const totalDeliveries = completedDeals.length;
-    
+
     const totalSalespeople = salespeople.length;
     const totalTarget = salespeople.reduce((sum, sp) => sum + sp.monthlyTarget, 0);
     const totalAchieved = salespeople.reduce((sum, sp) => sum + sp.achieved, 0);
     const targetPercent = Math.round((totalAchieved / totalTarget) * 100);
-    
+
     // Conversion: Bookings / Total Leads (Simplified)
     const bookingsCount = deals.filter(d => d.stage !== 'Account').length;
     const conversionRatio = deals.length > 0 ? ((bookingsCount / deals.length) * 100).toFixed(1) : '0';

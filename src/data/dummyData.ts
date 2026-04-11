@@ -25,9 +25,17 @@ export interface Deal {
   financeType?: 'In-house' | '3rd Party';
   financePartner?: string;
   financeStatus?: 'Pending' | 'Approved' | 'Rejected' | 'Disbursed' | 'Searching';
-  insurancePartner?: string;
+  insuranceType?: string;
+  extendedWarranty?: boolean;
   accessoriesAmount?: number;
   isExchange?: boolean;
+  // New incentive and RTO fields
+  incentiveAmount?: number;
+  incentiveStatus?: 'Pending' | 'Counted';
+  rtoNumberPlateIssued?: boolean;
+  exchangeCarDetails?: string;
+  nextFollowUpDate?: string;
+  nextFollowUpTask?: string;
 }
 
 export interface SalesPerson {
@@ -87,14 +95,13 @@ export const STAGE_COLORS: Record<DealStage, string> = {
 };
 
 export const CAR_MODELS = [
-  { model: 'Hyundai Creta', variants: ['EX', 'SX', 'SX(O)', 'N Line'], basePrice: 1100000 },
-  { model: 'Hyundai Venue', variants: ['S', 'SX', 'SX+', 'N Line'], basePrice: 780000 },
-  { model: 'Hyundai i20', variants: ['Magna', 'Sportz', 'Asta', 'N Line'], basePrice: 720000 },
-  { model: 'Hyundai Tucson', variants: ['Platinum', 'Signature'], basePrice: 2800000 },
-  { model: 'Hyundai Verna', variants: ['S', 'SX', 'SX(O)', 'Turbo'], basePrice: 1100000 },
-  { model: 'Hyundai Alcazar', variants: ['Prestige', 'Platinum', 'Signature'], basePrice: 1700000 },
-  { model: 'Hyundai Exter', variants: ['EX', 'S', 'SX', 'SX(O)'], basePrice: 600000 },
-  { model: 'Hyundai Grand i10 Nios', variants: ['Era', 'Magna', 'Sportz', 'Asta'], basePrice: 560000 },
+  { model: 'TATA Safari', variants: ['Smart', 'Pure', 'Adventure', 'Accomplished'], basePrice: 1600000, incentive: 15000 },
+  { model: 'TATA Harrier', variants: ['Smart', 'Pure', 'Adventure', 'Accomplished'], basePrice: 1500000, incentive: 12000 },
+  { model: 'TATA Nexon', variants: ['Smart', 'Pure', 'Creative', 'Fearless'], basePrice: 800000, incentive: 8000 },
+  { model: 'TATA Punch', variants: ['Pure', 'Adventure', 'Accomplished', 'Creative'], basePrice: 600000, incentive: 5000 },
+  { model: 'TATA Altroz', variants: ['XE', 'XM', 'XT', 'XZ', 'XZ+'], basePrice: 660000, incentive: 4000 },
+  { model: 'TATA Tiago', variants: ['XE', 'XM', 'XT', 'XZ'], basePrice: 560000, incentive: 3500 },
+  { model: 'TATA Tigor', variants: ['XE', 'XM', 'XT', 'XZ'], basePrice: 630000, incentive: 4000 },
 ];
 
 export const COLORS = ['Phantom Black', 'Polar White', 'Titan Grey', 'Fiery Red', 'Atlas White', 'Abyss Black', 'Robust Emerald', 'Starry Night'];

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useDashboard } from '@/contexts/DashboardContext';
-import { teams, salespeople, activities, formatCurrency, DEAL_STAGES, STAGE_COLORS, monthlyRevenueData, stageDistribution } from '@/data/dummyData';
+import { formatCurrency, DEAL_STAGES, STAGE_COLORS, monthlyRevenueData, stageDistribution } from '@/data/dummyData';
 import MetricsCard from './MetricsCard';
 import DealCard from './DealCard';
 import TeamCard from './TeamCard';
@@ -8,13 +8,13 @@ import TeamMemberCard from './TeamMemberCard';
 import { PipelineSummary } from './PipelineTracker';
 import ActivityTimeline from './ActivityTimeline';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell, Legend, Area, AreaChart } from 'recharts';
-import { Building2, IndianRupee, Users, Car, TrendingUp, Target, Award, Plus, BarChart3, ArrowUpRight, Crown } from 'lucide-react';
+import { Building2, IndianRupee, Users, Car, TrendingUp, Target, Award, Plus, BarChart3, ArrowUpRight, Crown, CheckCircle2 } from 'lucide-react';
 
 const CHART_COLORS = ['#3b82f6', '#8b5cf6', '#f59e0b', '#10b981', '#ff6b35'];
 
 const SalesManagerDashboard: React.FC = () => {
-  const { searchQuery, stageFilter, setStageFilter, setShowNewDealForm, deals } = useDashboard();
-  const [activeTab, setActiveTab] = useState<'overview' | 'teams' | 'deals' | 'analytics'>('overview');
+  const { searchQuery, stageFilter, setStageFilter, setShowNewDealForm, deals, teams, salespeople, activities } = useDashboard();
+  const [activeTab, setActiveTab] = useState<'overview' | 'teams' | 'deals' | 'analytics' | 'incentives'>('overview');
 
   const totalRevenue = teams.reduce((sum, t) => sum + t.achieved, 0);
   const totalTarget = teams.reduce((sum, t) => sum + t.monthlyTarget, 0);
@@ -23,6 +23,11 @@ const SalesManagerDashboard: React.FC = () => {
   const activeDeals = deals.filter(d => d.status === 'active').length;
   const blockedDeals = deals.filter(d => d.status === 'blocked').length;
   const completedDeals = deals.filter(d => d.status === 'completed').length;
+  const leadToTargetProgress = deals.length > 0 ? Math.round((completedDeals / deals.length) * 100) : 0;
+  
+  const pendingIncentives = deals.filter(d => d.incentiveStatus === 'Pending').reduce((sum, d) => sum + (d.incentiveAmount || 0), 0);
+  const countedIncentives = deals.filter(d => d.incentiveStatus === 'Counted').reduce((sum, d) => sum + (d.incentiveAmount || 0), 0);
+  
   const totalSalespeople = salespeople.length;
 
   // Top performers across all teams
@@ -75,27 +80,35 @@ const SalesManagerDashboard: React.FC = () => {
                   <Building2 className="w-7 h-7" />
                 </div>
                 <div>
-                  <h2 className="text-2xl font-bold">AutoDesk Showroom</h2>
+                  <h2 className="text-2xl font-bold">Rajkot TATA Moters Outlet</h2>
                   <p className="text-orange-100 text-sm">Sales Manager Dashboard • April 2026</p>
                 </div>
               </div>
             </div>
             <div className="flex flex-wrap gap-6">
               <div className="text-center">
-                <p className="text-orange-100 text-xs">Total Revenue</p>
-                <p className="text-3xl font-bold">{formatCurrency(totalRevenue)}</p>
+                <p className="text-orange-100 text-xs">All Leads</p>
+                <p className="text-3xl font-bold">{deals.length}</p>
               </div>
               <div className="text-center">
-                <p className="text-orange-100 text-xs">Overall Target</p>
+                <p className="text-orange-100 text-xs">Booking Vehicle</p>
+                <p className="text-3xl font-bold">{deals.filter(d => d.status === 'active').length}</p>
+              </div>
+              <div className="text-center">
+                <p className="text-orange-100 text-xs">Delivered</p>
+                <p className="text-3xl font-bold">{deals.filter(d => d.status === 'completed').length}</p>
+              </div>
+              <div className="text-center">
+                <p className="text-orange-100 text-xs">Lead to Target</p>
                 <div className="flex items-center gap-2 mt-1">
                   <div className="w-32 h-3 bg-white/20 rounded-full overflow-hidden">
-                    <div className="h-full bg-white rounded-full" style={{ width: `${overallProgress}%` }} />
+                    <div className="h-full bg-white rounded-full" style={{ width: `${leadToTargetProgress}%` }} />
                   </div>
-                  <span className="text-lg font-bold">{overallProgress}%</span>
+                  <span className="text-lg font-bold">{leadToTargetProgress}%</span>
                 </div>
               </div>
               <div className="text-center">
-                <p className="text-orange-100 text-xs">Teams</p>
+                <p className="text-orange-100 text-xs">Teams Count</p>
                 <p className="text-3xl font-bold">{teams.length}</p>
               </div>
             </div>
@@ -110,6 +123,7 @@ const SalesManagerDashboard: React.FC = () => {
           { id: 'teams', label: 'Teams', icon: Users },
           { id: 'deals', label: 'All Deals', icon: Car },
           { id: 'analytics', label: 'Analytics', icon: TrendingUp },
+          { id: 'incentives', label: 'Incentives', icon: IndianRupee },
         ].map(tab => {
           const Icon = tab.icon;
           return (
@@ -132,34 +146,34 @@ const SalesManagerDashboard: React.FC = () => {
           {/* Key Metrics */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
             <MetricsCard
-              title="Total Revenue"
-              value={formatCurrency(totalRevenue)}
-              subtitle={`Target: ${formatCurrency(totalTarget)}`}
-              trend={12}
-              icon={<IndianRupee className="w-5 h-5" />}
+              title="Lead to Target"
+              value={`${leadToTargetProgress}%`}
+              subtitle={`${completedDeals} of ${deals.length} Delivered`}
+              trend={leadToTargetProgress > 20 ? 12 : -2}
+              icon={<Target className="w-5 h-5" />}
               color="#10b981"
             />
             <MetricsCard
-              title="Active Deals"
+              title="All Leads"
+              value={String(totalDeals)}
+              subtitle="Total pipeline"
+              icon={<Users className="w-5 h-5" />}
+              color="#3b82f6"
+            />
+            <MetricsCard
+              title="Booking Vehicle"
               value={String(activeDeals)}
               subtitle={`${blockedDeals} blocked`}
               trend={8}
               icon={<Car className="w-5 h-5" />}
-              color="#3b82f6"
-            />
-            <MetricsCard
-              title="Sales Team"
-              value={String(totalSalespeople)}
-              subtitle={`${teams.length} teams`}
-              icon={<Users className="w-5 h-5" />}
               color="#8b5cf6"
             />
             <MetricsCard
-              title="Completed"
+              title="Delivered"
               value={String(completedDeals)}
               subtitle="This month"
               trend={15}
-              icon={<Target className="w-5 h-5" />}
+              icon={<CheckCircle2 className="w-5 h-5" />}
               color="#ff6b35"
             />
           </div>
@@ -417,6 +431,73 @@ const SalesManagerDashboard: React.FC = () => {
             </div>
           </div>
         </>
+      )}
+
+      {activeTab === 'incentives' && (
+        <div className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm">
+              <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Total Payouts</p>
+              <h3 className="text-2xl font-black text-gray-900">{formatCurrency(pendingIncentives + countedIncentives)}</h3>
+              <p className="text-[10px] text-gray-500 mt-2">Combined pending & Counted</p>
+            </div>
+            <div className="bg-amber-50 p-6 rounded-3xl border border-amber-100 shadow-sm">
+              <p className="text-xs font-bold text-amber-500 uppercase tracking-wider mb-1">Pending Incentives</p>
+              <h3 className="text-2xl font-black text-amber-600">{formatCurrency(pendingIncentives)}</h3>
+              <p className="text-[10px] text-amber-500 mt-2">Awaiting RTO Plate Issue</p>
+            </div>
+            <div className="bg-emerald-50 p-6 rounded-3xl border border-emerald-100 shadow-sm">
+              <p className="text-xs font-bold text-emerald-500 uppercase tracking-wider mb-1">Counted Incentives</p>
+              <h3 className="text-2xl font-black text-emerald-600">{formatCurrency(countedIncentives)}</h3>
+              <p className="text-[10px] text-emerald-500 mt-2">Reflected in Payroll</p>
+            </div>
+          </div>
+
+          {/* Incentive Table */}
+          <div className="bg-white rounded-3xl border border-gray-100 overflow-hidden shadow-sm">
+            <div className="p-6 border-b border-gray-50 bg-gray-50/50">
+              <h3 className="font-bold text-gray-900">Incentive Status by Executive</h3>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full text-left">
+                <thead>
+                  <tr className="text-[10px] font-bold text-gray-400 uppercase tracking-widest border-b border-gray-100">
+                    <th className="px-6 py-4">Executive</th>
+                    <th className="px-6 py-4 text-center">Total Leads</th>
+                    <th className="px-6 py-4 text-center">RTO Completed</th>
+                    <th className="px-6 py-4 text-center">Pending</th>
+                    <th className="px-6 py-4 text-right">Confirmed Payout</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-100 text-sm">
+                  {salespeople.map(sp => {
+                    const spDeals = deals.filter(d => d.salespersonId === sp.id);
+                    const pending = spDeals.filter(d => d.incentiveStatus === 'Pending').reduce((sum, d) => sum + (d.incentiveAmount || 0), 0);
+                    const counted = spDeals.filter(d => d.incentiveStatus === 'Counted').reduce((sum, d) => sum + (d.incentiveAmount || 0), 0);
+                    const rtoDone = spDeals.filter(d => d.rtoNumberPlateIssued).length;
+                    
+                    if (spDeals.length === 0) return null;
+
+                    return (
+                      <tr key={sp.id} className="hover:bg-gray-50 transition-colors">
+                        <td className="px-6 py-4">
+                          <p className="font-bold text-gray-900">{sp.name}</p>
+                          <p className="text-[10px] text-gray-500">Employee ID: {sp.id}</p>
+                        </td>
+                        <td className="px-6 py-4 text-center font-semibold text-gray-600">{spDeals.length}</td>
+                        <td className="px-6 py-4 text-center">
+                          <span className="bg-blue-50 text-blue-600 px-2 py-1 rounded-lg text-xs font-bold">{rtoDone} Cars</span>
+                        </td>
+                        <td className="px-6 py-4 text-center text-amber-600 font-bold">{formatCurrency(pending)}</td>
+                        <td className="px-6 py-4 text-right text-emerald-600 font-black">{formatCurrency(counted)}</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

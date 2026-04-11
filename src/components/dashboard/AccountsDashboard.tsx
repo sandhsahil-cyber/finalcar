@@ -6,14 +6,28 @@ import {
     ArrowRightLeft
 } from 'lucide-react';
 import {
-    salespeople, showroomExpenses, staffPayroll,
     formatCurrency, formatFullCurrency
 } from '@/data/dummyData';
 import { useDashboard } from '@/contexts/DashboardContext';
 import MetricsCard from './MetricsCard';
 
 const AccountDashboard: React.FC = () => {
-    const { deals } = useDashboard();
+    const { deals, salespeople } = useDashboard();
+    // For demo, we still use dummy values for expenses/payroll since they are static reports
+    // but in a real app these would also come from context
+    const showroomExpenses = [
+        { id: 'exp-1', label: 'Showroom Rent', category: 'Fixed', amount: 350000, status: 'Paid' },
+        { id: 'exp-2', label: 'Electricity & Water', category: 'Utility', amount: 45000, status: 'Paid' },
+        { id: 'exp-3', label: 'Digital Marketing', category: 'Marketing', amount: 80000, status: 'Pending' },
+        { id: 'exp-4', label: 'Housekeeping', category: 'General', amount: 25000, status: 'Paid' },
+        { id: 'exp-5', label: 'Internet & Software', category: 'Utility', amount: 15000, status: 'Pending' },
+    ];
+    const staffPayroll = [
+        { role: 'Sales Team', count: 12, totalPayout: 450000 },
+        { role: 'Service & Workshop', count: 8, totalPayout: 280000 },
+        { role: 'Administration', count: 4, totalPayout: 120000 },
+        { role: 'Accounts & Finance', count: 2, totalPayout: 90000 },
+    ];
     const [filterQuery, setFilterQuery] = useState('');
     const [selectedDeal, setSelectedDeal] = useState<any>(null);
     const [paymentMode, setPaymentMode] = useState<'Cash' | 'Finance' | 'Online'>('Online');

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Deal, STAGE_COLORS, formatCurrency, DEAL_STAGES, DealStage } from '@/data/dummyData';
 import PipelineTracker from './PipelineTracker';
-import { Car, User, Phone, Calendar, ChevronRight, AlertCircle, CheckCircle2, Clock, ArrowRightCircle } from 'lucide-react';
+import { Car, User, Phone, Calendar, ChevronRight, AlertCircle, CheckCircle2, Clock, ArrowRightCircle, TrendingUp } from 'lucide-react';
 import { useDashboard } from '@/contexts/DashboardContext';
 
 interface DealCardProps {
@@ -18,7 +18,7 @@ const statusConfig = {
 };
 
 const DealCard: React.FC<DealCardProps> = ({ deal, showActions = true, compact = false }) => {
-  const { setSelectedDeal, setShowDealModal, updateDealStage } = useDashboard();
+  const { setSelectedDeal, setShowDealModal, updateDealStage, updateDealStatus } = useDashboard();
   const status = statusConfig[deal.status];
   const StatusIcon = status.icon;
 
@@ -99,21 +99,54 @@ const DealCard: React.FC<DealCardProps> = ({ deal, showActions = true, compact =
           <PipelineTracker deal={deal} />
         </div>
 
+        {/* Incentive Status */}
+        {deal.incentiveAmount && (
+          <div className={`mb-3 flex items-center justify-between p-2 rounded-xl text-[10px] font-bold uppercase tracking-wider ${
+            deal.incentiveStatus === 'Counted' ? 'bg-emerald-50 text-emerald-600 border border-emerald-100' : 'bg-amber-50 text-amber-600 border border-amber-100'
+          }`}>
+            <span className="flex items-center gap-1">
+              <TrendingUp className="w-3 h-3" />
+              Incentive: {formatCurrency(deal.incentiveAmount)}
+            </span>
+            <span className="flex items-center gap-1">
+              {deal.rtoNumberPlateIssued ? (
+                <><CheckCircle2 className="w-3 h-3" /> Plate Issued</>
+              ) : (
+                <><Clock className="w-3 h-3" /> Plate Pending</>
+              )}
+              ({deal.incentiveStatus})
+            </span>
+          </div>
+        )}
+
         {/* Footer */}
         <div className="flex items-center justify-between pt-3 border-t border-gray-100">
           <div className="flex items-center gap-1.5 text-xs text-gray-400">
             <Calendar className="w-3 h-3" />
             <span>Delivery: {deal.expectedDelivery}</span>
           </div>
-          {showActions && deal.status === 'active' && DEAL_STAGES.indexOf(deal.stage) < DEAL_STAGES.length - 1 && (
-            <button
-              onClick={handleMoveToNext}
-              className="flex items-center gap-1 px-3 py-1.5 text-xs font-semibold text-white rounded-lg transition-all hover:opacity-90 active:scale-95"
-              style={{ backgroundColor: STAGE_COLORS[DEAL_STAGES[DEAL_STAGES.indexOf(deal.stage) + 1]] }}
-            >
-              <ArrowRightCircle className="w-3.5 h-3.5" />
-              Move to {DEAL_STAGES[DEAL_STAGES.indexOf(deal.stage) + 1]}
-            </button>
+          {showActions && deal.status === 'active' && (
+            DEAL_STAGES.indexOf(deal.stage) < DEAL_STAGES.length - 1 ? (
+              <button
+                onClick={handleMoveToNext}
+                className="flex items-center gap-1 px-3 py-1.5 text-xs font-semibold text-white rounded-lg transition-all hover:opacity-90 active:scale-95"
+                style={{ backgroundColor: STAGE_COLORS[DEAL_STAGES[DEAL_STAGES.indexOf(deal.stage) + 1]] }}
+              >
+                <ArrowRightCircle className="w-3.5 h-3.5" />
+                Move to {DEAL_STAGES[DEAL_STAGES.indexOf(deal.stage) + 1]}
+              </button>
+            ) : (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  updateDealStatus(deal.id, 'completed');
+                }}
+                className="flex items-center gap-1 px-3 py-1.5 text-xs font-semibold text-white bg-blue-600 rounded-lg transition-all hover:opacity-90 active:scale-95"
+              >
+                <CheckCircle2 className="w-3.5 h-3.5" />
+                Mark as Delivered
+              </button>
+            )
           )}
         </div>
       </div>
