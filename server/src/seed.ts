@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 const prisma = new PrismaClient();
 
-const DEAL_STAGES = ['Account', 'Finance', 'RTO', 'PDI', 'Accessories'];
+const DEAL_STAGES = ['General', 'Account', 'Finance', 'RTO', 'PDI', 'Accessories'];
 const STATUSES = ['active', 'completed', 'pending', 'blocked'];
 
 const CAR_MODELS = [

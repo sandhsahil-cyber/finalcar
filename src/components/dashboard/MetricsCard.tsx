@@ -3,7 +3,7 @@ import { TrendingUp, TrendingDown, Minus } from 'lucide-react';
 
 interface MetricsCardProps {
   title: string;
-  value: string;
+  value: React.ReactNode;
   subtitle?: string;
   trend?: number;
   icon: React.ReactNode;
@@ -21,7 +21,7 @@ const MetricsCard: React.FC<MetricsCardProps> = ({ title, value, subtitle, trend
       <div className="flex items-start justify-between">
         <div className="flex-1">
           <p className="text-xs font-medium text-gray-500 uppercase tracking-wider">{title}</p>
-          <p className="mt-2 text-2xl font-bold text-gray-900">{value}</p>
+          <div className="mt-2 text-2xl font-bold text-gray-900">{value}</div>
           {subtitle && <p className="mt-1 text-sm text-gray-500">{subtitle}</p>}
           {trend !== undefined && (
             <div className={`flex items-center mt-2 text-xs font-medium ${trend > 0 ? 'text-emerald-600' : trend < 0 ? 'text-red-500' : 'text-gray-400'}`}>

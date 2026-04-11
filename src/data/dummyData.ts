@@ -1,5 +1,5 @@
 // Types
-export type DealStage = 'Account' | 'Finance' | 'RTO' | 'PDI' | 'Accessories';
+export type DealStage = 'General' | 'Account' | 'Finance' | 'Insurance' | 'RTO' | 'PDI' | 'Accessories';
 export type DealStatus = 'active' | 'completed' | 'pending' | 'blocked';
 export type UserRole = 'salesperson' | 'teamleader' | 'salesmanager' | 'accounts' | 'rto' | 'insurance' | 'accessories' | 'finance' | 'pdi' | 'ceo';
 
@@ -36,6 +36,14 @@ export interface Deal {
   exchangeCarDetails?: string;
   nextFollowUpDate?: string;
   nextFollowUpTask?: string;
+  
+  // Follow-up interaction tracking
+  testDriveTaken?: boolean;
+  homeVisit?: boolean;
+  bookingFormSent?: boolean;
+  priceModelSent?: boolean;
+  brochureSent?: boolean;
+  lastFollowUpNotes?: string;
 }
 
 export interface SalesPerson {
@@ -84,11 +92,13 @@ export interface Notification {
 }
 
 // Dummy Data
-export const DEAL_STAGES: DealStage[] = ['Account', 'Finance', 'RTO', 'PDI', 'Accessories'];
+export const DEAL_STAGES: DealStage[] = ['General', 'Account', 'Finance', 'Insurance', 'RTO', 'PDI', 'Accessories'];
 
 export const STAGE_COLORS: Record<DealStage, string> = {
+  General: '#94a3b8',
   Account: '#3b82f6',
   Finance: '#8b5cf6',
+  Insurance: '#ec4899',
   RTO: '#f59e0b',
   PDI: '#10b981',
   Accessories: '#ff6b35',
@@ -157,9 +167,11 @@ export const deals: Deal[] = [
   { id: 'D-1003', customerName: 'Manoj Sharma', customerPhone: '+91 99887 76657', carModel: 'Hyundai Tucson', carVariant: 'Signature', color: 'Titan Grey', stage: 'Account', status: 'active', amount: 3200000, downPayment: 1000000, salespersonId: 'sp-1', teamId: 'team-1', createdAt: '2026-04-08', updatedAt: '2026-04-08', expectedDelivery: '2026-05-01', notes: 'Premium customer, needs priority handling', stageProgress: createStageProgress('Account'), isExchange: true },
   { id: 'D-1004', customerName: 'Sunita Devi', customerPhone: '+91 99887 76658', carModel: 'Hyundai i20', carVariant: 'Asta', color: 'Fiery Red', stage: 'Accessories', status: 'active', amount: 980000, downPayment: 300000, salespersonId: 'sp-3', teamId: 'team-1', createdAt: '2026-03-10', updatedAt: '2026-04-06', expectedDelivery: '2026-04-12', notes: 'Wants floor mats and body cover', stageProgress: createStageProgress('Accessories'), accessoriesAmount: 45000 },
   { id: 'D-1005', customerName: 'Rajiv Menon', customerPhone: '+91 99887 76659', carModel: 'Hyundai Verna', carVariant: 'Turbo', color: 'Atlas White', stage: 'RTO', status: 'active', amount: 1380000, downPayment: 450000, salespersonId: 'sp-4', teamId: 'team-1', createdAt: '2026-03-20', updatedAt: '2026-04-05', expectedDelivery: '2026-04-18', notes: 'RTO documents submitted', stageProgress: createStageProgress('RTO'), financeType: 'In-house', financeStatus: 'Approved' },
-  { id: 'D-1019', customerName: 'Sumit Gupta', customerPhone: '+91 99887 76673', carModel: 'Hyundai Creta', carVariant: 'EX', color: 'Atlas White', stage: 'Account', status: 'active', amount: 1150000, downPayment: 200000, salespersonId: 'sp-1', teamId: 'team-1', createdAt: '2026-04-02', updatedAt: '2026-04-02', expectedDelivery: '2026-04-25', notes: 'Waiting for token amount', stageProgress: createStageProgress('Account') },
-  { id: 'D-1020', customerName: 'Preeti Singh', customerPhone: '+91 99887 76674', carModel: 'Hyundai Venue', carVariant: 'S', color: 'Abyss Black', stage: 'Account', status: 'active', amount: 820000, downPayment: 150000, salespersonId: 'sp-1', teamId: 'team-1', createdAt: '2026-04-05', updatedAt: '2026-04-05', expectedDelivery: '2026-04-30', notes: 'Interested in extended warranty', stageProgress: createStageProgress('Account') },
-  { id: 'D-1021', customerName: 'Kailash Nath', customerPhone: '+91 99887 76675', carModel: 'Hyundai Verna', carVariant: 'SX', color: 'Starry Night', stage: 'Account', status: 'active', amount: 1280000, downPayment: 300000, salespersonId: 'sp-1', teamId: 'team-1', createdAt: '2026-04-09', updatedAt: '2026-04-09', expectedDelivery: '2026-05-15', notes: 'Documentation pending', stageProgress: createStageProgress('Account') },
+  { id: 'D-1019', customerName: 'Sumit Gupta', customerPhone: '+91 99887 76673', carModel: 'Hyundai Creta', carVariant: 'EX', color: 'Atlas White', stage: 'Account', status: 'active', amount: 1150000, downPayment: 200000, salespersonId: 'sp-1', teamId: 'team-1', createdAt: '2026-04-02', updatedAt: '2026-04-02', expectedDelivery: '2026-04-25', notes: 'Waiting for token amount', stageProgress: createStageProgress('Account'), financeType: 'In-house', financeStatus: 'Approved', accessoriesAmount: 15000 },
+  { id: 'D-1020', customerName: 'Preeti Singh', customerPhone: '+91 99887 76674', carModel: 'Hyundai Venue', carVariant: 'S', color: 'Abyss Black', stage: 'Finance', status: 'active', amount: 820000, downPayment: 150000, salespersonId: 'sp-2', teamId: 'team-1', createdAt: '2026-04-05', updatedAt: '2026-04-05', expectedDelivery: '2026-04-30', notes: 'Interested in extended warranty', stageProgress: createStageProgress('Finance'), financeType: '3rd Party', financeStatus: 'Approved', extendedWarranty: true },
+  { id: 'D-1021', customerName: 'Kailash Nath', customerPhone: '+91 99887 76675', carModel: 'Hyundai Verna', carVariant: 'SX', color: 'Starry Night', stage: 'PDI', status: 'completed', amount: 1280000, downPayment: 300000, salespersonId: 'sp-3', teamId: 'team-1', createdAt: '2026-04-09', updatedAt: '2026-04-09', expectedDelivery: '2026-04-15', notes: 'Documentation pending', stageProgress: createStageProgress('PDI'), rtoNumberPlateIssued: true, isExchange: true },
+  { id: 'D-1027', customerName: 'Aman Sharma', customerPhone: '+91 99887 76686', carModel: 'Hyundai i20', carVariant: 'Asta', color: 'Polar White', stage: 'Accessories', status: 'completed', amount: 950000, downPayment: 200000, salespersonId: 'sp-4', teamId: 'team-1', createdAt: '2026-04-10', updatedAt: '2026-04-10', expectedDelivery: '2026-04-20', notes: 'Delivery next week', stageProgress: createStageProgress('Accessories'), accessoriesAmount: 45000, insuranceType: 'In-house' },
+  { id: 'D-1028', customerName: 'Vikram Batra', customerPhone: '+91 99887 76687', carModel: 'Hyundai Creta', carVariant: 'SX', color: 'Titan Grey', stage: 'PDI', status: 'active', amount: 1550000, downPayment: 400000, salespersonId: 'sp-5', teamId: 'team-1', createdAt: '2026-04-11', updatedAt: '2026-04-11', expectedDelivery: '2026-04-25', notes: 'Urgent delivery request', stageProgress: createStageProgress('PDI'), financeType: 'In-house', financeStatus: 'Approved' },
 
   // Team 2 - Beta Force
   { id: 'D-1006', customerName: 'Priyanka Das', customerPhone: '+91 99887 76660', carModel: 'Hyundai Creta', carVariant: 'N Line', color: 'Abyss Black', stage: 'Finance', status: 'pending', amount: 1650000, downPayment: 500000, salespersonId: 'sp-6', teamId: 'team-2', createdAt: '2026-04-01', updatedAt: '2026-04-09', expectedDelivery: '2026-04-25', notes: 'Waiting for loan approval from HDFC', stageProgress: createStageProgress('Finance'), financeType: 'In-house', financePartner: 'HDFC', financeStatus: 'Pending' },
