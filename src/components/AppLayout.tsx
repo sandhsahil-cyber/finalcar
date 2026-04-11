@@ -12,6 +12,8 @@ import AccessoriesDashboard from './dashboard/AccessoriesDepartmentDashboard';
 import FinanceDashboard from './dashboard/FinanceDepartment';
 import PDIDashboard from './dashboard/PreDeliveryInspection';
 import ExecutiveDashboard from './dashboard/CEO&Owner';
+import GroupCEOdashboard from './dashboard/GroupCEOdashboard';
+import OwnerCommandCenter from './dashboard/OwnerCommandCenter';
 import DealsView from './dashboard/DealsView';
 import PipelineView from './dashboard/PipelineView';
 import TeamView from './dashboard/TeamView';
@@ -45,6 +47,10 @@ const AppLayout: React.FC = () => {
         return <PDIDashboard />;
       case 'ceo':
         return <ExecutiveDashboard />;
+      case 'groupceo':
+        return <GroupCEOdashboard />;
+      case 'owner':
+        return <OwnerCommandCenter />;
       default:
         return <SalesManagerDashboard />;
     }

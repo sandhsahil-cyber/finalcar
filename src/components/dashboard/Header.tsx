@@ -10,7 +10,8 @@ import {
   Package,
   Landmark,
   Truck,
-  TrendingUp
+  TrendingUp,
+  Globe
 } from 'lucide-react';
 
 const roles: { value: UserRole; label: string; sublabel: string; icon: React.ElementType; color: string }[] = [
@@ -23,7 +24,9 @@ const roles: { value: UserRole; label: string; sublabel: string; icon: React.Ele
   { value: 'accessories', label: 'Accessories Dept.', sublabel: 'Suresh Pal (Fit-Lead)', icon: Package, color: '#f43f5e' },
   { value: 'finance', label: 'Finance Dept.', sublabel: 'HDFC & SBI Partners', icon: Landmark, color: '#8b5cf6' },
   { value: 'pdi', label: 'PDI Workshop', sublabel: 'Quality Assurance', icon: Truck, color: '#10b981' },
-  { value: 'ceo', label: 'CEO & Owner', sublabel: 'Group Executive', icon: TrendingUp, color: '#1a202c' }
+  { value: 'ceo', label: 'Brand CEO', sublabel: 'Brand Executive', icon: TrendingUp, color: '#1a202c' },
+  { value: 'groupceo', label: 'Group CEO', sublabel: 'Group Executive', icon: Globe, color: '#0ea5e9' },
+  { value: 'owner', label: 'Group Owner', sublabel: 'Portfolio Visionary', icon: ShieldCheck, color: '#f59e0b' }
 ];
 
 const Header: React.FC = () => {
@@ -60,20 +63,26 @@ const Header: React.FC = () => {
 
   const handleRoleChange = (roleValue: UserRole) => {
     setCurrentRole(roleValue);
-    
+
     // Auto-switch UserID dynamically based on seeded data
     if (roleValue === 'salesperson') {
       const firstSP = salespeople.find(sp => sp.id.includes('rajkot')) || salespeople[0];
       if (firstSP) setCurrentUserId(firstSP.id);
-    } 
+    }
     else if (roleValue === 'teamleader') {
       const firstTeam = teams.find(t => t.id.includes('rajkot')) || teams[0];
       if (firstTeam) setCurrentUserId(firstTeam.leaderId);
     }
+    else if (roleValue === 'groupceo') {
+      setCurrentUserId('group-ceo');
+    }
+    else if (roleValue === 'owner') {
+      setCurrentUserId('group-owner');
+    }
     else {
       setCurrentUserId('sm-1');
     }
-    
+
     setShowRoleMenu(false);
   };
 
