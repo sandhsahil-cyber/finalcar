@@ -11,6 +11,7 @@ interface DashboardContextType {
   addDeal: (dealData: Partial<Deal>) => Promise<void>;
   updateDealStage: (dealId: string, newStage: DealStage) => void;
   updateDealStatus: (dealId: string, newStatus: string) => void;
+  updateDeal: (dealId: string, updatedData: Partial<Deal>) => Promise<void>;
   selectedDeal: Deal | null;
   setSelectedDeal: (deal: Deal | null) => void;
   showDealModal: boolean;
@@ -99,12 +100,12 @@ export const DashboardProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       createdAt: new Date().toISOString().split('T')[0],
       updatedAt: new Date().toISOString().split('T')[0],
       status: 'active',
-      stage: 'Account',
+      stage: 'General',
       incentiveAmount,
       incentiveStatus: 'Pending',
       rtoNumberPlateIssued: false,
       stageProgress: {
-        Account: { completed: true, date: new Date().toISOString().split('T')[0] },
+        General: { completed: true, date: new Date().toISOString().split('T')[0] },
       }
     };
 
@@ -152,11 +153,24 @@ export const DashboardProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     }
   }, [deals]);
 
+  const updateDeal = useCallback(async (dealId: string, updatedData: Partial<Deal>) => {
+    try {
+      const dataToUpdate = {
+        ...updatedData,
+        updatedAt: new Date().toISOString().split('T')[0],
+      };
+      const savedDeal = await api.updateDeal(dealId, dataToUpdate);
+      setDeals(prev => prev.map(d => d.id === dealId ? { ...d, ...savedDeal } : d));
+    } catch (err) {
+      console.error("Failed to update deal", err);
+    }
+  }, []);
+
   return (
     <DashboardContext.Provider value={{
       currentRole, setCurrentRole,
       currentUserId, setCurrentUserId,
-      deals, addDeal, updateDealStage, updateDealStatus,
+      deals, addDeal, updateDealStage, updateDealStatus, updateDeal,
       selectedDeal, setSelectedDeal,
       showDealModal, setShowDealModal,
       showNewDealForm, setShowNewDealForm,

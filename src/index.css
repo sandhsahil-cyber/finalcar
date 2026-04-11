@@ -126,7 +126,16 @@
   @apply font-sans font-semibold text-foreground;
 }
 
-.markdown-preview ul,
 .markdown-preview ol {
   @apply my-4 ml-6;
+}
+
+@layer utilities {
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
 }

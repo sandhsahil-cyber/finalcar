@@ -1,0 +1,38 @@
+Implementation Plan - Sales Manager Command Center
+I will transform the Sales Manager dashboard into a powerful dealership-wide oversight tool that combines aggregate "big picture" data with granular team-level drill-downs.
+
+User Review Required
+IMPORTANT
+
+Drill-Down Behavior: When a team is clicked, the top "Counting Panel" will also filter to show only that team's contribution. This allows the Manager to see exactly how a team's performance stacks up against the dealership totals.
+
+Proposed Changes
+[Component] SalesManagerDashboard.tsx
+[MODIFY] 
+SalesManagerDashboard.tsx
+New State:
+selectedTeamId: string | null: Tracks the currently inspected team.
+selectedMonth: string: Consistent with the Team Leader dashboard's month selector.
+Data Aggregation Logic:
+Implement a dealStats object that calculates:
+Total Leads (All leads in database).
+Total Bookings (Pipeline size).
+Delivered (Completed sales).
+In-House Finance (Penetration rate).
+Exchange/Accessories (Value addition).
+If selectedTeamId is set, these calculations will filter specifically for that team.
+UI Sections:
+Header: Month selector + "Dealership Overview" vs "[Team Name] Overview" title.
+Global Counting Panel: 8 high-density MetricCards (Leads, Bookings, Delivered, Blocks, Finance, Accessories, Exchange, Incentives).
+Teams Grid: A professional portfolio of teams. Clicking a team sets selectedTeamId.
+Leads Hub:
+If viewing a team, show their specific lead list (hybrid view: Table for All, Cards for others).
+If viewing dealership, show an aggregate lead list or analytics.
+Navigation:
+Add a "Clear Selection" button to return to the global Dealership view.
+Verification Plan
+Manual Verification
+Aggregation Check: verify that "Dealership Total" matches the sum of all individual teams.
+Drill-Down: Click "Alpha Squad" and verify that all metric cards and the lead list update immediately.
+Month Toggle: Change to "March 2026" and verify the dealership-wide data updates correctly.
+Leads View: Verify the "Hybrid View" (Table vs Cards) works for managers too.

@@ -77,6 +77,14 @@ model Deal {
   exchangeCarDetails String?
   nextFollowUpDate   String?
   nextFollowUpTask   String?
+  
+  // Follow-up interaction tracking
+  testDriveTaken    Boolean? @default(false)
+  homeVisit         Boolean? @default(false)
+  bookingFormSent   Boolean? @default(false)
+  priceModelSent    Boolean? @default(false)
+  brochureSent      Boolean? @default(false)
+  lastFollowUpNotes String?
 }
 
 model Activity {

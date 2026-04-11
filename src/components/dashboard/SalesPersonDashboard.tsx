@@ -1,17 +1,20 @@
 import React, { useState } from 'react';
 import { useDashboard } from '@/contexts/DashboardContext';
-import { formatCurrency, DEAL_STAGES, STAGE_COLORS, DealStage, activities } from '@/data/dummyData';
+import { formatCurrency, DEAL_STAGES, STAGE_COLORS, DealStage, Deal, activities } from '@/data/dummyData';
 import MetricsCard from './MetricsCard';
 import DealCard from './DealCard';
 import { PipelineSummary } from './PipelineTracker';
 import ActivityTimeline from './ActivityTimeline';
 import NewDealForm from './NewDealForm';
+import FollowUpModal from './FollowUpModal';
 import { Car, Target, TrendingUp, Plus, Filter, Clock, Users, ClipboardList, Shield, Package, ArrowRight, QrCode, X, ShieldCheck, FileCheck, Award, CheckCircle } from 'lucide-react';
 
 const SalesPersonDashboard: React.FC = () => {
   const { searchQuery, stageFilter, setStageFilter, setShowNewDealForm, deals, currentUserId, salespeople, teams } = useDashboard();
   const [showQRModal, setShowQRModal] = useState(false);
   const [selectedMonth, setSelectedMonth] = useState('2026-04');
+  const [selectedFollowUpDeal, setSelectedFollowUpDeal] = useState<Deal | null>(null);
+  const [showFollowUpModal, setShowFollowUpModal] = useState(false);
 
   // Find if current user is an executive or team leader
   const executive = salespeople.find(sp => sp.id === currentUserId);
@@ -51,12 +54,12 @@ const SalesPersonDashboard: React.FC = () => {
     currentStats = { dealsCount: fallbackSP.dealsCount, conversionRate: fallbackSP.conversionRate };
   }
 
-  const CAR_TARGET = teamManaged ? 50 : 15;
+  const CAR_TARGET = teamManaged ? teamManaged.monthlyTarget / 80000 : 15; // Estimate units based on 8L avg
   const progressPercent = Math.round((currentStats.dealsCount / CAR_TARGET) * 100);
 
   // Derived metrics with robust filtering
   const totalLeads = myDeals.length;
-  const totalBookings = myDeals.filter(d => d.stage && d.stage !== 'Account').length;
+  const totalBookings = myDeals.filter(d => d.stage && d.stage !== 'General').length;
   const totalDeliveries = myDeals.filter(d => d.status === 'completed').length;
 
   const financeInHouse = myDeals.filter(d => d.financeType === 'In-house').length;
@@ -112,7 +115,12 @@ const SalesPersonDashboard: React.FC = () => {
     return matchesSearch && matchesStage;
   });
 
-  const myActivities = activities.filter(a => a.user === userDisplayName).slice(0, 10);
+  // Activities: For TL, show team activities. For Executive, show personal.
+  const teamMemberNames = teamManaged ? salespeople.filter(sp => sp.teamId === teamManaged.id).map(sp => sp.name) : [];
+  const myActivities = activities.filter(a => {
+    if (teamManaged) return teamMemberNames.includes(a.user);
+    return a.user === userDisplayName;
+  }).slice(0, 10);
 
   return (
     <div className="space-y-6">
@@ -242,7 +250,7 @@ const SalesPersonDashboard: React.FC = () => {
       </div>
 
       {/* Individual Lead Metrics */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <MetricsCard
           title="All Leads"
           value={String(myDeals.length)}
@@ -253,7 +261,7 @@ const SalesPersonDashboard: React.FC = () => {
         />
         <MetricsCard
           title="Bookings"
-          value={String(myDeals.filter(d => d.stage !== 'Account').length)}
+          value={String(myDeals.filter(d => d.stage !== 'General').length)}
           subtitle="Units booked"
           trend={12}
           icon={<ClipboardList className="w-5 h-5" />}
@@ -277,8 +285,8 @@ const SalesPersonDashboard: React.FC = () => {
         />
         <MetricsCard
           title="Insurance"
-          value={`In-house: ${insuranceInHouseCount}`}
-          subtitle={`Self: ${insuranceSelfCount}`}
+          value={String(insuranceInHouseCount + insuranceSelfCount)}
+          subtitle={`In-house: ${insuranceInHouseCount} • Self: ${insuranceSelfCount}`}
           trend={5}
           icon={<ShieldCheck className="w-5 h-5" />}
           color="#6366f1"
@@ -318,80 +326,97 @@ const SalesPersonDashboard: React.FC = () => {
       </div>
       <PipelineSummary deals={myDeals} onStageClick={(stage) => setStageFilter(stage)} />
 
-      {/* Deals Section */}
-      <div>
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+      {/* Leads Section */}
+      <div id="leads-section" className="px-4 lg:px-0">
+        {/* HEADER CONTAINER 
+    - flex-wrap: allows children to drop to a new line
+    - justify-between: keeps title left and controls right
+  */}
+        <div className="flex flex-wrap items-center justify-between gap-y-6 gap-x-4 mb-8">
+
+          {/* TITLE SECTION (Always Row 1) */}
           <div className="flex items-center gap-3">
-            <h3 className="text-xl font-bold text-gray-900">My Deals</h3>
-            <span className="px-2.5 py-0.5 bg-gray-100 text-gray-600 text-xs font-bold rounded-full">
+            <h3 className="text-2xl font-black text-gray-900 tracking-tight">My Leads</h3>
+            <span className="px-3 py-1 bg-blue-50 text-blue-600 text-xs font-black rounded-full border border-blue-100 shadow-sm">
               {filteredDeals.length}
             </span>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2">
-            {/* Month Filter */}
-            <select
-              value={selectedMonth}
-              onChange={(e) => setSelectedMonth(e.target.value)}
-              className="px-3 py-1.5 bg-white border border-gray-200 rounded-xl text-xs font-bold text-gray-700 focus:outline-none focus:ring-2 focus:ring-orange-500/20"
-            >
-              <option value="2026-03">March 2026</option>
-              <option value="2026-04">April 2026</option>
-            </select>
+          {/* CONTROLS WRAPPER 
+      - w-full: Forces this entire block to Row 2 on mobile
+      - lg:w-auto: Pulls it back to Row 1 on large screens
+    */}
+          {/* Parent Container forced to flex-col to ensure 2 rows */}
+          {/* Parent Container forced to flex-col to ensure 2 rows */}
+          <div className="flex flex-col gap-4 w-full lg:w-auto items-end">
 
-            {/* Lead Filters */}
-            <div className="flex items-center gap-1 bg-gray-50 rounded-xl p-1">
-              <button
-                onClick={() => setStageFilter('All')}
-                className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all ${stageFilter === 'All' ? 'bg-white shadow-sm text-gray-900' : 'text-gray-500 hover:text-gray-700'
-                  }`}
+            {/* ROW 1: FILTER GROUP (Month & Stages) */}
+            <div className="flex items-center gap-2 w-full md:w-auto">
+              <select
+                value={selectedMonth}
+                onChange={(e) => setSelectedMonth(e.target.value)}
+                className="px-3 py-2 bg-white border border-gray-200 rounded-xl text-xs font-bold text-gray-700 focus:outline-none focus:ring-2 focus:ring-orange-500/20"
               >
-                All Leads
-              </button>
-              <button
-                onClick={() => setStageFilter('Booking')}
-                className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all ${stageFilter === 'Booking' ? 'bg-white shadow-sm text-gray-900' : 'text-gray-500 hover:text-gray-700'
-                  }`}
-              >
-                Booking Leads
-              </button>
-              <div className="w-px h-4 bg-gray-200 mx-1 hidden md:block" />
-              {DEAL_STAGES.map(stage => (
+                <option value="2026-03">March 2026</option>
+                <option value="2026-04">April 2026</option>
+              </select>
+
+              {/* Swipeable Stage Filter Container */}
+              <div className="flex items-center gap-1 bg-gray-50 rounded-xl p-1 overflow-x-auto no-scrollbar flex-1 md:flex-none">
                 <button
-                  key={stage}
-                  onClick={() => setStageFilter(stage)}
-                  className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-all hidden lg:block ${stageFilter === stage ? 'bg-white shadow-sm text-gray-900' : 'text-gray-500 hover:text-gray-700'
-                    }`}
+                  onClick={() => setStageFilter('All')}
+                  className={`whitespace-nowrap px-3 py-1.5 text-xs font-bold rounded-lg transition-all ${stageFilter === 'All' ? 'bg-white shadow-sm text-gray-900' : 'text-gray-500 hover:text-gray-700'}`}
                 >
-                  {stage}
+                  All Leads
                 </button>
-              ))}
+                <button
+                  onClick={() => setStageFilter('Booking')}
+                  className={`whitespace-nowrap px-3 py-1.5 text-xs font-bold rounded-lg transition-all ${stageFilter === 'Booking' ? 'bg-white shadow-sm text-gray-900' : 'text-gray-500 hover:text-gray-700'}`}
+                >
+                  Booking Leads
+                </button>
+
+                <div className="w-px h-4 bg-gray-200 mx-1 hidden md:block" />
+
+                {DEAL_STAGES.filter(stage => stage !== 'General').map(stage => (
+                  <button
+                    key={stage}
+                    onClick={() => setStageFilter(stage)}
+                    className={`whitespace-nowrap px-3 py-1.5 text-xs font-medium rounded-lg transition-all ${stageFilter === stage ? 'bg-white shadow-sm text-gray-900' : 'text-gray-500 hover:text-gray-700'}`}
+                  >
+                    {stage}
+                  </button>
+                ))}
+              </div>
             </div>
 
-            <div className="flex items-center gap-2 ml-auto">
-              <button
-                onClick={() => setShowQRModal(true)}
-                className="flex items-center gap-1.5 px-4 py-2 bg-indigo-50 text-indigo-600 text-sm font-semibold rounded-xl hover:bg-indigo-100 transition-colors border border-indigo-100"
-              >
-                <QrCode className="w-4 h-4" />
-                <span className="hidden sm:inline">Walking Lead</span>
-              </button>
-              <button
-                onClick={() => setShowNewDealForm(true)}
-                className="flex items-center gap-1.5 px-4 py-2 bg-blue-600 text-white text-sm font-semibold rounded-xl hover:bg-blue-700 transition-colors"
-              >
-                <Plus className="w-4 h-4" />
-                <span className="hidden sm:inline">Add Lead</span>
-              </button>
-            </div>
+            {/* ROW 2: ACTION BUTTON GROUP */}
+            {!teamManaged && (
+              <div className="flex items-center gap-2 w-full md:w-auto justify-end">
+                <button
+                  onClick={() => setShowQRModal(true)}
+                  className="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-2.5 bg-indigo-50 text-indigo-600 text-sm font-bold rounded-xl hover:bg-indigo-100 transition-all border border-indigo-100 shadow-sm"
+                >
+                  <QrCode className="w-4 h-4" />
+                  <span className="whitespace-nowrap">Walking Lead</span>
+                </button>
+                <button
+                  onClick={() => setShowNewDealForm(true)}
+                  className="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-2.5 bg-blue-600 text-white text-sm font-bold rounded-xl hover:bg-blue-700 transition-all shadow-lg shadow-blue-200"
+                >
+                  <Plus className="w-4 h-4" />
+                  <span className="whitespace-nowrap">Add Lead</span>
+                </button>
+              </div>
+            )}
           </div>
         </div>
-
+        {/* CONTENT GRID / TABLE */}
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
           {stageFilter === 'All' ? (
-            <div className="col-span-1 md:col-span-2 xl:col-span-3 bg-white rounded-3xl border border-gray-100 overflow-hidden shadow-sm">
-              <div className="overflow-x-auto">
-                <table className="w-full text-left">
+            <div className="col-span-full bg-white rounded-3xl border border-gray-100 overflow-hidden shadow-sm">
+              <div className="overflow-x-auto w-full">
+                <table className="w-full text-left min-w-[800px]">
                   <thead>
                     <tr className="bg-gray-50/50 text-[10px] font-black text-gray-400 uppercase tracking-widest border-b border-gray-100">
                       <th className="px-6 py-4">Customer</th>
@@ -430,7 +455,14 @@ const SalesPersonDashboard: React.FC = () => {
                         </td>
                         <td className="px-6 py-4 text-right">
                           <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                            <button className="p-2 text-blue-600 hover:bg-blue-50 rounded-xl transition-colors">
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setSelectedFollowUpDeal(deal);
+                                setShowFollowUpModal(true);
+                              }}
+                              className="p-2 text-blue-600 hover:bg-blue-50 rounded-xl transition-colors"
+                            >
                               <Plus className="w-4 h-4" />
                             </button>
                             <button className="p-2 text-red-600 hover:bg-red-50 rounded-xl transition-colors">
@@ -449,6 +481,8 @@ const SalesPersonDashboard: React.FC = () => {
               <DealCard key={deal.id} deal={deal} />
             ))
           )}
+
+          {/* EMPTY STATE */}
           {filteredDeals.length === 0 && (
             <div className="col-span-full text-center py-20 bg-gray-50 rounded-3xl border border-dashed border-gray-200">
               <div className="w-16 h-16 bg-white rounded-2xl shadow-sm flex items-center justify-center mx-auto mb-4">
@@ -503,7 +537,7 @@ const SalesPersonDashboard: React.FC = () => {
         </div>
       )}
 
-      {/* Activity and Incentives */}
+      {/* Activity and Incentives Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
           <ActivityTimeline activities={myActivities.length > 0 ? myActivities : activities.slice(0, 5)} />
@@ -530,8 +564,6 @@ const SalesPersonDashboard: React.FC = () => {
                     {salespeople.filter(sp => sp.teamId === teamManaged.id).map(sp => {
                       const spDeals = deals.filter(d => d.salespersonId === sp.id);
                       const delivered = spDeals.filter(d => d.status === 'completed').length;
-
-                      // Smart calculation for incentive in table
                       const earnedIncentive = spDeals
                         .filter(d => d.incentiveStatus === 'Counted' || d.stage === 'PDI' || d.stage === 'Accessories')
                         .reduce((sum, d) => sum + (d.incentiveAmount || 0), 0);
@@ -547,7 +579,7 @@ const SalesPersonDashboard: React.FC = () => {
                             </div>
                           </td>
                           <td className="text-center py-4 text-sm font-medium text-gray-600">{spDeals.length}</td>
-                          <td className="text-center py-4 text-sm font-medium text-gray-600">{spDeals.filter(d => d.stage !== 'Account').length}</td>
+                          <td className="text-center py-4 text-sm font-medium text-gray-600">{spDeals.filter(d => d.stage !== 'General').length}</td>
                           <td className="text-center py-4">
                             <span className={`px-2 py-1 rounded-lg text-[10px] font-bold ${delivered > 5 ? 'bg-emerald-50 text-emerald-600' : 'bg-gray-100 text-gray-600'}`}>
                               {delivered} Units
@@ -565,7 +597,6 @@ const SalesPersonDashboard: React.FC = () => {
         </div>
 
         <div className="space-y-4">
-          {/* Daily Tasks Section */}
           <div className="bg-white rounded-3xl border border-gray-100 p-6 shadow-sm overflow-hidden h-fit">
             <div className="flex items-center justify-between mb-6">
               <h3 className="font-bold text-gray-900 flex items-center gap-2">
@@ -654,8 +685,19 @@ const SalesPersonDashboard: React.FC = () => {
             </div>
           </div>
         </div>
-        <NewDealForm />
       </div>
+      <NewDealForm />
+
+      {showFollowUpModal && selectedFollowUpDeal && (
+        <FollowUpModal
+          deal={selectedFollowUpDeal}
+          onClose={() => {
+            setShowFollowUpModal(false);
+            setSelectedFollowUpDeal(null);
+          }}
+          salespersonName={userDisplayName || 'Sales Executive'}
+        />
+      )}
     </div>
   );
 };

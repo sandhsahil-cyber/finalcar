@@ -10,36 +10,43 @@ interface PipelineTrackerProps {
 const PipelineTracker: React.FC<PipelineTrackerProps> = ({ deal, compact = false }) => {
   if (!deal) return null;
 
-  const currentIndex = DEAL_STAGES.indexOf(deal.stage);
+  const displayStages = DEAL_STAGES.filter(s => s !== 'General');
+  const displayIndex = (displayStages as string[]).indexOf(deal.stage);
 
   if (compact) {
     return (
       <div className="flex items-center gap-1">
-        {DEAL_STAGES.map((stage, i) => (
-          <React.Fragment key={stage}>
-            <div
-              className={`w-2 h-2 rounded-full transition-all ${
-                i < currentIndex ? 'scale-100' : i === currentIndex ? 'scale-125' : 'scale-75 opacity-40'
-              }`}
-              style={{
-                backgroundColor: i <= currentIndex ? STAGE_COLORS[stage] : '#d1d5db',
-              }}
-              title={stage}
-            />
-            {i < DEAL_STAGES.length - 1 && (
-              <div className={`w-3 h-0.5 ${i < currentIndex ? 'bg-gray-400' : 'bg-gray-200'}`} />
-            )}
-          </React.Fragment>
-        ))}
+        {displayStages.map((stage, i) => {
+          const iPos = i; // Current stage in visual list
+          
+          return (
+            <React.Fragment key={stage}>
+              <div
+                className={`w-2 h-2 rounded-full transition-all ${
+                  displayIndex !== -1 && iPos < displayIndex ? 'scale-100' : 
+                  displayIndex !== -1 && iPos === displayIndex ? 'scale-125' : 'scale-75 opacity-40'
+                }`}
+                style={{
+                  backgroundColor: displayIndex !== -1 && iPos <= displayIndex ? STAGE_COLORS[stage] : '#d1d5db',
+                }}
+                title={stage}
+              />
+              {i < displayStages.length - 1 && (
+                <div className={`w-3 h-0.5 ${displayIndex !== -1 && iPos < displayIndex ? 'bg-gray-400' : 'bg-gray-200'}`} />
+              )}
+            </React.Fragment>
+          );
+        })}
       </div>
     );
   }
 
   return (
     <div className="flex items-center justify-between w-full">
-      {DEAL_STAGES.map((stage, i) => {
-        const isCompleted = i < currentIndex;
-        const isCurrent = i === currentIndex;
+      {displayStages.map((stage, i) => {
+        const iPos = i;
+        const isCompleted = displayIndex !== -1 && iPos < displayIndex;
+        const isCurrent = displayIndex !== -1 && iPos === displayIndex;
         const color = STAGE_COLORS[stage];
 
         return (
@@ -51,7 +58,7 @@ const PipelineTracker: React.FC<PipelineTrackerProps> = ({ deal, compact = false
                 }`}
                 style={{
                   backgroundColor: isCompleted || isCurrent ? color : '#e5e7eb',
-                  ringColor: isCompleted || isCurrent ? color : 'transparent',
+                  boxShadow: isCompleted || isCurrent ? `0 0 0 2px white, 0 0 0 4px ${color}` : 'none',
                 }}
               >
                 {isCompleted ? (
@@ -64,9 +71,9 @@ const PipelineTracker: React.FC<PipelineTrackerProps> = ({ deal, compact = false
                 {stage}
               </span>
             </div>
-            {i < DEAL_STAGES.length - 1 && (
+            {i < displayStages.length - 1 && (
               <div className="flex-1 mx-1">
-                <div className={`h-0.5 rounded-full ${i < currentIndex ? 'bg-gray-400' : 'bg-gray-200'}`} />
+                <div className={`h-0.5 rounded-full ${isCompleted ? 'bg-gray-400' : 'bg-gray-200'}`} />
               </div>
             )}
           </React.Fragment>
@@ -78,7 +85,8 @@ const PipelineTracker: React.FC<PipelineTrackerProps> = ({ deal, compact = false
 
 // Pipeline Summary showing deal counts per stage
 export const PipelineSummary: React.FC<{ deals: Deal[]; onStageClick?: (stage: DealStage) => void }> = ({ deals, onStageClick }) => {
-  const stageCounts = DEAL_STAGES.map(stage => ({
+  const displayStages = DEAL_STAGES.filter(s => s !== 'General');
+  const stageCounts = displayStages.map(stage => ({
     stage,
     count: deals.filter(d => d.stage === stage).length,
     value: deals.filter(d => d.stage === stage).reduce((sum, d) => sum + d.amount, 0),
