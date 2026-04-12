@@ -80,14 +80,14 @@ const GroupCEOdashboard = () => {
                 <div className={`col-span-2 bg-gradient-to-br ${brands.find(b => b.id === activeBrand).color} p-5 rounded-[2rem] text-white shadow-xl flex flex-col justify-between relative overflow-hidden group transition-all duration-500`}>
                     <div className="relative z-10">
                         <p className="text-white/70 text-[10px] font-black uppercase tracking-widest mb-1">
-                            {activeBrand === 'all' ? 'Group Revenue' : `${brands.find(b => b.id === activeBrand).name} Revenue`}
+                            {activeBrand === 'all' ? 'Total Sales' : `${brands.find(b => b.id === activeBrand).name} Sales`}
                         </p>
                         <p className="text-3xl font-black tabular-nums">{formatCurrency(metrics.revenue)}</p>
                     </div>
                     <div className="relative z-10 flex items-center gap-1.5 mt-4">
                         <div className="px-2 py-0.5 bg-white/20 backdrop-blur-md rounded-lg text-[10px] font-bold flex items-center gap-1">
                             <TrendingUp className="w-3 h-3 text-emerald-300" />
-                            <span>Live Group Index</span>
+                            <span>Live Update</span>
                         </div>
                     </div>
                     <Globe className="absolute -right-4 -bottom-4 w-24 h-24 text-white/10 group-hover:scale-110 transition-transform duration-700" />
@@ -136,7 +136,7 @@ const GroupCEOdashboard = () => {
             {activeBrand === 'all' && (
                 <div className="bg-white rounded-3xl border border-gray-100 p-6 shadow-sm">
                     <h3 className="font-bold text-gray-900 mb-6 flex items-center gap-2">
-                        <Globe className="w-5 h-5 text-blue-500" /> Group Brand Distribution (Revenue & Units)
+                        <Globe className="w-5 h-5 text-blue-500" /> Brand-wise Sales Summary
                     </h3>
                     <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
                         {brands.filter(b => b.id !== 'all').map((brand) => {
@@ -169,7 +169,7 @@ const GroupCEOdashboard = () => {
                     <div className="flex justify-between items-center mb-6">
                         <h3 className="font-bold text-gray-900 flex items-center gap-2">
                             <MapPin className="w-5 h-5 text-red-500" />
-                            {activeBrand === 'all' ? 'Group Top Teams' : `${brands.find(b => b.id === activeBrand).name} Top Teams`}
+                            {activeBrand === 'all' ? 'Best Performing Teams' : `${brands.find(b => b.id === activeBrand).name} Best Teams`}
                         </h3>
                     </div>
                     <div className="space-y-3">
@@ -195,7 +195,7 @@ const GroupCEOdashboard = () => {
                                         </div>
                                         <div className="text-right">
                                             <p className="text-sm font-black text-gray-900">{formatCurrency(team.achieved)}</p>
-                                            <p className="text-[10px] font-bold text-emerald-500 uppercase tracking-tighter">Target Achieved</p>
+                                            <p className="text-[10px] font-bold text-emerald-500 uppercase tracking-tighter">Target Done</p>
                                         </div>
                                     </div>
                                 );
@@ -205,27 +205,27 @@ const GroupCEOdashboard = () => {
 
                 <div className="bg-white rounded-3xl border border-gray-100 p-6 shadow-sm">
                     <h3 className="font-bold text-gray-900 mb-6 flex items-center gap-2">
-                        <Building2 className="w-5 h-5 text-indigo-500" /> {activeBrand === 'all' ? 'Group Stock' : `${brands.find(b => b.id === activeBrand).name} Stock`}
+                        <Building2 className="w-5 h-5 text-indigo-500" /> {activeBrand === 'all' ? 'Car Stock' : `${brands.find(b => b.id === activeBrand).name} Car Stock`}
                     </h3>
                     <div className="space-y-8">
                         <div className="flex justify-between items-end">
                             <div>
-                                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Available Inventory</p>
+                                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Cars Available</p>
                                 <p className="text-4xl font-black text-gray-900">
                                     {activeBrand === 'all' ? '1,248' : activeBrand === 'brand-1' ? '312' : activeBrand === 'brand-2' ? '412' : '264'} 
                                     <span className="text-sm font-medium text-gray-400 ml-2">Units</span>
                                 </p>
                             </div>
                             <div className="text-right">
-                                <p className="text-[10px] font-bold text-red-400 uppercase tracking-widest mb-1">Blocked / Booked</p>
-                                <p className="text-2xl font-black text-gray-700">84 <span className="text-xs text-gray-400">Locked</span></p>
+                                <p className="text-[10px] font-bold text-red-400 uppercase tracking-widest mb-1">Booked / Hold</p>
+                                <p className="text-2xl font-black text-gray-700">84 <span className="text-xs text-gray-400">Cars</span></p>
                             </div>
                         </div>
 
                         <div className="space-y-4">
                             <div className="flex justify-between text-[10px] font-black text-gray-400 uppercase tracking-widest">
-                                <span>Ageing Analysis (Days in Stock)</span>
-                                <span className="text-amber-600">Avg. 18 Days</span>
+                                <span>How Long Cars Are in Stock</span>
+                                <span className="text-amber-600">Average 18 Days</span>
                             </div>
                             <div className="flex h-5 w-full rounded-2xl overflow-hidden border border-gray-50 shadow-inner">
                                 <div className="bg-emerald-400 w-[65%] hover:opacity-80 transition-opacity cursor-help" title="0-30 Days" />
@@ -235,22 +235,22 @@ const GroupCEOdashboard = () => {
                             <div className="flex gap-4 mt-2">
                                 <div className="flex items-center gap-1.5">
                                     <div className="w-2 h-2 rounded-full bg-emerald-400" />
-                                    <span className="text-[10px] font-bold text-gray-500">Fast Moving</span>
+                                    <span className="text-[10px] font-bold text-gray-500">Selling Fast (0-30 days)</span>
                                 </div>
                                 <div className="flex items-center gap-1.5">
                                     <div className="w-2 h-2 rounded-full bg-amber-400" />
-                                    <span className="text-[10px] font-bold text-gray-500">Standard</span>
+                                    <span className="text-[10px] font-bold text-gray-500">Normal (31-60 days)</span>
                                 </div>
                                 <div className="flex items-center gap-1.5">
                                     <div className="w-2 h-2 rounded-full bg-red-400" />
-                                    <span className="text-[10px] font-bold text-gray-500">Critical (&gt;60d)</span>
+                                    <span className="text-[10px] font-bold text-gray-500">Slow Selling (60+ days)</span>
                                 </div>
                             </div>
                         </div>
 
                         <div className="pt-4 border-t border-gray-50">
                             <button className="w-full py-3 bg-gray-50 text-gray-600 text-xs font-bold rounded-2xl hover:bg-gray-100 transition-colors uppercase tracking-widest">
-                                View Full Inventory Audit
+                                See Full Stock Details
                             </button>
                         </div>
                     </div>

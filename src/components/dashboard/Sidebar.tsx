@@ -70,11 +70,11 @@ const menuItems = [
   { id: 'ceo_marketing', label: 'Marketing & ROI', icon: Zap },
   { id: 'ceo_audit', label: 'Audit Logs', icon: FileText },
   // Group CEO Specific
-  { id: 'gceo_consolidated', label: 'Group Consolidated View', icon: LayoutGrid },
-  { id: 'gceo_analytics', label: 'Inter-Brand Analytics', icon: BarChartHorizontal },
-  { id: 'gceo_funds', label: 'Group Fund Flow', icon: DollarSign },
-  { id: 'gceo_hr', label: 'HR & Payroll', icon: UserCheck },
-  { id: 'gceo_risk', label: 'Risk & Compliance', icon: ShieldCheck },
+  { id: 'gceo_consolidated', label: 'All Showrooms', icon: LayoutGrid },
+  { id: 'gceo_analytics', label: 'Brand Comparison', icon: BarChartHorizontal },
+  { id: 'gceo_funds', label: 'Paisa In-Out', icon: DollarSign },
+  { id: 'gceo_hr', label: 'Staff & Salary', icon: UserCheck },
+  { id: 'gceo_risk', label: 'Checking & Reports', icon: ShieldCheck },
   // Owner Specific
   { id: 'owner_command', label: 'CEO Command Center', icon: LayoutDashboard },
   { id: 'owner_profit', label: 'Profitability Analytics', icon: BarChart3 },

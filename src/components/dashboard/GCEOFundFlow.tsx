@@ -14,18 +14,18 @@ const GCEOFundFlow: React.FC = () => {
         <div className="space-y-8 animate-in fade-in duration-500 bg-[#0f172a] -m-6 p-10 min-h-screen text-slate-200">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
                 <div>
-                    <h2 className="text-3xl font-black tracking-tight uppercase text-white">Group Liquidity & Fund Management</h2>
+                    <h2 className="text-3xl font-black tracking-tight uppercase text-white">Paisa In-Out</h2>
                     <p className="text-sm font-medium text-slate-400 flex items-center gap-2">
-                        <DollarSign size={16} className="text-emerald-500" /> Consolidated Cash Balances & Treasury Oversight
+                        <DollarSign size={16} className="text-emerald-500" /> Track money coming in and going out
                     </p>
                 </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                 {[
-                    { label: 'Total Group Cash Pool', value: '₹142.8 Cr', trend: '+₹4.2 Cr Today', status: 'Healthy' },
-                    { label: 'Opex Credit Line', value: '₹250 Cr', trend: '42% Utilized', status: 'Optimal' },
-                    { label: 'Daily Group Burn', value: '₹1.84 Cr', trend: '-2.1% WoW', status: 'Positive' },
+                    { label: 'Total Cash Available', value: '₹142.8 Cr', trend: '+₹4.2 Cr Today', status: 'Good' },
+                    { label: 'Bank Credit Limit', value: '₹250 Cr', trend: '42% Used', status: 'Good' },
+                    { label: 'Daily Spending', value: '₹1.84 Cr', trend: '-2.1% This Week', status: 'OK' },
                 ].map((stat, i) => (
                     <div key={i} className="bg-slate-900 border border-slate-800 p-8 rounded-[40px] shadow-sm relative overflow-hidden group">
                         <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest leading-none mb-3">{stat.label}</p>
@@ -40,7 +40,7 @@ const GCEOFundFlow: React.FC = () => {
 
             <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
                  <div className="xl:col-span-2 bg-slate-900 border border-slate-800 rounded-[40px] p-10 overflow-hidden">
-                     <h4 className="text-xl font-black text-white uppercase tracking-tight mb-10">Brand-wise Liquidity Distribution</h4>
+                     <h4 className="text-xl font-black text-white uppercase tracking-tight mb-10">Brand-wise Money Flow</h4>
                      <div className="h-[400px] w-full">
                          <ResponsiveContainer width="100%" height="100%">
                              <AreaChart data={LIQUIDITY_TREND}>
@@ -61,17 +61,17 @@ const GCEOFundFlow: React.FC = () => {
                         <Landmark size={200} />
                     </div>
                     <div className="relative z-10">
-                        <h4 className="text-xl font-black text-white uppercase tracking-tight mb-8">Group Fund Approvals</h4>
+                        <h4 className="text-xl font-black text-white uppercase tracking-tight mb-8">Payment Approvals</h4>
                         <div className="space-y-6">
                             {[
-                                { desc: 'Toyota Rajkot: Inventory Purchase', value: '₹12.4 Cr', urgency: 'High' },
-                                { desc: 'Audi Mumbai: Operational CAPEX', value: '₹2.1 Cr', urgency: 'Normal' },
-                                { desc: 'Group Level: Insurance Renewal', value: '₹1.84 Cr', urgency: 'Immediate' },
+                                { desc: 'Toyota Rajkot: Car Purchase', value: '₹12.4 Cr', urgency: 'Urgent' },
+                                { desc: 'Audi Mumbai: Office & Equipment', value: '₹2.1 Cr', urgency: 'Normal' },
+                                { desc: 'All Showrooms: Insurance Renewal', value: '₹1.84 Cr', urgency: 'Very Urgent' },
                             ].map((app, i) => (
                                 <div key={i} className="p-5 bg-slate-800/40 border border-slate-700/50 rounded-3xl group-hover:border-blue-500/20 transition-all">
                                     <div className="flex justify-between items-start mb-4">
                                          <p className="text-[11px] font-black text-white leading-snug max-w-[150px]">{app.desc}</p>
-                                         <span className={`px-2 py-1 rounded-lg text-[8px] font-black uppercase tracking-widest ${app.urgency === 'High' ? 'bg-rose-500/10 text-rose-500' : 'bg-blue-500/10 text-blue-500'}`}>{app.urgency}</span>
+                                         <span className={`px-2 py-1 rounded-lg text-[8px] font-black uppercase tracking-widest ${app.urgency === 'Urgent' || app.urgency === 'Very Urgent' ? 'bg-rose-500/10 text-rose-500' : 'bg-blue-500/10 text-blue-500'}`}>{app.urgency}</span>
                                     </div>
                                     <h5 className="text-xl font-black text-white tracking-tighter tabular-nums mb-4">{app.value}</h5>
                                     <div className="flex gap-2">
@@ -83,7 +83,7 @@ const GCEOFundFlow: React.FC = () => {
                         </div>
                     </div>
                     <button className="w-full mt-10 py-4 bg-slate-800 text-slate-400 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-700 hover:text-white transition-all relative z-10">
-                        Group Treasury Master
+                        See All Payments
                     </button>
                  </div>
             </div>

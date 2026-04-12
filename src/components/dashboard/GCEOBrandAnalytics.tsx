@@ -14,16 +14,16 @@ const GCEOBrandAnalytics: React.FC = () => {
     <div className="space-y-8 animate-in fade-in duration-500 bg-[#0f172a] -m-6 p-10 min-h-screen text-slate-200">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
         <div>
-          <h2 className="text-3xl font-black tracking-tight uppercase text-white">Inter-Brand High Performance Analytics</h2>
+          <h2 className="text-3xl font-black tracking-tight uppercase text-white">Brand Comparison</h2>
           <p className="text-sm font-medium text-slate-400 flex items-center gap-2">
-            <BarChartHorizontal size={16} className="text-blue-500" /> Cross-Portfolio Efficiency & Profitability Comparison
+            <BarChartHorizontal size={16} className="text-blue-500" /> Compare how each brand is performing
           </p>
         </div>
       </div>
 
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
           <div className="bg-slate-900 border border-slate-800 rounded-[40px] p-10 overflow-hidden relative group">
-              <h4 className="text-xl font-black text-white uppercase tracking-tight mb-10">Profit Contribution by Brand (Cr)</h4>
+              <h4 className="text-xl font-black text-white uppercase tracking-tight mb-10">Brand-wise Profit (Cr)</h4>
               <div className="h-[400px] w-full">
                   <ResponsiveContainer width="100%" height="100%">
                       <BarChart data={BRAND_COMPARISON} layout="vertical">
@@ -42,7 +42,7 @@ const GCEOBrandAnalytics: React.FC = () => {
           </div>
 
            <div className="bg-slate-900 border border-slate-800 rounded-[40px] p-10 overflow-hidden relative group">
-              <h4 className="text-xl font-black text-white uppercase tracking-tight mb-10">Net PPU Efficiency (₹k)</h4>
+              <h4 className="text-xl font-black text-white uppercase tracking-tight mb-10">Profit Per Car (₹k)</h4>
               <div className="h-[400px] w-full">
                    <ResponsiveContainer width="100%" height="100%">
                         <AreaChart data={BRAND_COMPARISON}>
@@ -65,10 +65,10 @@ const GCEOBrandAnalytics: React.FC = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           {[
-            { label: 'Most Profitable', value: 'BMW India', sub: '₹142K PPU', icon: <DollarSign />, color: 'blue' },
-            { label: 'Best Efficiency', value: 'Toyota (City A)', sub: '94% TAT Score', icon: <Pulse />, color: 'emerald' },
-            { label: 'Fastest Stock Turn', value: 'Toyota (City B)', sub: '5.2x Monthly', icon: <Zap />, color: 'amber' },
-            { label: 'Highest CSAT', value: 'Audi Mumbai', sub: '9.8 / 10', icon: <Target />, color: 'purple' },
+            { label: 'Most Profit', value: 'BMW India', sub: '₹142K Per Car', icon: <DollarSign />, color: 'blue' },
+            { label: 'Best Speed', value: 'Toyota (City A)', sub: '94% Delivery Speed', icon: <Pulse />, color: 'emerald' },
+            { label: 'Fastest Selling', value: 'Toyota (City B)', sub: '5.2x Monthly', icon: <Zap />, color: 'amber' },
+            { label: 'Best Customer Rating', value: 'Audi Mumbai', sub: '9.8 / 10', icon: <Target />, color: 'purple' },
           ].map((card, i) => (
               <div key={i} className={`bg-slate-900/50 border border-slate-800 p-8 rounded-[40px] shadow-2xl relative overflow-hidden group`}>
                    <div className={`p-3 bg-${card.color}-500/10 rounded-2xl w-fit ${card.color === 'blue' ? 'text-blue-400' : card.color === 'emerald' ? 'text-emerald-400' : card.color === 'amber' ? 'text-amber-400' : 'text-purple-400'} mb-6`}>{card.icon}</div>

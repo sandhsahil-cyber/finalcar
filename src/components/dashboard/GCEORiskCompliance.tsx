@@ -14,19 +14,19 @@ const GCEORiskCompliance: React.FC = () => {
         <div className="space-y-8 animate-in fade-in duration-500 bg-[#0f172a] -m-6 p-10 min-h-screen text-slate-200">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
                 <div>
-                    <h2 className="text-3xl font-black tracking-tight uppercase text-white">Group Risk, Compliance & CSAT</h2>
+                    <h2 className="text-3xl font-black tracking-tight uppercase text-white">Checking & Reports</h2>
                     <p className="text-sm font-medium text-slate-400 flex items-center gap-2">
-                        <ShieldCheck size={16} className="text-emerald-500" /> Enterprise-wide Audit Surveillance & Integrity Scoreboard
+                        <ShieldCheck size={16} className="text-emerald-500" /> Check how each showroom is doing and customer feedback
                     </p>
                 </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                 {[
-                    { label: 'Group Integrity Index' , value: '88.4%', trend: 'Top Decile', color: 'emerald' },
-                    { label: 'Avg CSAT Score', value: '8.8 / 10', trend: '+0.2 Index', color: 'blue' },
-                    { label: 'Pending Audits', value: '08 Units', trend: 'Due in 4 Days', color: 'amber' },
-                    { label: 'Critical Resolutions', value: '14 Flags', trend: 'High Urgency', color: 'rose' },
+                    { label: 'Overall Score' , value: '88.4%', trend: 'Excellent', color: 'emerald' },
+                    { label: 'Customer Rating', value: '8.8 / 10', trend: '+0.2 Points', color: 'blue' },
+                    { label: 'Pending Reviews', value: '08', trend: 'Due in 4 Days', color: 'amber' },
+                    { label: 'Issues to Fix', value: '14', trend: 'Needs Attention', color: 'rose' },
                 ].map((stat, i) => (
                     <div key={i} className="bg-slate-900 border border-slate-800 p-8 rounded-[40px] shadow-sm overflow-hidden relative group">
                         <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest leading-none mb-3">{stat.label}</p>
@@ -39,15 +39,15 @@ const GCEORiskCompliance: React.FC = () => {
             <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
                  <div className="xl:col-span-2 bg-slate-900 border border-slate-800 rounded-[40px] overflow-hidden">
                      <div className="p-8 border-b border-slate-800 bg-slate-800/10 flex justify-between items-center">
-                        <h3 className="font-black text-lg tracking-tight uppercase text-white">Compliance Distribution (By Brand)</h3>
+                        <h3 className="font-black text-lg tracking-tight uppercase text-white">Showroom Report Card</h3>
                      </div>
                      <div className="overflow-x-auto">
                         <table className="w-full text-left">
                             <thead className="bg-slate-800/30 text-[10px] uppercase font-black text-slate-500 tracking-[0.2em]">
                                 <tr>
-                                    <th className="px-8 py-6">Dealership Name</th>
-                                    <th className="px-8 py-6 text-center">Integrity Score</th>
-                                    <th className="px-8 py-6 text-center">CSAT (10)</th>
+                                    <th className="px-8 py-6">Showroom Name</th>
+                                    <th className="px-8 py-6 text-center">Score</th>
+                                    <th className="px-8 py-6 text-center">Customer Rating (10)</th>
                                     <th className="px-8 py-6 text-center">Status</th>
                                     <th className="px-8 py-6 text-right">Audit</th>
                                 </tr>
@@ -78,7 +78,7 @@ const GCEORiskCompliance: React.FC = () => {
                                         </td>
                                         <td className="px-8 py-6 text-right">
                                             <button className="px-5 py-2.5 bg-slate-800 text-slate-400 rounded-xl text-[9px] font-black uppercase tracking-widest hover:text-white transition-all">
-                                                Surveillance
+                                                Check
                                             </button>
                                         </td>
                                     </tr>
@@ -93,18 +93,18 @@ const GCEORiskCompliance: React.FC = () => {
                         <AlertTriangle size={200} />
                     </div>
                     <div className="relative z-10">
-                        <h4 className="text-2xl font-black text-white uppercase tracking-tight mb-8">Master Compliance Flag</h4>
+                        <h4 className="text-2xl font-black text-white uppercase tracking-tight mb-8">Important Warning</h4>
                         <div className="p-8 bg-rose-500 text-white rounded-[32px] shadow-xl shadow-rose-500/20 space-y-6">
                             <div className="flex items-center gap-3">
                                 <AlertTriangle size={24} className="animate-bounce" />
-                                <span className="text-[10px] font-black uppercase tracking-[0.2em]">Immediate Attention Required</span>
+                                <span className="text-[10px] font-black uppercase tracking-[0.2em]">Needs Quick Action</span>
                             </div>
                             <p className="text-sm font-bold leading-relaxed">
-                                Tesla City A has failed the "Financial Payout Reconciliation" audit for 3 consecutive months.
+                                Tesla City A showroom has failed the money checking for 3 months in a row. Please look into this.
                             </p>
                             <div className="pt-6 border-t border-white/20">
                                  <button className="w-full py-4 bg-white text-rose-500 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-rose-50 shadow-lg">
-                                    Initiate Corrective Action
+                                    Take Action Now
                                  </button>
                             </div>
                         </div>
@@ -112,7 +112,7 @@ const GCEORiskCompliance: React.FC = () => {
                     <div className="relative z-10 mt-10">
                          <div className="bg-slate-800/40 border border-slate-700/50 p-6 rounded-3xl flex items-center justify-between">
                             <div>
-                                <p className="text-[10px] font-black text-slate-500 uppercase mb-1">Global Audit Progress</p>
+                                <p className="text-[10px] font-black text-slate-500 uppercase mb-1">Review Progress</p>
                                 <p className="text-xl font-black text-white italic">72% Completed</p>
                             </div>
                             <CheckCircle2 className="text-emerald-500" size={32} />
