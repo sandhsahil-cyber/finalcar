@@ -4,9 +4,9 @@ import { formatCurrency, formatFullCurrency } from '@/data/dummyData';
 import { useDashboard } from '@/contexts/DashboardContext';
 
 const FinanceDashboard = () => {
-    const { deals } = useDashboard();
+    const { deals, updateDepartmentStatus } = useDashboard();
     // Dynamic Finance Stats
-    const financeDeals = deals.filter(d => d.financeType);
+    const financeDeals = deals.filter(d => d.departmentStatus?.['Finance'] === 'In Progress');
     const logged = financeDeals.length;
     const sanctioned = financeDeals.filter(d => d.financeStatus === 'Approved' || d.financeStatus === 'Disbursed').length;
     const disbursed = financeDeals.filter(d => d.financeStatus === 'Disbursed').length;
@@ -81,8 +81,11 @@ const FinanceDashboard = () => {
                                             </span>
                                         </td>
                                         <td className="py-4 text-right">
-                                            <button className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg group-hover:bg-blue-50 group-hover:text-blue-600 transition-all">
-                                                <ArrowRight className="w-4 h-4" />
+                                            <button 
+                                                onClick={() => updateDepartmentStatus(deal.id, 'Finance', 'Completed')}
+                                                className="px-3 py-1.5 bg-emerald-50 text-emerald-600 hover:bg-emerald-100 rounded-lg text-xs font-bold transition-all"
+                                            >
+                                                Mark Done
                                             </button>
                                         </td>
                                     </tr>

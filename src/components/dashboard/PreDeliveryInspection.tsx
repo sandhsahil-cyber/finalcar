@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { CheckCircle, Clipboard, AlertCircle, Settings, Truck, FileText, Share2 } from 'lucide-react';
+import { useDashboard } from '@/contexts/DashboardContext';
 
 const PDIDashboard = () => {
-    const [selectedPDI, setSelectedPDI] = useState(null);
+    const { deals, salespeople, updateDepartmentStatus } = useDashboard();
+    const [selectedPDI, setSelectedPDI] = useState<any>(null);
 
     const pdiChecklist = [
         { id: 1, label: 'Exterior Paint & Scratch Check', status: 'pending' },
@@ -11,21 +13,24 @@ const PDIDashboard = () => {
         { id: 4, label: 'Tyre Pressure & Alloy Finish', status: 'pending' },
     ];
 
+    const pdiDeals = deals.filter(d => d.departmentStatus?.['PDI'] === 'In Progress');
+    const completedPDI = deals.filter(d => d.departmentStatus?.['PDI'] === 'Completed');
+
     return (
         <div className="space-y-6">
             {/* PDI Stats */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm">
                     <p className="text-gray-500 text-xs font-bold uppercase">Today's PDI Queue</p>
-                    <p className="text-2xl font-black text-gray-900">08 <span className="text-sm font-medium text-orange-500">Cars</span></p>
+                    <p className="text-2xl font-black text-gray-900">{String(pdiDeals.length).padStart(2, '0')} <span className="text-sm font-medium text-orange-500">Cars</span></p>
                 </div>
                 <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm">
                     <p className="text-gray-500 text-xs font-bold uppercase">Pending Rectifications</p>
-                    <p className="text-2xl font-black text-red-500">02 <span className="text-sm font-medium">Cars</span></p>
+                    <p className="text-2xl font-black text-red-500">00 <span className="text-sm font-medium">Cars</span></p>
                 </div>
                 <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm">
                     <p className="text-gray-500 text-xs font-bold uppercase">Ready for Delivery</p>
-                    <p className="text-2xl font-black text-emerald-500">14 <span className="text-sm font-medium">Cars</span></p>
+                    <p className="text-2xl font-black text-emerald-500">{String(completedPDI.length).padStart(2, '0')} <span className="text-sm font-medium">Cars</span></p>
                 </div>
             </div>
 
@@ -42,21 +47,24 @@ const PDIDashboard = () => {
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-50 text-sm">
-                            {[1, 2, 3].map((i) => (
-                                <tr key={i} className="hover:bg-gray-50/50 cursor-pointer" onClick={() => setSelectedPDI(i)}>
+                            {pdiDeals.map((deal) => {
+                                const sp = salespeople.find(s => s.id === deal.salespersonId);
+                                return (
+                                <tr key={deal.id} className={`hover:bg-gray-50/50 cursor-pointer ${selectedPDI?.id === deal.id ? 'bg-emerald-50/50' : ''}`} onClick={() => setSelectedPDI(deal)}>
                                     <td className="px-6 py-4">
-                                        <p className="font-bold">Grand Vitara Alpha</p>
-                                        <p className="text-[10px] text-gray-400 font-mono">VIN: 9A82J...092</p>
+                                        <p className="font-bold">{deal.carModel}</p>
+                                        <p className="text-[10px] text-gray-400 font-mono">VIN: ...{deal.id.split('-')[1].substring(6)}</p>
                                     </td>
-                                    <td className="px-6 py-4 text-gray-600">Vikram Singh</td>
+                                    <td className="px-6 py-4 text-gray-600">{sp?.name || 'Internal'}</td>
                                     <td className="px-6 py-4">
                                         <span className="px-2 py-1 bg-amber-50 text-amber-600 rounded-full text-[10px] font-bold">Awaiting Check</span>
                                     </td>
                                     <td className="px-6 py-4 text-right">
-                                        <button className="p-2 bg-gray-50 rounded-lg"><Settings className="w-4 h-4 text-gray-400" /></button>
+                                        <button className="p-2 bg-gray-50 rounded-lg shadow-sm hover:bg-white"><Settings className="w-4 h-4 text-gray-400" /></button>
                                     </td>
                                 </tr>
-                            ))}
+                                )
+                            })}
                         </tbody>
                     </table>
                 </div>
@@ -72,8 +80,18 @@ const PDIDashboard = () => {
                             </div>
                         ))}
                         <textarea placeholder="Observation Notes..." className="w-full bg-white/5 border border-white/10 rounded-2xl p-3 text-xs outline-none" rows={3}></textarea>
-                        <button className="w-full py-3 bg-emerald-500 text-white rounded-2xl font-bold text-xs flex items-center justify-center gap-2">
-                            <Share2 className="w-4 h-4" /> Finalize & Notify Salesman
+                        <button 
+                            disabled={!selectedPDI}
+                            onClick={() => {
+                                if (selectedPDI) {
+                                    updateDepartmentStatus(selectedPDI.id, 'PDI', 'Completed');
+                                    alert("PDI Cleared! Salesman Notified");
+                                    setSelectedPDI(null);
+                                }
+                            }}
+                            className="w-full py-3 bg-emerald-500 text-white rounded-2xl font-bold text-xs flex items-center justify-center gap-2 hover:bg-emerald-600 transition-colors disabled:opacity-50"
+                        >
+                            <Share2 className="w-4 h-4" /> {selectedPDI ? `Finalize PDI for ${selectedPDI.carModel}` : 'Select a Vehicle'}
                         </button>
                     </div>
                 </div>

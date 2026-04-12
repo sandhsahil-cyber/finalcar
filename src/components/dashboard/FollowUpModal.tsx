@@ -39,10 +39,14 @@ const FollowUpModal: React.FC<FollowUpModalProps> = ({ deal, onClose, salesperso
     }
   };
 
+  const getBookingUrl = () => {
+    return `${window.location.origin}/booking/${deal.id}?sp=${deal.salespersonId}`;
+  };
+
   const generateWhatsAppLink = (type: 'booking' | 'price' | 'brochure') => {
-    const baseUrl = "https://autodesk.com";
+    const baseUrl = "https://autodesk.com"; // Keep for price/brochure for now if needed, or change to origin
     const urls = {
-      booking: `${baseUrl}/booking/${deal.id}?sp=${deal.salespersonId}`,
+      booking: getBookingUrl(),
       price: `${baseUrl}/price-model/${deal.carModel.replace(/\s+/g, '-').toLowerCase()}`,
       brochure: `${baseUrl}/brochure/${deal.carModel.replace(/\s+/g, '-').toLowerCase()}`,
     };
@@ -175,22 +179,36 @@ const FollowUpModal: React.FC<FollowUpModalProps> = ({ deal, onClose, salesperso
                   <Send className="w-3.5 h-3.5 text-indigo-600" /> Send Documents
                 </h3>
                 <div className="grid grid-cols-1 gap-2">
-                  {[
+                  {[ 
                     { id: 'booking', label: 'Send Booking Form', icon: MessageCircle, color: 'emerald', sent: deal.bookingFormSent },
                     { id: 'price', label: 'Send Price Model', icon: FileText, color: 'blue', sent: deal.priceModelSent },
                     { id: 'brochure', label: 'Send Brochure', icon: FileText, color: 'indigo', sent: deal.brochureSent }
                   ].map((btn) => (
-                    <button
-                      key={btn.id}
-                      onClick={() => sendAction(btn.id as any)}
-                      className={`flex items-center justify-between p-3 rounded-xl bg-${btn.color}-50 text-${btn.color}-700 border border-${btn.color}-100 hover:bg-${btn.color}-100 transition-all group`}
-                    >
-                      <div className="flex items-center gap-3">
+                    <div key={btn.id} className={`flex items-center justify-between p-3 rounded-xl bg-${btn.color}-50 text-${btn.color}-700 border border-${btn.color}-100 hover:bg-${btn.color}-100 transition-all group`}>
+                      <button 
+                        onClick={() => sendAction(btn.id as any)}
+                        className="flex items-center gap-3 flex-1 text-left"
+                      >
                         <btn.icon className="w-4 h-4 sm:w-5 sm:h-5" />
                         <span className="text-[10px] sm:text-xs font-black uppercase tracking-tight">{btn.label}</span>
+                      </button>
+                      <div className="flex items-center gap-2">
+                        {btn.id === 'booking' && (
+                          <button 
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              navigator.clipboard.writeText(getBookingUrl());
+                              // You could add a toast here
+                            }}
+                            className="p-1.5 hover:bg-emerald-200 rounded-lg transition-colors text-emerald-700"
+                            title="Copy Booking Link"
+                          >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+                          </button>
+                        )}
+                        {btn.sent ? <Check className="w-4 h-4" /> : <ExternalLink className="w-3.5 h-3.5 opacity-50 sm:opacity-0 sm:group-hover:opacity-100" />}
                       </div>
-                      {btn.sent ? <Check className="w-4 h-4" /> : <ExternalLink className="w-3.5 h-3.5 opacity-50 sm:opacity-0 sm:group-hover:opacity-100" />}
-                    </button>
+                    </div>
                   ))}
                 </div>
               </div>

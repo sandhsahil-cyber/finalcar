@@ -4,14 +4,15 @@ import { DEAL_STAGES, STAGE_COLORS, formatFullCurrency, DealStage } from '@/data
 import { X, Car, User, Phone, Calendar, FileText, CheckCircle2, Circle, ArrowRight, MapPin, CreditCard, Clock, AlertTriangle } from 'lucide-react';
 
 const DealDetailModal: React.FC = () => {
-  const { selectedDeal, showDealModal, setShowDealModal, updateDealStage } = useDashboard();
+  const { selectedDeal, showDealModal, setShowDealModal, sendToDepartment, updateDepartmentStatus } = useDashboard();
 
   if (!showDealModal || !selectedDeal) return null;
 
-  const currentStageIndex = DEAL_STAGES.indexOf(selectedDeal.stage);
+  // We exclude 'General' and 'Account' from manual send routing if desired, or just list the operational ones.
+  const OPERATIONAL_DEPARTMENTS: DealStage[] = ['Account', 'Finance', 'Insurance', 'RTO', 'PDI', 'Accessories'];
 
-  const handleMoveStage = (stage: DealStage) => {
-    updateDealStage(selectedDeal.id, stage);
+  const getDeptStatus = (dept: DealStage) => {
+    return selectedDeal.departmentStatus?.[dept] || 'Not Sent';
   };
 
   const statusColors = {
@@ -47,50 +48,45 @@ const DealDetailModal: React.FC = () => {
           </p>
         </div>
 
-        {/* Pipeline Progress */}
-        <div className="px-6 py-4 border-b border-gray-100">
-          <h3 className="text-sm font-semibold text-gray-700 mb-4">Deal Progress</h3>
-          <div className="flex items-center justify-between">
-            {DEAL_STAGES.map((stage, i) => {
-              const isCompleted = i < currentStageIndex;
-              const isCurrent = i === currentStageIndex;
-              const color = STAGE_COLORS[stage];
+        {/* Department Routing */}
+        <div className="px-6 py-4 border-b border-gray-100 bg-gray-50/50">
+          <h3 className="text-sm font-semibold text-gray-700 mb-4 flex items-center gap-2">
+            <User className="w-4 h-4 text-blue-50" /> Department Routing
+          </h3>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
+            {OPERATIONAL_DEPARTMENTS.map((dept) => {
+              const status = getDeptStatus(dept);
+              const isSent = status === 'In Progress';
+              const isCompleted = status === 'Completed' || selectedDeal.stageProgress?.[dept]?.completed;
+              const color = STAGE_COLORS[dept] || '#cbd5e1';
 
               return (
-                <React.Fragment key={stage}>
-                  <div className="flex flex-col items-center gap-2">
-                    <button
-                      onClick={() => i <= currentStageIndex + 1 && handleMoveStage(stage)}
-                      disabled={i > currentStageIndex + 1}
-                      className={`flex items-center justify-center w-10 h-10 rounded-full transition-all duration-300 ${
-                        isCompleted || isCurrent ? 'hover:scale-110' : i === currentStageIndex + 1 ? 'hover:scale-110 opacity-60 hover:opacity-100' : 'opacity-30'
-                      }`}
-                      style={{
-                        backgroundColor: isCompleted || isCurrent ? color : '#e5e7eb',
-                        boxShadow: isCurrent ? `0 0 0 4px ${color}30` : 'none',
-                      }}
+                <div key={dept} className="flex flex-col gap-2 p-3 bg-white border border-gray-200 rounded-xl shadow-sm items-center text-center relative overflow-hidden transition-all">
+                  <span className="text-xs font-black text-gray-900 tracking-tight">{dept}</span>
+                  
+                  {isCompleted ? (
+                    <div className="flex flex-col items-center gap-1 w-full mt-1">
+                      <div className="w-6 h-6 rounded-full bg-emerald-100 flex items-center justify-center">
+                        <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                      </div>
+                      <span className="text-[10px] font-bold text-emerald-600">Done</span>
+                    </div>
+                  ) : isSent ? (
+                    <div 
+                      className="mt-1 w-full flex items-center justify-center gap-1 py-1.5 px-2 bg-blue-50 text-blue-600 rounded text-[10px] font-bold uppercase transition-colors opacity-80 cursor-default"
                     >
-                      {isCompleted ? (
-                        <CheckCircle2 className="w-5 h-5 text-white" />
-                      ) : (
-                        <Circle className={`w-5 h-5 ${isCurrent ? 'text-white' : 'text-gray-400'}`} />
-                      )}
+                      <Clock className="w-3 h-3" /> In Process
+                    </div>
+                  ) : (
+                    <button 
+                      onClick={() => sendToDepartment(selectedDeal.id, dept)}
+                      className="mt-1 w-full py-1.5 px-2 rounded text-[10px] font-bold uppercase transition-colors text-white"
+                      style={{ backgroundColor: color }}
+                    >
+                      Send Lead
                     </button>
-                    <div className="text-center">
-                      <span className={`text-xs font-semibold ${isCurrent ? 'text-gray-900' : isCompleted ? 'text-gray-600' : 'text-gray-400'}`}>
-                        {stage}
-                      </span>
-                      {selectedDeal.stageProgress[stage]?.date && (
-                        <p className="text-[10px] text-gray-400">{selectedDeal.stageProgress[stage].date}</p>
-                      )}
-                    </div>
-                  </div>
-                  {i < DEAL_STAGES.length - 1 && (
-                    <div className="flex-1 mx-2">
-                      <div className={`h-0.5 rounded-full ${i < currentStageIndex ? 'bg-gray-400' : 'bg-gray-200'}`} />
-                    </div>
                   )}
-                </React.Fragment>
+                </div>
               );
             })}
           </div>
@@ -143,22 +139,12 @@ const DealDetailModal: React.FC = () => {
         </div>
 
         {/* Actions */}
-        <div className="px-6 py-4 flex flex-wrap gap-2">
-          {selectedDeal.status === 'active' && currentStageIndex < DEAL_STAGES.length - 1 && (
-            <button
-              onClick={() => handleMoveStage(DEAL_STAGES[currentStageIndex + 1])}
-              className="flex items-center gap-2 px-4 py-2.5 text-sm font-semibold text-white rounded-xl transition-all hover:opacity-90 active:scale-95"
-              style={{ backgroundColor: STAGE_COLORS[DEAL_STAGES[currentStageIndex + 1]] }}
-            >
-              <ArrowRight className="w-4 h-4" />
-              Move to {DEAL_STAGES[currentStageIndex + 1]}
-            </button>
-          )}
+        <div className="px-6 py-4 flex flex-wrap justify-end gap-2 bg-gray-50">
           <button
             onClick={() => setShowDealModal(false)}
-            className="px-4 py-2.5 text-sm font-semibold text-gray-600 bg-gray-100 rounded-xl hover:bg-gray-200 transition-colors"
+            className="px-6 py-2.5 text-sm font-semibold text-gray-600 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors"
           >
-            Close
+            Close Window
           </button>
         </div>
       </div>

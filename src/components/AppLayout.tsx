@@ -19,6 +19,7 @@ import PipelineView from './dashboard/PipelineView';
 import TeamView from './dashboard/TeamView';
 import TargetsView from './dashboard/TargetsView';
 import ReportsView from './dashboard/ReportsView';
+import TodayTasksView from './dashboard/TodayTasksView';
 import DealDetailModal from './dashboard/DealDetailModal';
 import NewDealForm from './dashboard/NewDealForm';
 
@@ -70,6 +71,8 @@ const AppLayout: React.FC = () => {
         return <TargetsView />;
       case 'reports':
         return <ReportsView />;
+      case 'today_tasks':
+        return <TodayTasksView />;
       default:
         return renderDashboard();
     }

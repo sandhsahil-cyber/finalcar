@@ -12,6 +12,8 @@ interface DashboardContextType {
   updateDealStage: (dealId: string, newStage: DealStage) => void;
   updateDealStatus: (dealId: string, newStatus: string) => void;
   updateDeal: (dealId: string, updatedData: Partial<Deal>) => Promise<void>;
+  sendToDepartment: (dealId: string, department: DealStage) => Promise<void>;
+  updateDepartmentStatus: (dealId: string, department: DealStage, status: 'Not Sent' | 'In Progress' | 'Completed') => Promise<void>;
   selectedDeal: Deal | null;
   setSelectedDeal: (deal: Deal | null) => void;
   showDealModal: boolean;
@@ -153,6 +155,45 @@ export const DashboardProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     }
   }, [deals]);
 
+  const sendToDepartment = useCallback(async (dealId: string, department: DealStage) => {
+    const deal = deals.find(d => d.id === dealId);
+    if (!deal) return;
+    
+    const newDepartmentStatus = { ...(deal.departmentStatus || {}) };
+    newDepartmentStatus[department] = 'In Progress';
+    
+    try {
+      const savedDeal = await api.updateDeal(dealId, { departmentStatus: newDepartmentStatus });
+      setDeals(prev => prev.map(d => d.id === dealId ? { ...d, ...savedDeal } : d));
+    } catch (err) {
+      console.error("Failed to send lead to department", err);
+    }
+  }, [deals]);
+
+  const updateDepartmentStatus = useCallback(async (dealId: string, department: DealStage, status: 'Not Sent' | 'In Progress' | 'Completed') => {
+    const deal = deals.find(d => d.id === dealId);
+    if (!deal) return;
+    
+    const newDepartmentStatus = { ...(deal.departmentStatus || {}) };
+    newDepartmentStatus[department] = status;
+    
+    // Auto sync with original stageProgress structure to avoid breaking older views
+    const newStageProgress = { ...deal.stageProgress };
+    if (status === 'Completed') {
+      newStageProgress[department] = { completed: true, date: new Date().toISOString().split('T')[0], notes: `Completed by ${department} department` };
+    }
+    
+    try {
+      const savedDeal = await api.updateDeal(dealId, { 
+        departmentStatus: newDepartmentStatus,
+        stageProgress: newStageProgress 
+      });
+      setDeals(prev => prev.map(d => d.id === dealId ? { ...d, ...savedDeal } : d));
+    } catch (err) {
+      console.error("Failed to update department status", err);
+    }
+  }, [deals]);
+
   const updateDeal = useCallback(async (dealId: string, updatedData: Partial<Deal>) => {
     try {
       const dataToUpdate = {
@@ -170,7 +211,7 @@ export const DashboardProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     <DashboardContext.Provider value={{
       currentRole, setCurrentRole,
       currentUserId, setCurrentUserId,
-      deals, addDeal, updateDealStage, updateDealStatus, updateDeal,
+      deals, addDeal, updateDealStage, updateDealStatus, updateDeal, sendToDepartment, updateDepartmentStatus,
       selectedDeal, setSelectedDeal,
       showDealModal, setShowDealModal,
       showNewDealForm, setShowNewDealForm,

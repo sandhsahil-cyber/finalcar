@@ -10,31 +10,25 @@ interface PipelineTrackerProps {
 const PipelineTracker: React.FC<PipelineTrackerProps> = ({ deal, compact = false }) => {
   if (!deal) return null;
 
-  const displayStages = DEAL_STAGES.filter(s => s !== 'General');
-  const displayIndex = (displayStages as string[]).indexOf(deal.stage);
+  const displayStages: DealStage[] = ['Account', 'Finance', 'Insurance', 'RTO', 'PDI', 'Accessories'];
 
   if (compact) {
     return (
-      <div className="flex items-center gap-1">
-        {displayStages.map((stage, i) => {
-          const iPos = i; // Current stage in visual list
+      <div className="flex items-center gap-0.5 justify-end">
+        {displayStages.map((stage) => {
+          const status = deal.departmentStatus?.[stage] || 'Not Sent';
+          const isCompleted = status === 'Completed' || deal.stageProgress?.[stage]?.completed;
+          const isSent = status === 'In Progress';
           
           return (
-            <React.Fragment key={stage}>
-              <div
-                className={`w-2 h-2 rounded-full transition-all ${
-                  displayIndex !== -1 && iPos < displayIndex ? 'scale-100' : 
-                  displayIndex !== -1 && iPos === displayIndex ? 'scale-125' : 'scale-75 opacity-40'
-                }`}
-                style={{
-                  backgroundColor: displayIndex !== -1 && iPos <= displayIndex ? STAGE_COLORS[stage] : '#d1d5db',
-                }}
-                title={stage}
-              />
-              {i < displayStages.length - 1 && (
-                <div className={`w-3 h-0.5 ${displayIndex !== -1 && iPos < displayIndex ? 'bg-gray-400' : 'bg-gray-200'}`} />
-              )}
-            </React.Fragment>
+            <div
+              key={stage}
+              className={`w-2 h-2 rounded-full transition-all ${
+                isCompleted ? 'scale-100 opacity-100' : isSent ? 'scale-110 opacity-75 animate-pulse' : 'scale-75 opacity-20'
+              }`}
+              style={{ backgroundColor: isCompleted || isSent ? STAGE_COLORS[stage] : '#d1d5db' }}
+              title={`${stage}: ${status}`}
+            />
           );
         })}
       </div>
@@ -42,41 +36,36 @@ const PipelineTracker: React.FC<PipelineTrackerProps> = ({ deal, compact = false
   }
 
   return (
-    <div className="flex items-center justify-between w-full">
-      {displayStages.map((stage, i) => {
-        const iPos = i;
-        const isCompleted = displayIndex !== -1 && iPos < displayIndex;
-        const isCurrent = displayIndex !== -1 && iPos === displayIndex;
-        const color = STAGE_COLORS[stage];
+    <div className="flex items-center justify-between w-full relative">
+      <div className="absolute top-1/2 left-4 right-4 h-0.5 bg-gray-100 -translate-y-1/2 z-0" />
+      {displayStages.map((stage) => {
+        const status = deal.departmentStatus?.[stage] || 'Not Sent';
+        const isCompleted = status === 'Completed' || deal.stageProgress?.[stage]?.completed;
+        const isSent = status === 'In Progress';
+        const color = STAGE_COLORS[stage] || '#cbd5e1';
 
         return (
-          <React.Fragment key={stage}>
-            <div className="flex flex-col items-center gap-1.5">
-              <div
-                className={`flex items-center justify-center w-8 h-8 rounded-full transition-all duration-300 ${
-                  isCompleted ? 'ring-2 ring-offset-2' : isCurrent ? 'ring-2 ring-offset-2 animate-pulse' : 'opacity-40'
-                }`}
-                style={{
-                  backgroundColor: isCompleted || isCurrent ? color : '#e5e7eb',
-                  boxShadow: isCompleted || isCurrent ? `0 0 0 2px white, 0 0 0 4px ${color}` : 'none',
-                }}
-              >
-                {isCompleted ? (
-                  <CheckCircle2 className="w-4 h-4 text-white" />
-                ) : (
-                  <Circle className={`w-4 h-4 ${isCurrent ? 'text-white' : 'text-gray-400'}`} />
-                )}
-              </div>
-              <span className={`text-[10px] font-medium ${isCurrent ? 'text-gray-900' : isCompleted ? 'text-gray-600' : 'text-gray-400'}`}>
-                {stage}
-              </span>
+          <div key={stage} className="flex flex-col items-center gap-1.5 z-10 bg-white">
+            <div
+              className={`flex items-center justify-center w-6 h-6 rounded-full transition-all duration-300 ${
+                isCompleted ? 'ring-2 ring-offset-1' : isSent ? 'ring-2 ring-offset-1 animate-pulse' : 'opacity-40'
+              }`}
+              style={{
+                backgroundColor: isCompleted || isSent ? color : '#f3f4f6',
+                boxShadow: isCompleted || isSent ? `0 0 0 2px white, 0 0 0 3px ${color}` : 'none',
+              }}
+              title={`${stage}: ${status}`}
+            >
+              {isCompleted ? (
+                <CheckCircle2 className="w-3 h-3 text-white" />
+              ) : (
+                <Circle className={`w-3 h-3 ${isSent ? 'text-white' : 'text-gray-300'}`} />
+              )}
             </div>
-            {i < displayStages.length - 1 && (
-              <div className="flex-1 mx-1">
-                <div className={`h-0.5 rounded-full ${isCompleted ? 'bg-gray-400' : 'bg-gray-200'}`} />
-              </div>
-            )}
-          </React.Fragment>
+            <span className={`text-[9px] font-medium tracking-tight ${isSent ? 'text-gray-900 font-bold' : isCompleted ? 'text-gray-500' : 'text-gray-300'}`}>
+              {stage}
+            </span>
+          </div>
         );
       })}
     </div>
