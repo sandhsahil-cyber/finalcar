@@ -14,12 +14,50 @@ import PDIDashboard from './dashboard/PreDeliveryInspection';
 import ExecutiveDashboard from './dashboard/CEO&Owner';
 import GroupCEOdashboard from './dashboard/GroupCEOdashboard';
 import OwnerCommandCenter from './dashboard/OwnerCommandCenter';
+import OwnerProfitability from './dashboard/OwnerProfitability';
+import OwnerDeliveryFunnel from './dashboard/OwnerDeliveryFunnel';
+import OwnerDiscountApprovals from './dashboard/OwnerDiscountApprovals';
+import OwnerCSAT from './dashboard/OwnerCSAT';
 import DealsView from './dashboard/DealsView';
 import PipelineView from './dashboard/PipelineView';
 import TeamView from './dashboard/TeamView';
 import TargetsView from './dashboard/TargetsView';
 import ReportsView from './dashboard/ReportsView';
 import TodayTasksView from './dashboard/TodayTasksView';
+import AccSalesLeads from './dashboard/AccSalesLeads';
+import AccShowroomExpenses from './dashboard/AccShowroomExpenses';
+import AccSalesReports from './dashboard/AccSalesReports';
+import AccStockInventory from './dashboard/AccStockInventory';
+import RTOWorkspace from './dashboard/RTOWorkspace';
+import RTOTaxChallans from './dashboard/RTOTaxChallans';
+import RTOHSRPTracker from './dashboard/RTOHSRPTracker';
+import RTODocumentVault from './dashboard/RTODocumentVault';
+import InsurancePolicyIssuance from './dashboard/InsurancePolicyIssuance';
+import InsurancePremiumCalculator from './dashboard/InsurancePremiumCalculator';
+import InsuranceRenewals from './dashboard/InsuranceRenewals';
+import InsuranceClaimsDesk from './dashboard/InsuranceClaimsDesk';
+import AccFitmentQueue from './dashboard/AccFitmentQueue';
+import AccInventoryStock from './dashboard/AccInventoryStock';
+import AccComboPackages from './dashboard/AccComboPackages';
+import AccStockProcurement from './dashboard/AccStockProcurement';
+import FinLoanApplications from './dashboard/FinLoanApplications';
+import FinBankSchemes from './dashboard/FinBankSchemes';
+import FinPayoutTracker from './dashboard/FinPayoutTracker';
+import FinNocClosure from './dashboard/FinNocClosure';
+import PDIIngestionQueue from './dashboard/PDIIngestionQueue';
+import PDIChecklist from './dashboard/PDIChecklist';
+import PDIRectificationLog from './dashboard/PDIRectificationLog';
+import PDIReadyForDelivery from './dashboard/PDIReadyForDelivery';
+import CEOExecutiveSummary from './dashboard/CEOExecutiveSummary';
+import CEOInventoryValuation from './dashboard/CEOInventoryValuation';
+import CEODepartmentThroughput from './dashboard/CEODepartmentThroughput';
+import CEOMarketingROI from './dashboard/CEOMarketingROI';
+import CEOAuditLogs from './dashboard/CEOAuditLogs';
+import GCEOConsolidated from './dashboard/GCEOConsolidated';
+import GCEOBrandAnalytics from './dashboard/GCEOBrandAnalytics';
+import GCEOFundFlow from './dashboard/GCEOFundFlow';
+import GCEOHRPayroll from './dashboard/GCEOHRPayroll';
+import GCEORiskCompliance from './dashboard/GCEORiskCompliance';
 import DealDetailModal from './dashboard/DealDetailModal';
 import NewDealForm from './dashboard/NewDealForm';
 
@@ -73,6 +111,84 @@ const AppLayout: React.FC = () => {
         return <ReportsView />;
       case 'today_tasks':
         return <TodayTasksView />;
+      case 'acc_sales_leads':
+        return <AccSalesLeads />;
+      case 'acc_showroom_expenses':
+        return <AccShowroomExpenses />;
+      case 'acc_sales_reports':
+        return <AccSalesReports />;
+      case 'acc_stock_inventory':
+        return <AccStockInventory />;
+      case 'rto_workspace':
+        return <RTOWorkspace />;
+      case 'rto_tax':
+        return <RTOTaxChallans />;
+      case 'rto_hsrp':
+        return <RTOHSRPTracker />;
+      case 'rto_vault':
+        return <RTODocumentVault />;
+      case 'ins_issuance':
+        return <InsurancePolicyIssuance />;
+      case 'ins_calculator':
+        return <InsurancePremiumCalculator />;
+      case 'ins_renewals':
+        return <InsuranceRenewals />;
+      case 'ins_claims':
+        return <InsuranceClaimsDesk />;
+      case 'acc_fitment_queue':
+        return <AccFitmentQueue />;
+      case 'acc_inventory':
+        return <AccInventoryStock />;
+      case 'acc_combos':
+        return <AccComboPackages />;
+      case 'acc_procurement':
+        return <AccStockProcurement />;
+      case 'fin_loans':
+        return <FinLoanApplications />;
+      case 'fin_schemes':
+        return <FinBankSchemes />;
+      case 'fin_payouts':
+        return <FinPayoutTracker />;
+      case 'fin_noc':
+        return <FinNocClosure />;
+      case 'pdi_queue':
+        return <PDIIngestionQueue />;
+      case 'pdi_checklist':
+        return <PDIChecklist />;
+      case 'pdi_rectification':
+        return <PDIRectificationLog />;
+      case 'pdi_ready_delivery':
+        return <PDIReadyForDelivery />;
+      case 'ceo_summary':
+        return <CEOExecutiveSummary />;
+      case 'ceo_inventory':
+        return <CEOInventoryValuation />;
+      case 'ceo_throughput':
+        return <CEODepartmentThroughput />;
+      case 'ceo_marketing':
+        return <CEOMarketingROI />;
+      case 'ceo_audit':
+        return <CEOAuditLogs />;
+      case 'gceo_consolidated':
+        return <GCEOConsolidated />;
+      case 'gceo_analytics':
+        return <GCEOBrandAnalytics />;
+      case 'gceo_funds':
+        return <GCEOFundFlow />;
+      case 'gceo_hr':
+        return <GCEOHRPayroll />;
+      case 'gceo_risk':
+        return <GCEORiskCompliance />;
+      case 'owner_command':
+        return <OwnerCommandCenter />;
+      case 'owner_profit':
+        return <OwnerProfitability />;
+      case 'owner_funnel':
+        return <OwnerDeliveryFunnel />;
+      case 'owner_discounts':
+        return <OwnerDiscountApprovals />;
+      case 'owner_csat':
+        return <OwnerCSAT />;
       default:
         return renderDashboard();
     }

@@ -3,8 +3,11 @@ import { useDashboard } from '@/contexts/DashboardContext';
 import {
   LayoutDashboard, Car, Users, BarChart3, FileText, Settings, Bell,
   ChevronLeft, ChevronRight, LogOut, Shield, UserCircle, Briefcase,
-  Target, ClipboardList, TrendingUp, Wallet, ShieldCheck, Package,
-  Landmark, Truck
+  Target, TrendingUp, Wallet, Package, Landmark, Truck, Users2, 
+  ReceiptText, PackageSearch, Gavel, FileCheck, Hash, CreditCard, 
+  Umbrella, Calculator, History, Layers, ShoppingCart, Wrench, 
+  PieChart, FileSignature, Banknote, ShieldCheck, ClipboardList, 
+  Camera, CheckCircle, Globe, Zap, DollarSign, Dna, LayoutGrid, BarChartHorizontal, Map, UserCheck, Flame, Activity
 } from 'lucide-react';
 
 const roleConfig = {
@@ -12,12 +15,14 @@ const roleConfig = {
   teamleader: { label: 'Team Leader', color: '#8b5cf6', icon: Shield },
   salesmanager: { label: 'Sales Manager', color: '#ff6b35', icon: Briefcase },
   accounts: { label: 'Accounts & Finance', color: '#10b981', icon: Wallet },
-  rto: { label: 'RTO Department', color: '#6366f1', icon: ClipboardList },
+  rto: { label: 'RTO Department', color: '#6366f1', icon: Gavel },
   insurance: { label: 'Insurance Dept.', color: '#0ea5e9', icon: ShieldCheck },
   accessories: { label: 'Accessories Dept.', color: '#f43f5e', icon: Package },
   finance: { label: 'Finance Dept.', color: '#8b5cf6', icon: Landmark },
-  pdi: { label: 'PDI Workshop', color: '#10b981', icon: Truck },
-  ceo: { label: 'CEO & Owner', color: '#1a202c', icon: TrendingUp },
+  pdi: { label: 'PDI Workshop', color: '#10b981', icon: ShieldCheck },
+  ceo: { label: 'CEO & Owner', color: '#1a202c', icon: Globe },
+  groupceo: { label: 'Group CEO', color: '#1a202c', icon: LayoutGrid },
+  owner: { label: 'Dealer Principal', color: '#0f172a', icon: Shield },
 };
 
 const menuItems = [
@@ -28,6 +33,54 @@ const menuItems = [
   { id: 'team', label: 'Team', icon: Users },
   { id: 'targets', label: 'Targets', icon: Target },
   { id: 'reports', label: 'Reports', icon: BarChart3 },
+  // Account Specific
+  { id: 'acc_sales_leads', label: 'Sales Lead', icon: Users2 },
+  { id: 'acc_showroom_expenses', label: 'Showroom Expenses', icon: Wallet },
+  { id: 'acc_sales_reports', label: 'Sales Report', icon: ReceiptText },
+  { id: 'acc_stock_inventory', label: 'Stock Inventory', icon: PackageSearch },
+  // RTO Specific
+  { id: 'rto_workspace', label: 'RTO Workspace', icon: ClipboardList },
+  { id: 'rto_tax', label: 'Tax & Challans', icon: CreditCard },
+  { id: 'rto_hsrp', label: 'HSRP Tracker', icon: Hash },
+  { id: 'rto_vault', label: 'Document Vault', icon: FileCheck },
+  // Insurance Specific
+  { id: 'ins_issuance', label: 'Policy Issuance', icon: ShieldCheck },
+  { id: 'ins_calculator', label: 'Premium Calculator', icon: Calculator },
+  { id: 'ins_renewals', label: 'Renewals', icon: History },
+  { id: 'ins_claims', label: 'Claims Desk', icon: Umbrella },
+  // Accessories Specific
+  { id: 'acc_fitment_queue', label: 'Fitment Queue', icon: Wrench },
+  { id: 'acc_inventory', label: 'Inventory Stock', icon: Package },
+  { id: 'acc_combos', label: 'Combo Packages', icon: Layers },
+  { id: 'acc_procurement', label: 'Stock Procurement', icon: ShoppingCart },
+  // Finance Specific
+  { id: 'fin_loans', label: 'Loan Applications', icon: FileSignature },
+  { id: 'fin_schemes', label: 'Bank Schemes', icon: Landmark },
+  { id: 'fin_payouts', label: 'Payout Tracker', icon: PieChart },
+  { id: 'fin_noc', label: 'NOC & Closure', icon: Banknote },
+  // PDI Specific
+  { id: 'pdi_queue', label: 'Inspection Queue', icon: Truck },
+  { id: 'pdi_checklist', label: '100-Point Checklist', icon: ClipboardList },
+  { id: 'pdi_rectification', label: 'Rectification Log', icon: Wrench },
+  { id: 'pdi_ready_delivery', label: 'Ready for Delivery', icon: CheckCircle },
+  // CEO Specific
+  { id: 'ceo_summary', label: 'Executive Summary', icon: LayoutDashboard },
+  { id: 'ceo_inventory', label: 'Inventory Valuation', icon: DollarSign },
+  { id: 'ceo_throughput', label: 'Department Throughput', icon: BarChart3 },
+  { id: 'ceo_marketing', label: 'Marketing & ROI', icon: Zap },
+  { id: 'ceo_audit', label: 'Audit Logs', icon: FileText },
+  // Group CEO Specific
+  { id: 'gceo_consolidated', label: 'Group Consolidated View', icon: LayoutGrid },
+  { id: 'gceo_analytics', label: 'Inter-Brand Analytics', icon: BarChartHorizontal },
+  { id: 'gceo_funds', label: 'Group Fund Flow', icon: DollarSign },
+  { id: 'gceo_hr', label: 'HR & Payroll', icon: UserCheck },
+  { id: 'gceo_risk', label: 'Risk & Compliance', icon: ShieldCheck },
+  // Owner Specific
+  { id: 'owner_command', label: 'CEO Command Center', icon: LayoutDashboard },
+  { id: 'owner_profit', label: 'Profitability Analytics', icon: BarChart3 },
+  { id: 'owner_funnel', label: 'Delivery Funnel', icon: Activity },
+  { id: 'owner_discounts', label: 'Discount Approvals', icon: Flame },
+  { id: 'owner_csat', label: 'Customer Satisfaction', icon: Target },
 ];
 
 const Sidebar: React.FC = () => {
@@ -77,11 +130,85 @@ const Sidebar: React.FC = () => {
         <nav className="flex-1 px-3 py-2 space-y-1 overflow-y-auto">
           {menuItems
             .filter(item => {
+              const isAccLeadItem = item.id.startsWith('acc_') && !['acc_fitment_queue', 'acc_inventory', 'acc_combos', 'acc_procurement'].includes(item.id);
+              const isRTOItem = item.id.startsWith('rto_');
+              const isInsItem = item.id.startsWith('ins_');
+              const isAccessoriesItem = ['acc_fitment_queue', 'acc_inventory', 'acc_combos', 'acc_procurement'].includes(item.id);
+              const isFinanceItem = item.id.startsWith('fin_');
+
+              // 1. Account Role Logic
+              if (currentRole === 'accounts') {
+                if (isAccLeadItem || item.id === 'dashboard') return true;
+                return false;
+              }
+
+              // 2. RTO Role Logic
+              if (currentRole === 'rto') {
+                if (isRTOItem || item.id === 'dashboard') return true;
+                return false;
+              }
+
+              // 3. Insurance Role Logic
+              if (currentRole === 'insurance') {
+                if (isInsItem || item.id === 'dashboard') return true;
+                return false;
+              }
+
+              // 4. Accessories Role Logic
+              if (currentRole === 'accessories') {
+                if (isAccessoriesItem || item.id === 'dashboard') return true;
+                return false;
+              }
+
+              // 5. Finance Role Logic
+              if (currentRole === 'finance') {
+                if (isFinanceItem || item.id === 'dashboard') return true;
+                return false;
+              }
+
+              const isPDIItem = item.id.startsWith('pdi_');
+              // 6. PDI Role Logic
+              if (currentRole === 'pdi') {
+                if (isPDIItem || item.id === 'dashboard') return true;
+                return false;
+              }
+
+              const isCEOItem = item.id.startsWith('ceo_');
+              // 7. CEO Role Logic
+              if (currentRole === 'ceo') {
+                if (isCEOItem || item.id === 'dashboard' || item.id === 'reports') return true;
+                return false;
+              }
+
+              const isGCEOItem = item.id.startsWith('gceo_');
+              // 8. Group CEO Role Logic
+              if (currentRole === 'groupceo') {
+                if (isGCEOItem || item.id === 'dashboard' || item.id === 'reports') return true;
+                return false;
+              }
+
+              const isOwnerItem = item.id.startsWith('owner_');
+              // 9. Owner Role Logic
+              if (currentRole === 'owner') {
+                if (isOwnerItem || item.id === 'dashboard' || item.id === 'reports') return true;
+                return false;
+              }
+
+              // 10. Hide specialized items for everyone else
+              if (isAccLeadItem || isRTOItem || isInsItem || isAccessoriesItem || isFinanceItem || isPDIItem || isCEOItem || isGCEOItem || isOwnerItem) return false;
+
+              // 11. Today Tasks for Salesperson ONLY
+              if (item.id === 'today_tasks') {
+                return currentRole === 'salesperson';
+              }
+
+              // 12. Salesperson exclusions
               if (currentRole === 'salesperson') {
                 return !['team', 'targets', 'reports'].includes(item.id);
               }
-              // Prevent non-sales execs from seeing pure task view if desired, but we can leave it for all right now
-              return item.id !== 'today_tasks' || currentRole === 'salesperson' || currentRole === 'teamleader';
+
+              // 13. Default visibility for all other roles (TL, SM, etc.)
+              return true;
             })
             .map(item => {
               const isActive = activeView === item.id;
