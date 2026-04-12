@@ -1,273 +1,193 @@
-import React, { useState, useMemo } from 'react';
-import {
-    TrendingUp, BarChart3, Globe, AlertOctagon,
-    ArrowUpRight, Activity, Layers, Map,
-    DollarSign, PieChart, Calendar, ShieldCheck,
-    ChevronRight, ArrowRight, Users, ClipboardList,
-    Package, X, Landmark, IndianRupee, MapPin,
-    Building2, Target, BarChart2, Clock,
-    AlertTriangle, CheckCircle2
-} from 'lucide-react';
-import {
-    BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
-    ResponsiveContainer, LineChart, Line, ComposedChart, Area,
-    Cell, Legend, PieChart as RePie, Pie
-} from 'recharts';
-import { deals, teams, formatCurrency } from '@/data/dummyData';
+import React, { useState } from 'react';
+import { LayoutDashboard, BarChart3, Target, Activity, Flame, Zap, Shield, TrendingUp, DollarSign, Box, Clock, UserCheck, AlertTriangle, CheckCircle2, ChevronRight, Filter, Download, Printer, Bell, Activity as PulseIcon, Car, FileText } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, PieChart, Pie, Cell, Legend, BarChart, Bar } from 'recharts';
 
-// ─── BRANDS CONFIG ────────────────────────────────────────
-const BRANDS = [
-    { id: 'all', name: 'Group Total', color: '#6366f1', gradient: 'from-slate-900 to-slate-800' },
-    { id: 'brand-1', name: 'Toyota', color: '#eb0a1e', gradient: 'from-red-700 to-red-900' },
-    { id: 'brand-2', name: 'Hyundai', color: '#002c5f', gradient: 'from-blue-700 to-blue-900' },
-    { id: 'brand-3', name: 'Tata', color: '#1a1a2e', gradient: 'from-slate-700 to-slate-900' },
-    { id: 'brand-4', name: 'Mahindra', color: '#d97706', gradient: 'from-amber-700 to-amber-900' },
-    { id: 'brand-5', name: 'Maruti', color: '#2563eb', gradient: 'from-indigo-600 to-blue-900' },
+const REVENUE_DATA = [
+  { date: '01', value: 1240000 },
+  { date: '05', value: 2120000 },
+  { date: '10', value: 1840000 },
+  { date: '15', value: 3420000 },
+  { date: '20', value: 2980000 },
+  { date: '25', value: 4120000 },
+  { date: '30', value: 3840000 },
 ];
 
-const CITIES = ['Ahmedabad', 'Surat', 'Vadodara', 'Rajkot', 'Bhavnagar'];
+const MARKET_SHARE = [
+  { name: 'Nexon', value: 35, fill: '#3b82f6' },
+  { name: 'Punch', value: 25, fill: '#8b5cf6' },
+  { name: 'Safari', value: 20, fill: '#f43f5e' },
+  { name: 'Harrier', value: 20, fill: '#10b981' },
+];
 
-// ─── MAIN COMPONENT ────────────────────────────────────────
-const OwnerDashboard = () => {
-    const [activeBrand, setActiveBrand] = useState('all');
-    const [timePeriod, setTimePeriod] = useState<'daily' | 'weekly' | 'monthly'>('monthly');
+const DEPT_HEALTH = [
+  { dept: 'Accounts', status: 'Healthy', metric: 'Overdue', value: '₹4.2L', stuck: 2, latent: 12 },
+  { dept: 'Finance', status: 'Warning', metric: 'Avg Sanction', value: '4.2 Days', stuck: 14, latent: 56 },
+  { dept: 'RTO', status: 'Critical', metric: 'Awaiting Reg', value: '28 Units', stuck: 12, latent: 72 },
+  { dept: 'PDI', status: 'Healthy', metric: 'Fail Rate', value: '1.2%', stuck: 1, latent: 8 },
+];
 
-    // ─── FILTERED DATA ─────────────────────────────────────
-    const filteredDeals = useMemo(() => {
-        return activeBrand === 'all' ? deals : deals.filter(d => d.brandId === activeBrand);
-    }, [activeBrand]);
+const LEAKAGE_DATA = [
+    { name: 'Insurance Payout', val: 450000, fill: '#3b82f6' },
+    { name: 'Fin Commission', val: 320000, fill: '#8b5cf6' },
+    { name: 'Acc Margin', val: 180000, fill: '#10b981' },
+    { name: 'Discounts', val: -410000, fill: '#f43f5e' },
+];
 
-    const filteredTeams = useMemo(() => {
-        return activeBrand === 'all' ? teams : teams.filter(t => t.brandId === activeBrand);
-    }, [activeBrand]);
-
-    // ─── CORE METRICS ──────────────────────────────────────
-    const metrics = useMemo(() => {
-        const totalLeads = filteredDeals.length;
-        const bookings = filteredDeals.filter(d => d.stage !== 'General').length;
-        const delivered = filteredDeals.filter(d => d.status === 'completed').length;
-        const blocked = filteredDeals.filter(d => d.status === 'blocked').length;
-        const revenue = filteredDeals.reduce((s, d) => s + d.amount, 0);
-        const accessoriesTotal = filteredDeals.reduce((s, d) => s + (d.accessoriesAmount || 0), 0);
-        const financeInhouse = filteredDeals.filter(d => d.financeType === 'In-house').length;
-        const conversionRate = totalLeads > 0 ? ((delivered / totalLeads) * 100).toFixed(1) : '0';
-        const activeOutlets = filteredTeams.length;
-        const totalTarget = filteredTeams.reduce((s, t) => s + t.monthlyTarget, 0);
-        const totalAchieved = filteredTeams.reduce((s, t) => s + t.achieved, 0);
-
-        return { totalLeads, bookings, delivered, blocked, revenue, accessoriesTotal, financeInhouse, conversionRate, activeOutlets, totalTarget, totalAchieved };
-    }, [filteredDeals, filteredTeams]);
-
-    // ─── BRAND BREAKDOWN (for pie chart) ───────────────────
-    const brandBreakdown = useMemo(() => {
-        const totalRev = deals.reduce((s, d) => s + d.amount, 0);
-        return BRANDS.filter(b => b.id !== 'all').map(brand => {
-            const brandRev = deals.filter(d => d.brandId === brand.id).reduce((s, d) => s + d.amount, 0);
-            return {
-                name: brand.name,
-                value: Math.round((brandRev / totalRev) * 100) || 0,
-                revenue: brandRev,
-                color: brand.color,
-            };
-        });
-    }, []);
-
-    // ─── STOCK INVENTORY BY BRAND ──────────────────────────
-    const stockByBrand = useMemo(() => {
-        return BRANDS.filter(b => b.id !== 'all').map(brand => {
-            const brandDeals = deals.filter(d => d.brandId === brand.id);
-            const active = brandDeals.filter(d => d.status === 'active' || d.status === 'pending').length;
-            const completed = brandDeals.filter(d => d.status === 'completed').length;
-            const blocked = brandDeals.filter(d => d.status === 'blocked').length;
-            return { name: brand.name, brandId: brand.id, active, completed, blocked, total: active + completed + blocked, color: brand.color };
-        });
-    }, []);
-
-    // ─── GEOGRAPHIC ANALYSIS ───────────────────────────────
-    const cityPerformance = useMemo(() => {
-        return CITIES.map(city => {
-            const cityTeams = (activeBrand === 'all' ? teams : teams.filter(t => t.brandId === activeBrand)).filter(t => t.city === city);
-            const revenue = cityTeams.reduce((s, t) => s + t.achieved, 0);
-            const target = cityTeams.reduce((s, t) => s + t.monthlyTarget, 0);
-            const outlets = cityTeams.length;
-            return { city, revenue, target, outlets, achievement: target > 0 ? Math.round((revenue / target) * 100) : 0 };
-        }).sort((a, b) => b.revenue - a.revenue);
-    }, [activeBrand]);
-
-    // ─── OUTLET RANKINGS ───────────────────────────────────
-    const outletRankings = useMemo(() => {
-        return filteredTeams
-            .map(t => ({ ...t, score: Math.round((t.achieved / t.monthlyTarget) * 100) }))
-            .sort((a, b) => b.score - a.score);
-    }, [filteredTeams]);
-
-    const topOutlets = outletRankings.slice(0, Math.min(10, outletRankings.length));
-    const bottomOutlets = outletRankings.slice(-Math.min(5, outletRankings.length)).reverse();
-
-    // ─── CRITICAL ALERTS ───────────────────────────────────
-    const alerts = useMemo(() => {
-        const red = filteredTeams.filter(t => (t.achieved / t.monthlyTarget) < 0.5).length;
-        const yellow = filteredTeams.filter(t => { const r = t.achieved / t.monthlyTarget; return r >= 0.5 && r < 0.75; }).length;
-        const green = filteredTeams.filter(t => (t.achieved / t.monthlyTarget) >= 0.75).length;
-        return { red, yellow, green };
-    }, [filteredTeams]);
-
-    // ─── YEARLY PROJECTION DATA ────────────────────────────
-    const yearlyData = useMemo(() => {
-        const currentRev = metrics.revenue;
-        return [
-            { year: 'FY24', revenue: Math.round(currentRev * 0.52), profit: Math.round(currentRev * 0.52 * 0.09) },
-            { year: 'FY25', revenue: Math.round(currentRev * 0.74), profit: Math.round(currentRev * 0.74 * 0.10) },
-            { year: 'FY26', revenue: currentRev, profit: Math.round(currentRev * 0.112) },
-        ];
-    }, [metrics.revenue]);
-
-    // ─── TIME MULTIPLIER (mock daily/weekly/monthly) ───────
-    const timeLabel = timePeriod === 'daily' ? 'Today' : timePeriod === 'weekly' ? 'This Week' : 'This Month';
-    const timeDivisor = timePeriod === 'daily' ? 30 : timePeriod === 'weekly' ? 4 : 1;
+const OwnerCommandCenter: React.FC = () => {
+    const [dateRange, setDateRange] = useState('MTD');
 
     return (
-        <div className="min-h-screen bg-background text-foreground p-4 md:p-6 font-sans">
-
-            {/* ═══════════════════════════════════════════════════
-                HEADER: OWNER BRANDING + BRAND FILTER + TIME FILTER
-            ═══════════════════════════════════════════════════ */}
-            <div className="flex flex-col xl:flex-row justify-between items-start xl:items-center mb-8 gap-4">
+        <div className="space-y-8 animate-in fade-in duration-500 bg-[#020617] -m-6 p-10 min-h-screen text-slate-200">
+            <div className="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-6">
                 <div>
-                    <div className="flex items-center gap-2 mb-1">
-                        <ShieldCheck className="w-6 h-6 text-primary" />
-                        <h1 className="text-3xl md:text-4xl font-black tracking-tighter uppercase">Owner Command</h1>
+                    <div className="flex items-center gap-3 mb-2">
+                        <div className="p-2 bg-rose-500/20 rounded-lg text-rose-400 border border-rose-500/30 shadow-lg shadow-rose-500/10"><Flame size={24}/></div>
+                        <h2 className="text-4xl font-black tracking-tighter uppercase text-white italic">Dealer Principal Command</h2>
                     </div>
-                    <p className="text-muted-foreground font-medium flex items-center gap-2 text-sm">
-                        <Globe className="w-4 h-4" /> Multi-Brand Group Intelligence • {metrics.activeOutlets} Outlets Active • {timeLabel}
+                    <p className="text-sm font-medium text-slate-400 flex items-center gap-2">
+                         <PulseIcon size={16} className="text-emerald-500" /> Showroom P&L Master Engine • Real-time Fiscal Oversight
                     </p>
                 </div>
 
-                <div className="flex flex-col sm:flex-row gap-3">
-                    {/* TIME PERIOD */}
-                    <div className="flex bg-muted rounded-xl p-1 border shadow-inner">
-                        {(['daily', 'weekly', 'monthly'] as const).map((period) => (
-                            <button key={period} onClick={() => setTimePeriod(period)}
-                                className={`px-4 py-1.5 rounded-lg text-[10px] font-black uppercase transition-all ${timePeriod === period
-                                    ? 'bg-card text-card-foreground shadow-sm ring-1 ring-border' : 'text-muted-foreground hover:text-foreground'}`}>
-                                {period}
+                <div className="flex flex-wrap items-center gap-4">
+                    <div className="flex bg-slate-900 border border-slate-800 p-1.5 rounded-2xl gap-1">
+                        {['Today', 'Week', 'MTD', 'YTD'].map(p => (
+                            <button 
+                                key={p} onClick={() => setDateRange(p)}
+                                className={`px-5 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${dateRange === p ? 'bg-white text-black shadow-lg shadow-white/10' : 'text-slate-500 hover:text-white'}`}
+                            >
+                                {p}
                             </button>
                         ))}
                     </div>
-                    {/* BRAND FILTER */}
-                    <div className="flex flex-wrap bg-muted rounded-xl p-1 border shadow-inner gap-0.5">
-                        {BRANDS.map((brand) => (
-                            <button key={brand.id} onClick={() => setActiveBrand(brand.id)}
-                                className={`px-3 py-1.5 rounded-lg text-[10px] font-black uppercase transition-all ${activeBrand === brand.id
-                                    ? 'bg-card text-card-foreground shadow-sm ring-1 ring-border' : 'text-muted-foreground hover:text-foreground'}`}>
-                                {brand.name}
-                            </button>
-                        ))}
-                    </div>
+                    <button className="p-3.5 bg-slate-900 border border-slate-800 rounded-2xl text-slate-400 hover:text-white transition-all shadow-xl"><Download size={20}/></button>
                 </div>
             </div>
 
-            {/* ═══════════════════════════════════════════════════
-                SECTION 1: 8-CARD HIGH DENSITY KPI GRID
-            ═══════════════════════════════════════════════════ */}
-            <div className="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-8 gap-3 mb-8">
-                {/* REVENUE HERO CARD */}
-                <div className={`col-span-2 bg-gradient-to-br ${BRANDS.find(b => b.id === activeBrand)?.gradient || 'from-slate-900 to-slate-800'} p-5 rounded-[2rem] text-white shadow-xl relative overflow-hidden`}>
-                    <div className="relative z-10">
-                        <p className="text-white/60 text-[10px] font-black uppercase tracking-widest mb-1">
-                            {activeBrand === 'all' ? 'Group Revenue' : `${BRANDS.find(b => b.id === activeBrand)?.name} Revenue`}
-                        </p>
-                        <p className="text-2xl md:text-3xl font-black tabular-nums">{formatCurrency(Math.round(metrics.revenue / timeDivisor))}</p>
-                        <div className="flex items-center gap-1.5 mt-3">
-                            <TrendingUp className="w-3 h-3 text-emerald-300" />
-                            <span className="text-[10px] font-bold text-emerald-300">+{(12 / timeDivisor * 2).toFixed(0)}% {timeLabel}</span>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                {[
+                    { label: 'Net Showroom Revenue', value: '₹14.24 Cr', change: '+12.4%', icon: <DollarSign />, color: 'emerald' },
+                    { label: 'Gross Margin (Group)', value: '18.2%', change: '+2.1%', icon: <TrendingUp />, color: 'blue' },
+                    { label: 'Pipeline Value', value: '₹18.52 Cr', change: '92 Units', icon: <Activity />, color: 'rose' },
+                    { label: 'Stock Valuation (Yard)', value: '₹24.8 Cr', change: '142 Units', icon: <Box />, color: 'purple' },
+                ].map((stat, i) => (
+                    <div key={i} className="bg-slate-900/50 border border-slate-800 p-8 rounded-[40px] shadow-2xl relative overflow-hidden group">
+                        <div className={`absolute top-0 right-0 p-8 opacity-5 group-hover:scale-125 transition-transform duration-700 text-${stat.color}-500`}>{stat.icon}</div>
+                        <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest leading-none mb-3">{stat.label}</p>
+                        <h3 className="text-3xl font-black text-white tracking-tighter tabular-nums mb-4">{stat.value}</h3>
+                        <div className={`flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest ${stat.change.startsWith('+') || !stat.change.includes('-') ? 'text-emerald-500' : 'text-rose-500'}`}>
+                            {stat.change} vs Target
                         </div>
                     </div>
-                    <Globe className="absolute -right-4 -bottom-4 w-24 h-24 text-white/10" />
-                </div>
-
-                <KpiMini title="Total Leads" value={Math.round(metrics.totalLeads / timeDivisor)} icon={<Users className="w-4 h-4" />} color="#3b82f6" />
-                <KpiMini title="Bookings" value={Math.round(metrics.bookings / timeDivisor)} icon={<ClipboardList className="w-4 h-4" />} color="#8b5cf6" />
-                <KpiMini title="Delivered" value={Math.round(metrics.delivered / timeDivisor)} icon={<Package className="w-4 h-4" />} color="#10b981" />
-                <KpiMini title="Conversion" value={`${metrics.conversionRate}%`} icon={<Target className="w-4 h-4" />} color="#f59e0b" subtitle="Lead → Delivery" />
-                <KpiMini title="Blocked" value={metrics.blocked} icon={<X className="w-4 h-4" />} color="#ef4444" />
-                <KpiMini title="Accessories" value={formatCurrency(metrics.accessoriesTotal)} icon={<Layers className="w-4 h-4" />} color="#ff6b35" />
+                ))}
             </div>
 
-            {/* ═══════════════════════════════════════════════════
-                SECTION 2: CRITICAL ALERTS (RED / YELLOW / GREEN)
-            ═══════════════════════════════════════════════════ */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-                <AlertCard icon={<AlertOctagon className="w-5 h-5" />} label="Red Zones" count={alerts.red} sub="Below 50% Target" colorClass="bg-red-500/10 border-red-500/30 text-red-600" />
-                <AlertCard icon={<AlertTriangle className="w-5 h-5" />} label="Yellow Watch" count={alerts.yellow} sub="50-75% Target" colorClass="bg-amber-500/10 border-amber-500/30 text-amber-600" />
-                <AlertCard icon={<CheckCircle2 className="w-5 h-5" />} label="Green Active" count={alerts.green} sub="Above 75% Target" colorClass="bg-emerald-500/10 border-emerald-500/30 text-emerald-600" />
-            </div>
-
-            {/* ═══════════════════════════════════════════════════
-                SECTION 3: FORECASTING + BRAND COMPARISON
-            ═══════════════════════════════════════════════════ */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-                {/* FORECASTING & PROJECTIONS */}
-                <div className="lg:col-span-2 bg-card border rounded-[2.5rem] p-6 md:p-8 shadow-sm">
-                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
-                        <h3 className="text-lg font-black flex items-center gap-2">
-                            <TrendingUp className="w-5 h-5 text-primary" /> Forecasting & P&L Projections
-                        </h3>
-                        <div className="flex gap-4 text-[10px] font-black uppercase text-muted-foreground">
-                            <span className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-primary" /> Revenue</span>
-                            <span className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-emerald-500" /> Profit</span>
+            <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
+                <div className="xl:col-span-2 bg-slate-900 border border-slate-800 rounded-[40px] p-10 flex flex-col relative overflow-hidden group">
+                     <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-transparent to-transparent pointer-events-none" />
+                     <div className="flex justify-between items-start mb-10 relative z-10">
+                        <div>
+                            <h4 className="text-xl font-black text-white uppercase tracking-tight">Business Velocity (Area Trends)</h4>
+                            <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mt-1">Daily Inflow & Sales Momentum Index</p>
+                        </div>
+                        <div className="px-4 py-2 bg-emerald-500/10 border border-emerald-500/20 rounded-xl flex items-center gap-2">
+                             <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                             <span className="text-[9px] font-black uppercase text-emerald-500">Live P&L Stream</span>
                         </div>
                     </div>
-                    <div className="h-[320px] w-full">
+                    <div className="h-[400px] w-full mt-auto relative z-10">
                         <ResponsiveContainer width="100%" height="100%">
-                            <ComposedChart data={yearlyData}>
-                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
-                                <XAxis dataKey="year" axisLine={false} tickLine={false} tick={{ fontSize: 12, fontWeight: 700 }} dy={10} />
-                                <YAxis hide />
-                                <Tooltip contentStyle={{ borderRadius: '16px', border: '1px solid hsl(var(--border))', boxShadow: 'none' }} />
-                                <Area type="monotone" dataKey="revenue" fill="hsl(var(--primary))" fillOpacity={0.05} stroke="none" />
-                                <Bar dataKey="revenue" fill="hsl(var(--primary))" radius={[12, 12, 0, 0]} barSize={50} />
-                                <Line type="monotone" dataKey="profit" stroke="#10b981" strokeWidth={4} dot={{ r: 6, fill: '#10b981', strokeWidth: 3, stroke: '#fff' }} />
-                            </ComposedChart>
+                            <AreaChart data={REVENUE_DATA}>
+                                <defs>
+                                    <linearGradient id="colorRev" x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.4}/>
+                                        <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
+                                    </linearGradient>
+                                </defs>
+                                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
+                                <XAxis dataKey="date" stroke="rgba(255,255,255,0.3)" fontSize={11} fontWeight="900" axisLine={false} tickLine={false} />
+                                <YAxis stroke="rgba(255,255,255,0.3)" fontSize={11} fontWeight="900" axisLine={false} tickLine={false} tickFormatter={(v) => `₹${v/100000}L`} />
+                                <Tooltip contentStyle={{ backgroundColor: '#020617', border: 'none', borderRadius: '20px' }} />
+                                <Area type="monotone" dataKey="value" stroke="#3b82f6" strokeWidth={5} fillOpacity={1} fill="url(#colorRev)" />
+                            </AreaChart>
                         </ResponsiveContainer>
                     </div>
                 </div>
 
-                {/* BRAND PORTFOLIO COMPARISON */}
-                <div className="bg-card border rounded-[2.5rem] p-6 md:p-8 shadow-sm">
-                    <h3 className="text-lg font-black mb-6 flex items-center gap-2">
-                        <Layers className="w-5 h-5 text-primary" /> Brand Portfolio
-                    </h3>
-                    <div className="h-[200px] relative">
+                <div className="bg-[#0f172a] rounded-[40px] p-10 border border-slate-700 shadow-2xl relative overflow-hidden group">
+                    <div className="absolute top-0 right-0 p-12 opacity-5 scale-[2] pointer-events-none group-hover:rotate-6 transition-transform duration-1000">
+                        <Target size={180} />
+                    </div>
+                    <h4 className="text-xl font-black text-white uppercase tracking-tight mb-8 relative z-10">Model-wise Market Share</h4>
+                    <div className="h-[300px] w-full relative z-10">
                         <ResponsiveContainer width="100%" height="100%">
-                            <RePie>
-                                <Pie data={brandBreakdown} innerRadius={60} outerRadius={90} paddingAngle={4} dataKey="value">
-                                    {brandBreakdown.map((entry, i) => (
-                                        <Cell key={i} fill={entry.color} />
-                                    ))}
+                            <PieChart>
+                                <Pie data={MARKET_SHARE} innerRadius={80} outerRadius={100} paddingAngle={10} dataKey="value" stroke="none">
+                                    {MARKET_SHARE.map((entry, index) => <Cell key={`cell-${index}`} fill={entry.fill} />)}
                                 </Pie>
-                                <Tooltip />
-                            </RePie>
+                                <Tooltip contentStyle={{ backgroundColor: '#020617', border: 'none', borderRadius: '20px' }} />
+                                <Legend verticalAlign="bottom" iconType="circle" wrapperStyle={{ bottom: -20, fontSize: '9px', fontWeight: '900', textTransform: 'uppercase', color: '#94a3b8' }} />
+                            </PieChart>
                         </ResponsiveContainer>
                         <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                            <span className="text-2xl font-black">5</span>
-                            <span className="text-[10px] font-bold text-muted-foreground uppercase">Brands</span>
+                            <span className="text-sm font-black text-slate-500 uppercase tracking-widest">Total Sales</span>
+                            <span className="text-2xl font-black text-white">420 Units</span>
                         </div>
                     </div>
-                    <div className="space-y-3 mt-4">
-                        {brandBreakdown.map((b) => (
-                            <div key={b.name} className="flex justify-between items-center group cursor-pointer hover:bg-muted/50 p-2 rounded-xl transition-all" onClick={() => {
-                                const brand = BRANDS.find(br => br.name === b.name);
-                                if (brand) setActiveBrand(brand.id);
-                            }}>
-                                <div className="flex items-center gap-2">
-                                    <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: b.color }} />
-                                    <span className="text-xs font-bold">{b.name}</span>
+                    <div className="mt-12 pt-10 border-t border-slate-700 relative z-10">
+                        <button className="w-full py-4 bg-slate-800 text-slate-400 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-700 hover:text-white transition-all shadow-xl">
+                            Download Inventory Audit
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
+                <div className="bg-slate-900 border border-slate-800 rounded-[40px] p-10 shadow-sm relative group overflow-hidden">
+                     <h4 className="text-xl font-black text-white uppercase tracking-tight mb-10 relative z-10">Departmental Efficiency Heatmap</h4>
+                     <div className="grid grid-cols-2 gap-8 relative z-10">
+                        {DEPT_HEALTH.map((dept, i) => (
+                            <div key={i} className={`p-8 bg-slate-800/40 border border-slate-700/50 rounded-[32px] hover:border-${dept.status === 'Critical' ? 'rose' : dept.status === 'Warning' ? 'amber' : 'emerald'}-500/30 transition-all ${dept.stuck > 10 ? 'ring-2 ring-rose-500 ring-offset-4 ring-offset-[#020617] animate-pulse shadow-xl shadow-rose-500/20' : ''}`}>
+                                <div className="flex justify-between items-start mb-6">
+                                    <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">{dept.dept}</p>
+                                    <span className={`px-2 py-1 rounded-lg text-[8px] font-black uppercase tracking-widest ${dept.status === 'Critical' ? 'bg-rose-500/10 text-rose-500' : dept.status === 'Warning' ? 'bg-amber-500/10 text-amber-500' : 'bg-emerald-500/10 text-emerald-500'}`}>{dept.status}</span>
                                 </div>
-                                <div className="flex items-center gap-2">
-                                    <span className="text-[10px] text-muted-foreground">{formatCurrency(b.revenue)}</span>
-                                    <span className="text-xs font-black">{b.value}%</span>
-                                    <ChevronRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-all" />
+                                <h5 className="text-2xl font-black text-white tracking-tighter mb-1">{dept.value}</h5>
+                                <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest">{dept.metric}</p>
+                                <div className="mt-6 pt-6 border-t border-slate-700 flex justify-between">
+                                     <div className="text-center">
+                                        <p className="text-[10px] font-black text-rose-500">{dept.stuck}</p>
+                                        <p className="text-[8px] font-black text-slate-600 uppercase">Stuck</p>
+                                     </div>
+                                     <div className="text-center">
+                                        <p className="text-[10px] font-black text-white">{dept.latent}h</p>
+                                        <p className="text-[8px] font-black text-slate-600 uppercase">Latent</p>
+                                     </div>
+                                </div>
+                            </div>
+                        ))}
+                     </div>
+                </div>
+
+                <div className="bg-slate-900 border border-slate-800 rounded-[40px] p-10 flex flex-col relative overflow-hidden group">
+                    <h4 className="text-xl font-black text-white uppercase tracking-tight mb-10">Manager Escalation Feed</h4>
+                    <div className="flex-1 space-y-6">
+                        {[
+                            { id: 'ESC-1', by: 'RTO Head', msg: 'HSRP inventory mismatch in Rajkot hub. Immediate stock push required.', type: 'Immediate' },
+                            { id: 'ESC-2', by: 'Finance Manager', msg: 'ICICI Bank loan sanctions taking >5 days on avg. Review payout terms.', type: 'Urgent' },
+                            { id: 'ESC-3', by: 'Accounts Head', msg: 'TDS reconciliation pending for Q3. Need auditor approval.', type: 'Normal' },
+                        ].map((esc, i) => (
+                            <div key={i} className={`p-6 bg-${esc.type === 'Immediate' ? 'rose' : esc.type === 'Urgent' ? 'amber' : 'slate'}-500/5 border border-${esc.type === 'Immediate' ? 'rose' : esc.type === 'Urgent' ? 'amber' : 'slate'}-500/10 rounded-3xl flex items-start gap-5 group-hover:scale-[1.02] transition-transform`}>
+                                <div className={`p-2 rounded-xl bg-${esc.type === 'Immediate' ? 'rose' : esc.type === 'Urgent' ? 'amber' : 'slate'}-500/10 text-${esc.type === 'Immediate' ? 'rose' : esc.type === 'Urgent' ? 'amber' : 'slate'}-500`}>
+                                     {esc.type === 'Immediate' ? <Zap size={18} /> : <Bell size={18} />}
+                                </div>
+                                <div className="flex-1">
+                                    <div className="flex justify-between items-center mb-1">
+                                        <p className="text-xs font-black text-white uppercase">{esc.by}</p>
+                                        <span className="text-[9px] font-black text-slate-500 uppercase">Today 10:42 AM</span>
+                                    </div>
+                                    <p className="text-[11px] font-medium text-slate-400 leading-relaxed">{esc.msg}</p>
                                 </div>
                             </div>
                         ))}
@@ -275,220 +195,51 @@ const OwnerDashboard = () => {
                 </div>
             </div>
 
-            {/* ═══════════════════════════════════════════════════
-                SECTION 4: STOCK INVENTORY BY BRAND (Edge Stock)
-            ═══════════════════════════════════════════════════ */}
-            <div className="bg-card border rounded-[2.5rem] p-6 md:p-8 shadow-sm mb-8">
-                <h3 className="text-lg font-black mb-6 flex items-center gap-2">
-                    <Building2 className="w-5 h-5 text-primary" /> Stock Inventory — Brand-Wise Edge Stock
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-                    {stockByBrand.map((brand) => (
-                        <div key={brand.name} className="p-4 rounded-2xl border hover:shadow-md transition-all cursor-pointer" onClick={() => setActiveBrand(brand.brandId)}>
-                            <div className="flex justify-between items-start mb-3">
-                                <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">{brand.name}</p>
-                                <div className="w-3 h-3 rounded-full" style={{ backgroundColor: brand.color }} />
-                            </div>
-                            <p className="text-2xl font-black">{brand.total}</p>
-                            <p className="text-[10px] text-muted-foreground font-bold mb-3">Total Pipeline Units</p>
-                            <div className="flex gap-2 text-[9px] font-bold">
-                                <span className="px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-600">{brand.active} Active</span>
-                                <span className="px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-600">{brand.completed} Done</span>
-                                {brand.blocked > 0 && <span className="px-1.5 py-0.5 rounded bg-red-500/10 text-red-600">{brand.blocked} Block</span>}
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            </div>
-
-            {/* ═══════════════════════════════════════════════════
-                SECTION 5: GEOGRAPHIC ANALYSIS (City-Wise)
-            ═══════════════════════════════════════════════════ */}
-            <div className="bg-card border rounded-[2.5rem] p-6 md:p-8 shadow-sm mb-8">
-                <h3 className="text-lg font-black mb-6 flex items-center gap-2">
-                    <MapPin className="w-5 h-5 text-primary" /> Geographic Intelligence — City-Wise Revenue
-                </h3>
-                <div className="h-[280px] w-full mb-4">
-                    <ResponsiveContainer width="100%" height="100%">
-                        <BarChart data={cityPerformance} layout="vertical">
-                            <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="hsl(var(--border))" />
-                            <XAxis type="number" hide />
-                            <YAxis type="category" dataKey="city" axisLine={false} tickLine={false} tick={{ fontSize: 12, fontWeight: 700 }} width={90} />
-                            <Tooltip contentStyle={{ borderRadius: '12px', border: '1px solid hsl(var(--border))' }} formatter={(val: number) => formatCurrency(val)} />
-                            <Bar dataKey="revenue" fill="hsl(var(--primary))" radius={[0, 8, 8, 0]} barSize={24} name="Revenue" />
-                        </BarChart>
-                    </ResponsiveContainer>
-                </div>
-                <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-                    {cityPerformance.map(c => (
-                        <div key={c.city} className="p-3 rounded-xl border bg-muted/30">
-                            <p className="text-[10px] font-black text-muted-foreground uppercase">{c.city}</p>
-                            <p className="text-sm font-black">{formatCurrency(c.revenue)}</p>
-                            <div className="flex items-center gap-1 mt-1">
-                                <div className="flex-1 h-1 bg-border rounded-full overflow-hidden">
-                                    <div className={`h-full rounded-full ${c.achievement >= 75 ? 'bg-emerald-500' : c.achievement >= 50 ? 'bg-amber-500' : 'bg-red-500'}`} style={{ width: `${c.achievement}%` }} />
+            <div className="bg-[#0f172a] rounded-[40px] p-12 border border-slate-700 shadow-3xl flex flex-col md:flex-row items-center gap-16 overflow-hidden relative group">
+                <div className="flex-1 relative z-10 w-full">
+                     <div className="flex items-center gap-4 mb-10">
+                        <Shield className="text-emerald-500" size={32} />
+                        <h3 className="text-3xl font-black text-white uppercase italic tracking-tighter">Final Closing Gate (Safe Delivery)</h3>
+                     </div>
+                     <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                         {[
+                            { label: 'Accounts', status: 'Approved', icon: <DollarSign /> },
+                            { label: 'RTO Reg.', status: 'Ready', icon: <Car /> },
+                            { label: 'Finance DO', status: 'Approved', icon: <FileText /> },
+                            { label: 'PDI Cert.', status: 'Certified', icon: <CheckCircle2 /> },
+                         ].map((gate, i) => (
+                            <div key={i} className="text-center group-hover:scale-110 transition-transform">
+                                <div className="mx-auto w-16 h-16 bg-emerald-500/10 border-2 border-emerald-500/30 rounded-full flex items-center justify-center text-emerald-500 mb-4 shadow-lg shadow-emerald-500/10">
+                                     {gate.icon}
                                 </div>
-                                <span className="text-[9px] font-black text-muted-foreground">{c.achievement}%</span>
+                                <p className="text-[10px] font-black text-white uppercase tracking-widest">{gate.label}</p>
+                                <p className="text-[9px] font-black text-emerald-500 uppercase mt-1 flex items-center justify-center gap-1">
+                                    <CheckCircle2 size={10} /> {gate.status}
+                                </p>
                             </div>
-                        </div>
-                    ))}
-                </div>
-            </div>
-
-            {/* ═══════════════════════════════════════════════════
-                SECTION 6: OUTLET RANKINGS (Top 10 + Bottom 5)
-            ═══════════════════════════════════════════════════ */}
-            <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 mb-8">
-                {/* TOP OUTLETS */}
-                <div className="bg-card border rounded-[2.5rem] p-6 md:p-8 shadow-sm">
-                    <div className="flex justify-between items-center mb-6">
-                        <h3 className="text-lg font-black flex items-center gap-2">
-                            <CheckCircle2 className="w-5 h-5 text-emerald-500" /> Top Performers
-                        </h3>
-                        <span className="text-[10px] font-black text-emerald-600 bg-emerald-500/10 px-3 py-1 rounded-full">{topOutlets.length} Outlets</span>
-                    </div>
-                    <div className="space-y-2">
-                        {topOutlets.map((outlet, i) => (
-                            <OutletRow key={outlet.id} rank={i + 1} name={outlet.name} city={outlet.city || 'N/A'} score={outlet.score} status="top" brandName={BRANDS.find(b => b.id === outlet.brandId)?.name || ''} />
-                        ))}
-                    </div>
+                         ))}
+                     </div>
                 </div>
 
-                {/* BOTTOM OUTLETS */}
-                <div className="bg-card border rounded-[2.5rem] p-6 md:p-8 shadow-sm">
-                    <div className="flex justify-between items-center mb-6">
-                        <h3 className="text-lg font-black flex items-center gap-2">
-                            <AlertOctagon className="w-5 h-5 text-red-500" /> Needs Attention
-                        </h3>
-                        <span className="text-[10px] font-black text-red-600 bg-red-500/10 px-3 py-1 rounded-full">{bottomOutlets.length} Outlets</span>
-                    </div>
-                    <div className="space-y-2">
-                        {bottomOutlets.map((outlet, i) => (
-                            <OutletRow key={outlet.id} rank={outletRankings.length - bottomOutlets.length + i + 1} name={outlet.name} city={outlet.city || 'N/A'} score={outlet.score} status="bottom" brandName={BRANDS.find(b => b.id === outlet.brandId)?.name || ''} />
-                        ))}
-                    </div>
-                </div>
-            </div>
-
-            {/* ═══════════════════════════════════════════════════
-                SECTION 7: FINANCIAL P&L + RECOMMENDED ACTIONS
-            ═══════════════════════════════════════════════════ */}
-            <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-                {/* RECOMMENDED ACTIONS */}
-                <div className="bg-primary text-primary-foreground p-6 md:p-8 rounded-[2.5rem] shadow-xl relative overflow-hidden">
-                    <div className="relative z-10">
-                        <h3 className="text-primary-foreground/60 text-[10px] font-black uppercase tracking-widest mb-4">Owner's Recommended Actions</h3>
-                        <div className="space-y-3">
-                            {alerts.red > 0 && (
-                                <ActionItem text={`Immediate review required: ${alerts.red} outlet(s) operating below 50% target. Consider resource re-allocation or management audit.`} />
-                            )}
-                            <ActionItem text="Redirect slow-moving Toyota Glanza stock from Surat West to Ahmedabad South to capitalize on high demand." />
-                            <ActionItem text={`Maruti division showing strong momentum. Consider expanding Brezza inventory across ${activeBrand === 'all' ? 'all' : BRANDS.find(b => b.id === activeBrand)?.name} outlets.`} />
-                            {alerts.yellow > 0 && (
-                                <ActionItem text={`Monitor ${alerts.yellow} yellow-zone outlet(s). Deploy additional field support before month-end close.`} />
-                            )}
-                        </div>
-                        <div className="mt-6 flex justify-between items-center">
-                            <div>
-                                <p className="text-xs font-bold opacity-60">Estimated Yield Improvement</p>
-                                <p className="text-2xl font-black">+{formatCurrency(Math.round(metrics.revenue * 0.04))}</p>
-                            </div>
-                            <button className="bg-white text-primary p-3 rounded-2xl hover:scale-105 transition-transform shadow-lg">
-                                <ArrowRight className="w-5 h-5" />
-                            </button>
-                        </div>
-                    </div>
-                    <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -mr-20 -mt-20 blur-3xl" />
-                </div>
-
-                {/* FINANCIAL P&L SUMMARY */}
-                <div className="bg-card border rounded-[2.5rem] p-6 md:p-8 shadow-sm">
-                    <h3 className="text-lg font-black mb-6 flex items-center gap-2">
-                        <IndianRupee className="w-5 h-5 text-primary" /> Financial P&L Summary
-                    </h3>
-                    <div className="space-y-4">
-                        <PnlDetail label="Gross Revenue" value={formatCurrency(Math.round(metrics.revenue / timeDivisor))} percent="100%" highlight />
-                        <div className="border-t my-2" />
-                        <PnlDetail label="Material & Procurement" value={formatCurrency(Math.round(metrics.revenue * 0.62 / timeDivisor))} percent="62%" />
-                        <PnlDetail label="Manpower & OpEx" value={formatCurrency(Math.round(metrics.revenue * 0.14 / timeDivisor))} percent="14%" />
-                        <PnlDetail label="Marketing & Digital" value={formatCurrency(Math.round(metrics.revenue * 0.05 / timeDivisor))} percent="5%" />
-                        <PnlDetail label="Accessories Revenue" value={formatCurrency(Math.round(metrics.accessoriesTotal / timeDivisor))} percent="" isPositive />
-                        <div className="pt-4 mt-2 border-t flex justify-between items-center">
-                            <span className="text-sm font-black text-primary">Consolidated EBITDA</span>
-                            <span className="text-xl font-black text-emerald-500">{formatCurrency(Math.round(metrics.revenue * 0.19 / timeDivisor))}</span>
-                        </div>
-                        <div className="flex justify-between items-center text-xs text-muted-foreground mt-1">
-                            <span>Net Profit Margin</span>
-                            <span className="font-black text-emerald-600">11.2%</span>
-                        </div>
-                    </div>
+                <div className="w-full md:w-96 bg-slate-900 border border-slate-800 p-10 rounded-[48px] shadow-2xl relative z-10">
+                     <p className="text-[10px] font-black opacity-40 uppercase tracking-[0.3em] mb-4">Closing Logic Status</p>
+                     <h4 className="text-2xl font-black text-white uppercase tracking-tight mb-8">Ready for Grand Handover?</h4>
+                     <div className="space-y-6">
+                         <div className="flex justify-between items-center text-sm font-black text-emerald-400 italic">
+                             <span>YES — ALL GATES CLEAR</span>
+                             <Zap size={16} />
+                         </div>
+                         <p className="text-xs font-medium text-slate-500 leading-relaxed mb-8">
+                            System has verified technical and financial clearance across all 4 departments for VIN #88921.
+                         </p>
+                         <button className="w-full py-5 bg-white text-[#0f172a] rounded-2xl text-[11px] font-black uppercase tracking-widest shadow-2xl hover:bg-emerald-50 transition-all flex items-center justify-center gap-3">
+                            Confirm Final Release <ChevronRight size={16} />
+                         </button>
+                     </div>
                 </div>
             </div>
         </div>
     );
 };
 
-// ─── SUB-COMPONENTS ─────────────────────────────────────────
-
-const KpiMini = ({ title, value, icon, color, subtitle }: any) => (
-    <div className="bg-card border p-3 md:p-4 rounded-[1.5rem] shadow-sm hover:shadow-md transition-all flex flex-col justify-between">
-        <div className="flex justify-between items-start mb-2">
-            <div className="p-1.5 rounded-lg" style={{ backgroundColor: `${color}15` }}>
-                {React.cloneElement(icon, { style: { color } })}
-            </div>
-            <p className="text-[9px] font-black text-muted-foreground uppercase tracking-tighter">{title}</p>
-        </div>
-        <div className="mt-auto">
-            <p className="text-lg font-black">{value}</p>
-            {subtitle && <p className="text-[9px] text-muted-foreground font-bold">{subtitle}</p>}
-        </div>
-    </div>
-);
-
-const AlertCard = ({ icon, label, count, sub, colorClass }: any) => (
-    <div className={`border-2 p-5 rounded-[2rem] ${colorClass} flex items-center gap-4`}>
-        <div className="p-3 rounded-2xl bg-white/60">{icon}</div>
-        <div>
-            <p className="text-2xl font-black">{String(count).padStart(2, '0')}</p>
-            <p className="text-xs font-black">{label}</p>
-            <p className="text-[10px] font-bold opacity-70">{sub}</p>
-        </div>
-    </div>
-);
-
-const OutletRow = ({ rank, name, city, score, status, brandName }: any) => (
-    <div className="flex items-center gap-3 p-3 rounded-xl bg-muted/30 hover:bg-muted/50 transition-all">
-        <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-xs font-black ${status === 'top' ? 'bg-emerald-500/10 text-emerald-600' : 'bg-red-500/10 text-red-600'}`}>
-            {rank}
-        </div>
-        <div className="flex-1 min-w-0">
-            <p className="text-xs font-bold truncate">{name}</p>
-            <p className="text-[9px] text-muted-foreground font-bold uppercase">{brandName} • {city}</p>
-        </div>
-        <div className="flex items-center gap-2">
-            <div className="w-16 h-1.5 bg-border rounded-full overflow-hidden hidden sm:block">
-                <div className={`h-full rounded-full ${status === 'top' ? 'bg-emerald-500' : 'bg-red-500'}`} style={{ width: `${score}%` }} />
-            </div>
-            <span className={`text-xs font-black ${status === 'top' ? 'text-emerald-600' : 'text-red-600'}`}>{score}%</span>
-        </div>
-    </div>
-);
-
-const ActionItem = ({ text }: { text: string }) => (
-    <div className="flex gap-3 bg-white/10 p-3 rounded-xl backdrop-blur-sm border border-white/10">
-        <div className="w-1.5 h-1.5 bg-white rounded-full mt-1.5 shrink-0" />
-        <p className="text-xs font-bold leading-relaxed">{text}</p>
-    </div>
-);
-
-const PnlDetail = ({ label, value, percent, highlight, isPositive }: any) => (
-    <div className="flex justify-between items-center text-xs font-bold">
-        <span className={highlight ? 'text-foreground font-black' : 'text-muted-foreground'}>{label}</span>
-        <div className="flex items-center gap-3">
-            {percent && <span className="text-muted-foreground/50">{percent}</span>}
-            <span className={`w-20 text-right font-black ${isPositive ? 'text-emerald-600' : highlight ? 'text-foreground' : ''}`}>{value}</span>
-        </div>
-    </div>
-);
-
-export default OwnerDashboard;
+export default OwnerCommandCenter;
