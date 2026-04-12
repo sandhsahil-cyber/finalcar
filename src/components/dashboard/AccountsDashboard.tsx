@@ -12,7 +12,7 @@ import { useDashboard } from '@/contexts/DashboardContext';
 import MetricsCard from './MetricsCard';
 
 const AccountDashboard: React.FC = () => {
-    const { deals, salespeople } = useDashboard();
+    const { deals, salespeople, updateDepartmentStatus } = useDashboard();
     // For demo, we still use dummy values for expenses/payroll since they are static reports
     // but in a real app these would also come from context
     const showroomExpenses = [
@@ -39,12 +39,14 @@ const AccountDashboard: React.FC = () => {
     });
 
     const filteredDeals = enhancedDeals.filter(d =>
-        d.customerName.toLowerCase().includes(filterQuery.toLowerCase()) ||
-        d.carModel.toLowerCase().includes(filterQuery.toLowerCase())
+        d.departmentStatus?.['Account'] === 'In Progress' &&
+        (d.customerName.toLowerCase().includes(filterQuery.toLowerCase()) ||
+        d.carModel.toLowerCase().includes(filterQuery.toLowerCase()))
     );
 
     const handleApprovePayment = (dealId: string) => {
-        alert(`Receipt Generated for ${selectedDeal.customerName}. Notifying ${selectedDeal.salesmanName} to move to RTO stage.`);
+        updateDepartmentStatus(dealId, 'Account', 'Completed');
+        alert(`Receipt Generated for ${selectedDeal.customerName}.`);
         setSelectedDeal(null);
     };
 

@@ -125,28 +125,13 @@ const DealCard: React.FC<DealCardProps> = ({ deal, showActions = true, compact =
             <Calendar className="w-3 h-3" />
             <span>Delivery: {deal.expectedDelivery}</span>
           </div>
-          {showActions && deal.status === 'active' && (
-            DEAL_STAGES.indexOf(deal.stage) < DEAL_STAGES.length - 1 ? (
-              <button
-                onClick={handleMoveToNext}
-                className="flex items-center gap-1 px-3 py-1.5 text-xs font-semibold text-white rounded-lg transition-all hover:opacity-90 active:scale-95"
-                style={{ backgroundColor: STAGE_COLORS[DEAL_STAGES[DEAL_STAGES.indexOf(deal.stage) + 1]] }}
-              >
-                <ArrowRightCircle className="w-3.5 h-3.5" />
-                Move to {DEAL_STAGES[DEAL_STAGES.indexOf(deal.stage) + 1]}
-              </button>
-            ) : (
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  updateDealStatus(deal.id, 'completed');
-                }}
-                className="flex items-center gap-1 px-3 py-1.5 text-xs font-semibold text-white bg-blue-600 rounded-lg transition-all hover:opacity-90 active:scale-95"
-              >
-                <CheckCircle2 className="w-3.5 h-3.5" />
-                Mark as Delivered
-              </button>
-            )
+          {showActions && (
+            <button
+              onClick={handleViewDetail}
+              className="flex items-center gap-1 px-3 py-1.5 text-xs font-bold text-primary bg-primary/10 rounded-lg transition-all hover:bg-primary/20"
+            >
+              Open Lead
+            </button>
           )}
         </div>
       </div>

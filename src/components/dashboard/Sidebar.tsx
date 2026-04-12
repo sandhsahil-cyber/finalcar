@@ -21,6 +21,7 @@ const roleConfig = {
 };
 
 const menuItems = [
+  { id: 'today_tasks', label: 'Today Tasks', icon: ClipboardList },
   { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { id: 'deals', label: 'Leads', icon: Car },
   { id: 'pipeline', label: 'Pipeline', icon: TrendingUp },
@@ -79,7 +80,8 @@ const Sidebar: React.FC = () => {
               if (currentRole === 'salesperson') {
                 return !['team', 'targets', 'reports'].includes(item.id);
               }
-              return true;
+              // Prevent non-sales execs from seeing pure task view if desired, but we can leave it for all right now
+              return item.id !== 'today_tasks' || currentRole === 'salesperson' || currentRole === 'teamleader';
             })
             .map(item => {
               const isActive = activeView === item.id;

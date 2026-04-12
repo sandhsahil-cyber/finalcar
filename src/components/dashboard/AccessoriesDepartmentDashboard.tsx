@@ -15,24 +15,27 @@ import {
     History,
     CheckCircle2
 } from 'lucide-react';
-import { deals, formatCurrency } from '@/data/dummyData';
+import { formatCurrency } from '@/data/dummyData';
+import { useDashboard } from '@/contexts/DashboardContext';
 import MetricsCard from './MetricsCard';
 
 const AccessoriesDashboard: React.FC = () => {
+    const { deals, updateDepartmentStatus } = useDashboard();
     const [filterQuery, setFilterQuery] = useState('');
     const [selectedFitment, setSelectedFitment] = useState<any>(null);
 
     // Business Logic: Accessory specific leads
-    const totalAccessoryRevenue = deals.reduce((sum, d) => sum + (d.accessoriesAmount || 0), 0);
-    const pendingFittings = deals.filter(d => (d.accessoriesAmount || 0) > 0 && d.status !== 'completed').length;
-    const completedFittings = deals.filter(d => (d.accessoriesAmount || 0) > 0 && d.status === 'completed').length;
+    const accessoryDeals = deals.filter(d => d.departmentStatus?.['Accessories'] === 'In Progress');
+    const totalAccessoryRevenue = accessoryDeals.reduce((sum, d) => sum + (d.accessoriesAmount || 0), 0);
+    const pendingFittings = accessoryDeals.length;
+    const completedFittings = deals.filter(d => d.departmentStatus?.['Accessories'] === 'Completed').length;
 
-    const accessoryLeads = deals.filter(d => (d.accessoriesAmount || 0) > 0).map(deal => ({
+    const accessoryLeads = accessoryDeals.map(deal => ({
         ...deal,
-        fitmentStatus: deal.status === 'completed' ? 'Fitting Done' : 'In Progress',
+        fitmentStatus: 'In Progress',
         accessoryValue: deal.accessoriesAmount || 0,
         items: ['Floor Mats', 'Mud Flaps', 'Chrome Kit', 'Seat Covers'],
-        pendingItems: deal.status === 'active' ? ['Dashcam'] : [],
+        pendingItems: [],
     }));
 
     return (
@@ -176,7 +179,11 @@ const AccessoriesDashboard: React.FC = () => {
                                         <Upload className="w-4 h-4" /> Upload Accessory Bill
                                     </button>
                                     <button
-                                        onClick={() => { alert('Salesman Notified: Fitting Complete!'); setSelectedFitment(null); }}
+                                        onClick={() => { 
+                                            updateDepartmentStatus(selectedFitment.id, 'Accessories', 'Completed');
+                                            alert('Salesman Notified: Fitting Complete!'); 
+                                            setSelectedFitment(null); 
+                                        }}
                                         className="w-full py-3 bg-rose-500 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-2 shadow-lg shadow-rose-200"
                                     >
                                         Complete & Notify Salesman

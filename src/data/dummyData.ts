@@ -21,11 +21,13 @@ export interface Deal {
   expectedDelivery: string;
   notes: string;
   stageProgress: Record<DealStage, { completed: boolean; date?: string; notes?: string }>;
+  departmentStatus?: Partial<Record<DealStage, 'Not Sent' | 'In Progress' | 'Completed'>>;
   // New operational fields
   financeType?: 'In-house' | '3rd Party';
   financePartner?: string;
   financeStatus?: 'Pending' | 'Approved' | 'Rejected' | 'Disbursed' | 'Searching';
   insuranceType?: string;
+  insurancePartner?: string;
   extendedWarranty?: boolean;
   accessoriesAmount?: number;
   isExchange?: boolean;
@@ -46,6 +48,16 @@ export interface Deal {
   lastFollowUpNotes?: string;
   brandId?: string;
   brandName?: string;
+  // Booking form fields
+  bookingAmount?: number;
+  customerEmail?: string;
+  customerAltPhone?: string;
+  customerAddress?: string;
+  panNumber?: string;
+  aadhaarNumber?: string;
+  kycDocuments?: string[];
+  bookingDate?: string;
+  bookingSubmittedViaWhatsApp?: boolean;
 }
 
 export interface SalesPerson {

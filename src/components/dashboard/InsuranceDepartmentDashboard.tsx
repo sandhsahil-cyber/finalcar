@@ -21,7 +21,7 @@ import { useDashboard } from '@/contexts/DashboardContext';
 import MetricsCard from './MetricsCard';
 
 const InsuranceDashboard: React.FC = () => {
-    const { deals } = useDashboard();
+    const { deals, updateDepartmentStatus } = useDashboard();
     const [filterQuery, setFilterQuery] = useState('');
     const [showIssueModal, setShowIssueModal] = useState(false);
     const [selectedLead, setSelectedLead] = useState<any>(null);
@@ -31,7 +31,9 @@ const InsuranceDashboard: React.FC = () => {
     const pendingApproval = deals.filter(d => d.status !== 'completed' && d.stage === 'RTO').length;
     const totalProcessed = deals.filter(d => d.status === 'completed' || d.insurancePartner).length;
 
-    const insuranceLeads = deals.map(deal => ({
+    const insuranceDeals = deals.filter(d => d.departmentStatus?.['Insurance'] === 'In Progress');
+
+    const insuranceLeads = insuranceDeals.map(deal => ({
         ...deal,
         insuranceType: deal.insurancePartner ? 'Self (Showroom)' : 'By Party (External)',
         policyStatus: deal.status === 'completed' ? 'Policy Issued' : 'Pending Approval',
@@ -174,7 +176,11 @@ const InsuranceDashboard: React.FC = () => {
                                 </div>
 
                                 <button
-                                    onClick={() => { alert('Policy Sent to Salesperson!'); setSelectedLead(null); }}
+                                    onClick={() => { 
+                                        updateDepartmentStatus(selectedLead.id, 'Insurance', 'Completed');
+                                        alert('Policy Sent to Salesperson!'); 
+                                        setSelectedLead(null); 
+                                    }}
                                     className="w-full py-4 bg-primary text-white rounded-2xl font-bold flex items-center justify-center gap-2 shadow-lg shadow-primary/30"
                                 >
                                     <Send className="w-4 h-4" /> Issue & Notify Salesman

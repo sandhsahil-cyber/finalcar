@@ -9,6 +9,7 @@ import { DashboardProvider } from "@/contexts/DashboardContext";
 import { AuthProvider } from "@/contexts/AuthContext";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
+import BookingForm from "./pages/BookingForm";
 
 const queryClient = new QueryClient();
 
@@ -23,6 +24,7 @@ const App = () => (
             <BrowserRouter>
               <Routes>
                 <Route path="/" element={<Index />} />
+                <Route path="/booking/:id" element={<BookingForm />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </BrowserRouter>

@@ -1,53 +1,80 @@
-import { Deal, SalesPerson, Team, Activity, Notification } from '../data/dummyData';
+import { Deal, SalesPerson, Team, Activity, Notification, deals as initialDeals, salespeople, teams, activities, notifications } from '../data/dummyData';
 
-const API_BASE_URL = 'http://localhost:3001/api';
+// Simulated latency to make it feel like a real API
+const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
+const DEALS_STORAGE_KEY = 'finalcar_mock_deals';
+
+// Initialize data from localStorage or fallback to dummyData
+const getLocalDeals = (): Deal[] => {
+  try {
+    const stored = localStorage.getItem(DEALS_STORAGE_KEY);
+    if (stored) {
+      return JSON.parse(stored);
+    }
+  } catch (e) {
+    console.error("Failed to parse deals from localStorage", e);
+  }
+  // Initialize with initialDeals if not present
+  localStorage.setItem(DEALS_STORAGE_KEY, JSON.stringify(initialDeals));
+  return [...initialDeals];
+};
+
+const saveLocalDeals = (deals: Deal[]) => {
+  localStorage.setItem(DEALS_STORAGE_KEY, JSON.stringify(deals));
+};
 
 export const api = {
   getTeams: async (): Promise<Team[]> => {
-    const response = await fetch(`${API_BASE_URL}/teams`);
-    return response.json();
+    await delay(300);
+    return teams;
   },
   
   getSalespeople: async (): Promise<SalesPerson[]> => {
-    const response = await fetch(`${API_BASE_URL}/salespeople`);
-    return response.json();
+    await delay(300);
+    return salespeople;
   },
   
   getDeals: async (): Promise<Deal[]> => {
-    const response = await fetch(`${API_BASE_URL}/deals`);
-    return response.json();
+    await delay(400);
+    return getLocalDeals();
   },
   
   getDeal: async (id: string): Promise<Deal> => {
-    const response = await fetch(`${API_BASE_URL}/deals/${id}`);
-    return response.json();
+    await delay(200);
+    const localDeals = getLocalDeals();
+    const deal = localDeals.find(d => d.id === id);
+    if (!deal) throw new Error("Deal not found");
+    return deal;
   },
   
   updateDeal: async (id: string, data: Partial<Deal>): Promise<Deal> => {
-    const response = await fetch(`${API_BASE_URL}/deals/${id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data),
-    });
-    return response.json();
+    await delay(500);
+    const localDeals = getLocalDeals();
+    const index = localDeals.findIndex(d => d.id === id);
+    if (index === -1) throw new Error("Deal not found");
+    
+    localDeals[index] = { ...localDeals[index], ...data };
+    saveLocalDeals(localDeals);
+    return localDeals[index];
   },
   
   createDeal: async (data: Partial<Deal>): Promise<Deal> => {
-    const response = await fetch(`${API_BASE_URL}/deals`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data),
-    });
-    return response.json();
+    await delay(500);
+    const localDeals = getLocalDeals();
+    const newDeal = { ...data, id: `D-${Date.now()}` } as Deal;
+    const updatedDeals = [newDeal, ...localDeals];
+    saveLocalDeals(updatedDeals);
+    return newDeal;
   },
   
   getActivities: async (): Promise<Activity[]> => {
-    const response = await fetch(`${API_BASE_URL}/activities`);
-    return response.json();
+    await delay(300);
+    return activities;
   },
   
   getNotifications: async (): Promise<Notification[]> => {
-    const response = await fetch(`${API_BASE_URL}/notifications`);
-    return response.json();
+    await delay(300);
+    return notifications;
   },
 };

@@ -13,16 +13,19 @@ import {
     AlertCircle,
     ChevronRight
 } from 'lucide-react';
-import { deals, salespeople, formatCurrency } from '@/data/dummyData';
+import { salespeople, formatCurrency } from '@/data/dummyData';
+import { useDashboard } from '@/contexts/DashboardContext';
 import MetricsCard from './MetricsCard';
 
 const RTODashboard: React.FC = () => {
+    const { deals, updateDepartmentStatus } = useDashboard();
     const [filterQuery, setFilterQuery] = useState('');
     const [activeTab, setActiveTab] = useState<'pending' | 'completed'>('pending');
+    const [selectedLead, setSelectedLead] = useState<any>(null);
 
-    // Business Logic: Only show deals that are "Settled" (from Accounts)
-    // In a real app, you'd filter by deal.status === 'settled'
-    const rtoLeads = deals.map(deal => {
+    // Business Logic: Only show deals that are routed to RTO
+    const rtoDeals = deals.filter(d => d.departmentStatus?.['RTO'] === 'In Progress');
+    const rtoLeads = rtoDeals.map(deal => {
         const salesman = salespeople.find(sp => sp.id === deal.salespersonId);
         return {
             ...deal,
@@ -149,7 +152,10 @@ const RTODashboard: React.FC = () => {
                                             </div>
                                         </td>
                                         <td className="px-6 py-4 text-right">
-                                            <button className="p-2 hover:bg-white rounded-lg border border-transparent hover:border-gray-200 transition-all shadow-sm">
+                                            <button 
+                                                onClick={() => setSelectedLead(item)}
+                                                className={`p-2 rounded-lg border transition-all shadow-sm ${selectedLead?.id === item.id ? 'bg-indigo-50 border-indigo-200 text-indigo-600' : 'hover:bg-gray-50 border-transparent hover:border-gray-200'}`}
+                                            >
                                                 <MoreVertical className="w-4 h-4 text-gray-400" />
                                             </button>
                                         </td>
@@ -177,8 +183,18 @@ const RTODashboard: React.FC = () => {
                                     Upload RTO Receipt
                                     <ChevronRight className="w-4 h-4" />
                                 </button>
-                                <button className="w-full py-3 bg-indigo-500/30 text-white border border-indigo-400/30 rounded-xl text-xs font-bold hover:bg-indigo-500/50 transition-all">
-                                    Notify Salesman for Delivery
+                                <button 
+                                    className="w-full py-3 bg-indigo-500/30 text-white border border-indigo-400/30 rounded-xl text-xs font-bold hover:bg-indigo-500/50 transition-all disabled:opacity-50"
+                                    disabled={!selectedLead}
+                                    onClick={() => {
+                                        if(selectedLead) {
+                                            updateDepartmentStatus(selectedLead.id, 'RTO', 'Completed');
+                                            alert("Salesman Notified for Delivery!");
+                                            setSelectedLead(null);
+                                        }
+                                    }} 
+                                >
+                                    {selectedLead ? `Mark ${selectedLead.carModel} Done` : 'Select Lead to Finish'}
                                 </button>
                             </div>
                         </div>
