@@ -51,16 +51,16 @@ const TodayTasksView: React.FC = () => {
       
       {/* Metrics Row */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <MetricsCard title="Pending Tasks" value={todayTasks.length.toString()} icon={<Calendar className="w-5 h-5"/>} color="#f59e0b" />
-        <MetricsCard title="Overdue Leads" value={overdueTasks.toString()} icon={<Clock className="w-5 h-5"/>} color="#ef4444" />
-        <MetricsCard title="Completed Today" value={completedToday.toString()} icon={<CheckCircle2 className="w-5 h-5"/>} color="#10b981" />
-        <MetricsCard title="Total Converts" value={conversions.toString()} icon={<Target className="w-5 h-5"/>} color="#3b82f6" />
+        <MetricsCard title="Wait for Call" value={todayTasks.length.toString()} icon={<Calendar className="w-5 h-5"/>} color="#f59e0b" />
+        <MetricsCard title="Missed Calls" value={overdueTasks.toString()} icon={<Clock className="w-5 h-5"/>} color="#ef4444" />
+        <MetricsCard title="Call Done" value={completedToday.toString()} icon={<CheckCircle2 className="w-5 h-5"/>} color="#10b981" />
+        <MetricsCard title="Final Bills Done" value={conversions.toString()} icon={<Target className="w-5 h-5"/>} color="#3b82f6" />
       </div>
 
       {/* Main Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mt-6">
         <div>
-          <h2 className="text-xl font-bold text-gray-900 tracking-tight">Today's Action Plan</h2>
+          <h2 className="text-xl font-bold text-gray-900 tracking-tight">Today Works</h2>
         </div>
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -90,7 +90,7 @@ const TodayTasksView: React.FC = () => {
                   <div className="flex items-center gap-2 mb-1">
                     <span className="text-xs font-mono text-gray-400">{deal.id}</span>
                     <span className="px-2 py-0.5 rounded text-[10px] uppercase font-bold bg-rose-50 text-rose-600 border border-rose-100 flex items-center gap-1">
-                      <Clock className="w-3 h-3" /> Due Today
+                      <Clock className="w-3 h-3" /> Today
                     </span>
                   </div>
                   <h4 className="text-lg font-bold text-gray-900">{deal.customerName}</h4>
@@ -103,20 +103,28 @@ const TodayTasksView: React.FC = () => {
                 <div className="flex-1">
                   <p className="text-sm font-semibold text-gray-800">{deal.carModel} {deal.carVariant}</p>
                   <p className="text-xs text-gray-500 mt-1 line-clamp-2 bg-gray-50 p-2 rounded-lg border border-gray-100">
-                    <span className="font-bold text-gray-700">Agenda:</span> {deal.nextFollowUpTask || "Call customer to push for final booking confirmation and finance documents."}
+                    <span className="font-bold text-gray-700">Work to do:</span> {deal.nextFollowUpTask || "Call customer to push for final booking confirmation and finance documents."}
                   </p>
                   
                   {/* Step-wise Status */}
                   <div className="flex items-center gap-2 mt-3 overflow-x-auto pb-1">
-                      {['General', 'Account', 'Finance', 'Delivery'].map((step, idx) => {
-                          const isDone = deal.stageProgress?.[step as any]?.completed || deal.departmentStatus?.[step as any] === 'Completed' || (step === 'Delivery' && deal.status === 'completed');
+                      {[
+                        { id: 'General', label: 'GEN' },
+                        { id: 'Account', label: 'ACC' },
+                        { id: 'Finance', label: 'FIN' },
+                        { id: 'Insurance', label: 'INS' },
+                        { id: 'RTO', label: 'RTO' },
+                        { id: 'PDI', label: 'PDI' },
+                        { id: 'Accessories', label: 'ACC' }
+                      ].map((step, idx) => {
+                          const isDone = deal.stageProgress?.[step.id as any]?.completed || deal.departmentStatus?.[step.id as any] === 'Completed' || (step.id === 'Accessories' && deal.status === 'completed');
                           return (
                               <div key={idx} className="flex items-center gap-1.5 flex-shrink-0">
                                   <div className={`w-3 h-3 rounded-full flex items-center justify-center ${isDone ? 'bg-emerald-500 ring-2 ring-emerald-100' : 'bg-gray-200'}`}>
                                       {isDone && <CheckCircle2 className="w-2 h-2 text-white" />}
                                   </div>
-                                  <span className={`text-[9px] uppercase font-bold tracking-widest ${isDone ? 'text-emerald-700' : 'text-gray-400'}`}>{step}</span>
-                                  {idx < 3 && <div className="w-3 h-px bg-gray-200 ml-1" />}
+                                  <span className={`text-[9px] uppercase font-black tracking-tighter ${isDone ? 'text-emerald-700' : 'text-gray-400'}`}>{step.label}</span>
+                                  {idx < 6 && <div className="w-2 h-px bg-gray-200" />}
                               </div>
                           )
                       })}
@@ -130,17 +138,17 @@ const TodayTasksView: React.FC = () => {
                   onClick={() => markTaskDone(deal.id)}
                   className="w-full py-2.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 rounded-xl text-sm font-bold flex items-center justify-center gap-2 transition-colors border border-emerald-200"
                 >
-                  <CheckCircle2 className="w-4 h-4" /> Resolve Task
+                  <CheckCircle2 className="w-4 h-4" /> Done
                 </button>
                 <button 
                   className="w-full py-2.5 bg-gray-50 hover:bg-gray-100 text-gray-600 rounded-xl text-sm font-bold transition-colors border border-gray-200"
                   onClick={() => {
-                    setRescheduleDeal(deal);
-                    setNewDate(deal.nextFollowUpDate || '');
-                    setNewTask(deal.nextFollowUpTask || '');
+                     setRescheduleDeal(deal);
+                     setNewDate(deal.nextFollowUpDate || '');
+                     setNewTask(deal.nextFollowUpTask || '');
                   }}
                 >
-                  <Calendar className="w-4 h-4" /> Reschedule Date
+                  <Calendar className="w-4 h-4" /> Change Date
                 </button>
               </div>
 
@@ -154,7 +162,7 @@ const TodayTasksView: React.FC = () => {
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-in fade-in">
           <div className="bg-white rounded-3xl w-full max-w-md shadow-2xl p-6">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-bold text-gray-900">Reschedule Follow-up</h3>
+               <h3 className="text-xl font-bold text-gray-900">Change Time</h3>
               <button onClick={() => setRescheduleDeal(null)} className="p-2 hover:bg-gray-100 rounded-full transition-colors"><X className="w-5 h-5 text-gray-500" /></button>
             </div>
             
@@ -185,7 +193,7 @@ const TodayTasksView: React.FC = () => {
                 onClick={handleReschedule}
                 className="w-full py-3 bg-primary hover:bg-primary/90 text-white rounded-xl font-bold flex items-center justify-center gap-2 shadow-lg shadow-primary/20 transition-all"
               >
-                <Clock className="w-5 h-5" /> Confirm Reschedule
+                <Clock className="w-5 h-5" /> Ok, Change Date
               </button>
             </div>
           </div>

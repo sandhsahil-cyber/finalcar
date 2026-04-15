@@ -84,15 +84,15 @@ const NewDealForm: React.FC = () => {
             <div className="w-16 h-16 mx-auto bg-emerald-100 rounded-full flex items-center justify-center mb-4">
               <Check className="w-8 h-8 text-emerald-600" />
             </div>
-            <h3 className="text-xl font-bold text-gray-900">Deal Created!</h3>
-            <p className="text-sm text-gray-500 mt-2">The deal has been added to your pipeline</p>
+            <h3 className="text-xl font-bold text-gray-900">Customer Added!</h3>
+            <p className="text-sm text-gray-500 mt-2">The customer has been added to your list</p>
           </div>
         ) : (
           <>
             {/* Header */}
             <div className="flex items-center justify-between p-5 border-b border-gray-100">
               <div>
-                <h2 className="text-lg font-bold text-gray-900">New Deal</h2>
+                <h2 className="text-lg font-bold text-gray-900">Add New Customer</h2>
                 <p className="text-xs text-gray-500">Step {step} of 3</p>
               </div>
               <button onClick={() => setShowNewDealForm(false)} className="p-2 rounded-full hover:bg-gray-100">
@@ -185,15 +185,15 @@ const NewDealForm: React.FC = () => {
                 <>
                   <div className="flex items-center gap-2 mb-3">
                     <FileText className="w-4 h-4 text-orange-500" />
-                    <h3 className="text-sm font-semibold text-gray-700">Exchange & Next Follow-up</h3>
+                    <h3 className="text-sm font-semibold text-gray-700">Exchange & Next Steps</h3>
                   </div>
                   
                   {/* Exchange Section */}
                   <div className="p-4 bg-gray-50 rounded-2xl border border-gray-100 mb-4">
                     <div className="flex items-center justify-between mb-3">
                       <div>
-                        <p className="text-sm font-bold text-gray-800">Car Exchange?</p>
-                        <p className="text-[10px] text-gray-500">Is the customer trading in an old car?</p>
+                        <p className="text-sm font-bold text-gray-800">Trade-in Old Car?</p>
+                        <p className="text-[10px] text-gray-500">Is the customer trading in their current vehicle?</p>
                       </div>
                       <button
                         type="button"
@@ -203,7 +203,7 @@ const NewDealForm: React.FC = () => {
                         <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${formData.isExchange ? 'left-7' : 'left-1'}`} />
                       </button>
                     </div>
-
+ 
                     {formData.isExchange && (
                       <div className="mt-3 animate-in fade-in slide-in-from-top-2">
                         <label className="text-xs font-medium text-gray-500 mb-1 block">Old Car Details (Model, Year, Kms) *</label>
@@ -221,7 +221,7 @@ const NewDealForm: React.FC = () => {
                   {/* Follow-up Section */}
                   <div className="space-y-4">
                     <div>
-                      <label className="text-xs font-medium text-gray-500 mb-1 block">Next Follow-up Date *</label>
+                      <label className="text-xs font-medium text-gray-500 mb-1 block">Next Contact Date *</label>
                       <input
                         type="date"
                         value={formData.nextFollowUpDate}
@@ -230,11 +230,11 @@ const NewDealForm: React.FC = () => {
                       />
                     </div>
                     <div>
-                      <label className="text-xs font-medium text-gray-500 mb-1 block">Next Step / Task *</label>
+                      <label className="text-xs font-medium text-gray-500 mb-1 block">What to do next? *</label>
                       <textarea
                         value={formData.nextFollowUpTask}
                         onChange={e => handleChange('nextFollowUpTask', e.target.value)}
-                        placeholder="What is the next action needed? (e.g., Home Test Drive, Finance Docs Collection)"
+                        placeholder="What is the next action needed? (e.g., Talk to customer, Home Visit, Collect papers)"
                         rows={3}
                         className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-400 resize-none"
                       />
@@ -267,7 +267,7 @@ const NewDealForm: React.FC = () => {
                   disabled={!canProceed()}
                   className="flex items-center gap-1 px-5 py-2.5 text-sm font-semibold text-white bg-emerald-500 rounded-xl hover:bg-emerald-600 disabled:opacity-50 transition-colors"
                 >
-                  <Check className="w-4 h-4" /> Create Deal
+                  <Check className="w-4 h-4" /> Add Customer
                 </button>
               )}
             </div>

@@ -14,13 +14,18 @@ const statusConfig = {
   active: { label: 'Active', color: 'bg-emerald-100 text-emerald-700', icon: Clock },
   completed: { label: 'Completed', color: 'bg-blue-100 text-blue-700', icon: CheckCircle2 },
   pending: { label: 'Pending', color: 'bg-amber-100 text-amber-700', icon: Clock },
-  blocked: { label: 'Blocked', color: 'bg-red-100 text-red-700', icon: AlertCircle },
+  blocked: { label: 'Stuck', color: 'bg-red-100 text-red-700', icon: AlertCircle },
 };
 
 const DealCard: React.FC<DealCardProps> = ({ deal, showActions = true, compact = false }) => {
-  const { setSelectedDeal, setShowDealModal, updateDealStage, updateDealStatus } = useDashboard();
+  const { setSelectedDeal, setShowDealModal, updateDealStage, updateDealStatus, salespeople, teams } = useDashboard();
   const status = statusConfig[deal.status];
   const StatusIcon = status.icon;
+
+  const salesperson = salespeople.find(s => s.id === deal.salespersonId);
+  const team = teams.find(t => t.id === deal.teamId);
+  const teamLeaderName = team?.leaderName || 'N/A';
+  const executiveName = salesperson?.name || 'N/A';
 
   const handleViewDetail = () => {
     setSelectedDeal(deal);
@@ -90,7 +95,10 @@ const DealCard: React.FC<DealCardProps> = ({ deal, showActions = true, compact =
           <Car className="w-4 h-4 text-gray-400 flex-shrink-0" />
           <div className="flex-1 min-w-0">
             <p className="text-sm font-semibold text-gray-800 truncate">{deal.carModel} {deal.carVariant}</p>
-            <p className="text-xs text-gray-500">{deal.color}</p>
+            <div className="flex items-center gap-2 mt-0.5">
+              <span className="text-[10px] text-blue-600 font-bold bg-blue-50 px-1.5 py-0.5 rounded">SE: {executiveName}</span>
+              <span className="text-[10px] text-purple-600 font-bold bg-purple-50 px-1.5 py-0.5 rounded">TL: {teamLeaderName}</span>
+            </div>
           </div>
         </div>
 
@@ -130,7 +138,7 @@ const DealCard: React.FC<DealCardProps> = ({ deal, showActions = true, compact =
               onClick={handleViewDetail}
               className="flex items-center gap-1 px-3 py-1.5 text-xs font-bold text-primary bg-primary/10 rounded-lg transition-all hover:bg-primary/20"
             >
-              Open Lead
+              Open Customer
             </button>
           )}
         </div>

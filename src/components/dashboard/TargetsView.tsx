@@ -20,7 +20,7 @@ const TargetsView: React.FC = () => {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold text-gray-900">Targets & Goals</h2>
+        <h2 className="text-2xl font-bold text-gray-900">Monthly Sales Goals</h2>
         <p className="text-sm text-gray-500">April 2026 performance tracking</p>
       </div>
 
@@ -28,10 +28,10 @@ const TargetsView: React.FC = () => {
       <div className="bg-gradient-to-r from-orange-500 to-red-500 rounded-2xl p-6 text-white">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <p className="text-orange-100 text-sm">Overall Achievement</p>
+            <p className="text-orange-100 text-sm">Total Progress</p>
             <p className="text-4xl font-bold mt-1">{overallProgress}%</p>
             <p className="text-orange-100 text-sm mt-1">
-              {formatCurrency(totalAchieved)} of {formatCurrency(totalTarget)} target
+              {Math.round(totalAchieved / 80000)} of {Math.round(totalTarget / 80000)} Units Goal
             </p>
           </div>
           <div className="w-full md:w-64">
@@ -39,7 +39,7 @@ const TargetsView: React.FC = () => {
               <div className="h-full bg-white rounded-full transition-all duration-700" style={{ width: `${overallProgress}%` }} />
             </div>
             <p className="text-orange-100 text-xs mt-2 text-right">
-              {formatCurrency(totalTarget - totalAchieved)} remaining
+              {Math.round((totalTarget - totalAchieved) / 80000)} Left to reach Goal
             </p>
           </div>
         </div>
@@ -47,7 +47,7 @@ const TargetsView: React.FC = () => {
 
       {/* Team Targets */}
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-        <h3 className="text-lg font-bold text-gray-900 mb-4">Team Targets</h3>
+        <h3 className="text-lg font-bold text-gray-900 mb-4">Team Progress Goals</h3>
         <div className="space-y-4">
           {displayTeams.map(team => {
             const percent = Math.round((team.achieved / team.monthlyTarget) * 100);
@@ -77,8 +77,8 @@ const TargetsView: React.FC = () => {
                   />
                 </div>
                 <div className="flex items-center justify-between text-xs text-gray-500">
-                  <span>Achieved: {formatFullCurrency(team.achieved)}</span>
-                  <span>Target: {formatFullCurrency(team.monthlyTarget)}</span>
+                  <span>Achieved: {Math.round(team.achieved / 80000)} Units</span>
+                  <span>Target: {Math.round(team.monthlyTarget / 80000)} Units</span>
                 </div>
               </div>
             );
@@ -88,7 +88,7 @@ const TargetsView: React.FC = () => {
 
       {/* Individual Targets */}
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-        <h3 className="text-lg font-bold text-gray-900 mb-4">Individual Targets</h3>
+        <h3 className="text-lg font-bold text-gray-900 mb-4">Person-wise Goals</h3>
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
@@ -132,8 +132,8 @@ const TargetsView: React.FC = () => {
                       <td className="py-3 pr-4 hidden md:table-cell">
                         <span className="text-xs text-gray-500">{team?.name}</span>
                       </td>
-                      <td className="py-3 pr-4 text-right text-sm text-gray-600">{formatCurrency(sp.monthlyTarget)}</td>
-                      <td className="py-3 pr-4 text-right text-sm font-semibold text-gray-900">{formatCurrency(sp.achieved)}</td>
+                      <td className="py-3 pr-4 text-right text-sm text-gray-600 font-medium">Goal: {Math.round(sp.monthlyTarget / 80000)} Units</td>
+                      <td className="py-3 pr-4 text-right text-sm font-black text-gray-900">{Math.round(sp.achieved / 80000)} Units</td>
                       <td className="py-3">
                         <div className="flex items-center gap-2">
                           <div className="flex-1 h-1.5 bg-gray-200 rounded-full overflow-hidden">

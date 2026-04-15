@@ -36,7 +36,7 @@ const InsuranceDashboard: React.FC = () => {
     const insuranceLeads = insuranceDeals.map(deal => ({
         ...deal,
         insuranceType: deal.insurancePartner ? 'Self (Showroom)' : 'By Party (External)',
-        policyStatus: deal.status === 'completed' ? 'Policy Issued' : 'Pending Approval',
+        policyStatus: deal.status === 'completed' ? 'Insurance Policy Ready' : 'Waiting for Papers',
         premiumAmount: deal.amount * 0.035, // Approx 3.5% Premium
         expiryDate: '2027-04-10'
     }));
@@ -52,19 +52,19 @@ const InsuranceDashboard: React.FC = () => {
             {/* 1. TOP STATS COUNTERS */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                 <MetricsCard
-                    title="Total Insurance" value={String(totalProcessed).padStart(2, '0')} subtitle="Processed this month"
+                    title="Insurance Finish" value={String(totalProcessed).padStart(2, '0')} subtitle="Processed this month"
                     icon={<ShieldCheck className="w-5 h-5" />} color="#0ea5e9"
                 />
                 <MetricsCard
-                    title="Self (In-House)" value={String(inHouseInsurance).padStart(2, '0')} subtitle="Dealer Channel"
+                    title="Shop Insurance" value={String(inHouseInsurance).padStart(2, '0')} subtitle="From Shop"
                     icon={<Briefcase className="w-5 h-5" />} color="#10b981"
                 />
                 <MetricsCard
-                    title="Pending Policy" value={String(pendingApproval).padStart(2, '0')} subtitle="In Pipeline"
+                    title="Wait for Ins." value={String(pendingApproval).padStart(2, '0')} subtitle="In Pipeline"
                     icon={<Clock className="w-5 h-5" />} color="#f59e0b"
                 />
                 <MetricsCard
-                    title="Conversion" value={`${Math.round((inHouseInsurance/deals.length)*100)}%`} subtitle="vs Total Sales"
+                    title="Total vs Shop" value={`${Math.round((inHouseInsurance/deals.length)*100)}%`} subtitle="vs Total Sales"
                     icon={<History className="w-5 h-5" />} color="#6366f1"
                 />
             </div>
@@ -75,8 +75,8 @@ const InsuranceDashboard: React.FC = () => {
                 <div className="xl:col-span-2 bg-white border border-gray-100 rounded-3xl p-6 shadow-sm">
                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
                         <div>
-                            <h3 className="text-lg font-bold text-gray-900">New Policy Issuance</h3>
-                            <p className="text-sm text-gray-500">Approve Cover Notes and notify Sales Executives</p>
+                            <h3 className="text-lg font-bold text-gray-900">Make New Insurance</h3>
+                            <p className="text-sm text-gray-500">Check & Make Insurance paper for Sales Person</p>
                         </div>
                         <div className="flex items-center gap-2">
                             <div className="relative">
@@ -95,10 +95,10 @@ const InsuranceDashboard: React.FC = () => {
                         <table className="w-full text-left">
                             <thead>
                                 <tr className="text-[11px] font-bold text-gray-400 uppercase tracking-widest border-b border-gray-50">
-                                    <th className="pb-4 px-2">Customer & Vehicle</th>
+                                    <th className="pb-4 px-2">Customer & Car</th>
                                     <th className="pb-4 px-2">Type</th>
-                                    <th className="pb-4 px-2">Net Premium</th>
-                                    <th className="pb-4 px-2">Status</th>
+                                    <th className="pb-4 px-2">Total Fee</th>
+                                    <th className="pb-4 px-2">Paper Status</th>
                                     <th className="pb-4 px-2 text-right">Action</th>
                                 </tr>
                             </thead>
@@ -112,7 +112,7 @@ const InsuranceDashboard: React.FC = () => {
                                         <td className="py-4 px-2">
                                             <span className={`px-2 py-0.5 rounded-md text-[10px] font-bold ${lead.insuranceType.includes('Self') ? 'bg-emerald-50 text-emerald-700' : 'bg-gray-100 text-gray-600'
                                                 }`}>
-                                                {lead.insuranceType}
+                                                {lead.insuranceType === 'Self (Showroom)' ? 'From Shop' : 'From Outside'}
                                             </span>
                                         </td>
                                         <td className="py-4 px-2">
@@ -120,8 +120,8 @@ const InsuranceDashboard: React.FC = () => {
                                         </td>
                                         <td className="py-4 px-2">
                                             <div className="flex items-center gap-1.5">
-                                                <div className={`w-1.5 h-1.5 rounded-full ${lead.policyStatus.includes('Pending') ? 'bg-amber-500 animate-pulse' : 'bg-emerald-500'}`} />
-                                                <span className="text-xs">{lead.policyStatus}</span>
+                                                <div className={`w-1.5 h-1.5 rounded-full ${lead.policyStatus.includes('Waiting') ? 'bg-amber-500 animate-pulse' : 'bg-emerald-500'}`} />
+                                                <span className="text-xs">{lead.policyStatus === 'Insurance Policy Ready' ? 'Paper Ready' : 'Wait for Paper'}</span>
                                             </div>
                                         </td>
                                         <td className="py-4 px-2 text-right">
@@ -146,18 +146,18 @@ const InsuranceDashboard: React.FC = () => {
                     <div className="bg-gray-900 rounded-3xl p-6 text-white shadow-xl relative overflow-hidden">
                         <div className="absolute -top-10 -right-10 w-32 h-32 bg-primary/20 rounded-full blur-3xl" />
                         <h3 className="font-bold mb-4 flex items-center gap-2">
-                            <ShieldCheck className="w-5 h-5 text-primary" /> Cover Note Entry
+                            <ShieldCheck className="w-5 h-5 text-primary" /> Write Insurance Info
                         </h3>
 
                         {selectedLead ? (
                             <div className="space-y-4 animate-in slide-in-from-right-4">
                                 <div>
-                                    <label className="text-[10px] text-gray-400 font-bold uppercase">Policy/Cover Note Number</label>
+                                    <label className="text-[10px] text-gray-400 font-bold uppercase">Insurance Policy Number</label>
                                     <input type="text" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-sm mt-1 focus:ring-1 focus:ring-primary outline-none" placeholder="Enter Policy No." />
                                 </div>
                                 <div className="grid grid-cols-2 gap-3">
                                     <div>
-                                        <label className="text-[10px] text-gray-400 font-bold uppercase">IDV Value</label>
+                                        <label className="text-[10px] text-gray-400 font-bold uppercase">Car Value for Ins.</label>
                                         <input type="text" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-sm mt-1 outline-none" placeholder="₹" />
                                     </div>
                                     <div>
@@ -183,7 +183,7 @@ const InsuranceDashboard: React.FC = () => {
                                     }}
                                     className="w-full py-4 bg-primary text-white rounded-2xl font-bold flex items-center justify-center gap-2 shadow-lg shadow-primary/30"
                                 >
-                                    <Send className="w-4 h-4" /> Issue & Notify Salesman
+                                    <Send className="w-4 h-4" /> Finish & Tell Sales Person
                                 </button>
                             </div>
                         ) : (
@@ -197,7 +197,7 @@ const InsuranceDashboard: React.FC = () => {
                     <div className="bg-white border border-gray-100 rounded-3xl p-6 shadow-sm">
                         <div className="flex items-center justify-between mb-4">
                             <h3 className="font-bold text-gray-900 flex items-center gap-2">
-                                <History className="w-5 h-5 text-indigo-500" /> 1st Year Renewals
+                                <History className="w-5 h-5 text-indigo-500" /> Next Year Insurance List
                             </h3>
                             <span className="text-[10px] bg-indigo-50 text-indigo-600 px-2 py-1 rounded-md font-bold">REPORT</span>
                         </div>

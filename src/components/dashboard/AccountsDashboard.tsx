@@ -97,14 +97,14 @@ const AccountDashboard: React.FC = () => {
             <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div className="space-y-1">
                     <h1 className="text-3xl font-black tracking-tight bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
-                        Finance Control
+                        Payments & Money
                     </h1>
                     <div className="flex items-center gap-3">
                         <span className="flex items-center gap-1.5 px-2.5 py-1 bg-primary/10 text-primary text-[10px] font-black rounded-lg uppercase tracking-tighter">
-                            <ShieldCheck size={12} /> Secure Portal
+                            <ShieldCheck size={12} /> Safe Area
                         </span>
                         <p className="text-muted-foreground text-[13px] font-medium italic underline decoration-primary/30 underline-offset-4">
-                           Operational Cashflow & Settlement Workflow
+                           Managing Daily Money & Bills
                         </p>
                     </div>
                 </div>
@@ -128,17 +128,17 @@ const AccountDashboard: React.FC = () => {
             {/* 2. DYNAMIC METRICS BASED ON ROLE */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <StatCard 
-                    title="Ledger Inflow" 
+                    title="Money to Collect" 
                     value="₹1.24 Cr" 
-                    sub="Total receivables" 
+                    sub="Pending Payments" 
                     icon={IndianRupee} 
                     color="text-emerald-500" 
                     percent="+14%"
                 />
                 <StatCard 
-                    title="Finance Pipeline" 
+                    title="Loan Status" 
                     value="₹85.2 L" 
-                    sub="Awaiting bank NOCs" 
+                    sub="Wait for Bank Check" 
                     icon={Landmark} 
                     color="text-blue-500" 
                     percent="+8%"
@@ -155,9 +155,9 @@ const AccountDashboard: React.FC = () => {
                             percent="+22%"
                         />
                         <StatCard 
-                            title="Asset Value" 
+                            title="Total Car Value" 
                             value="₹12.4 Cr" 
-                            sub="Floor inventory" 
+                            sub="Cars in Shop" 
                             icon={PackageSearch} 
                             color="text-orange-500" 
                         />
@@ -165,16 +165,16 @@ const AccountDashboard: React.FC = () => {
                 ) : (
                     <>
                         <StatCard 
-                            title="Awaiting Process" 
+                            title="Wait to Check" 
                             value={pendingCount.toString()} 
-                            sub="Pending settlements" 
+                            sub="Waiting for Money" 
                             icon={Clock} 
                             color="text-amber-500" 
                         />
                         <StatCard 
-                            title="Completed Today" 
+                            title="Money Taken Today" 
                             value={doneCount.toString()} 
-                            sub="Processed entries" 
+                            sub="Bills Saved" 
                             icon={CheckCircle} 
                             color="text-emerald-500" 
                         />
@@ -190,21 +190,21 @@ const AccountDashboard: React.FC = () => {
                         <div className="p-8 border-b border-border space-y-6 bg-muted/10">
                             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                                 <div>
-                                    <h3 className="font-black text-xl tracking-tight">Lead Settlement Workflow</h3>
-                                    <p className="text-[12px] text-muted-foreground font-medium">Verify documents and complete account settlements</p>
+                                    <h3 className="font-black text-xl tracking-tight">Money & Paper Check</h3>
+                                    <p className="text-[12px] text-muted-foreground font-medium">Check paper and take final money</p>
                                 </div>
                                 <div className="flex bg-muted p-1 rounded-2xl border border-border">
                                     <button 
                                         onClick={() => setActiveTab('pending')}
                                         className={`flex items-center gap-2 px-6 py-2.5 text-[11px] font-black rounded-xl transition-all ${activeTab === 'pending' ? 'bg-background text-amber-600 shadow-lg' : 'text-muted-foreground hover:text-foreground'}`}
                                     >
-                                        <Clock size={14} /> PENDING ({pendingCount})
+                                        <Clock size={14} /> WAITING ({pendingCount})
                                     </button>
                                     <button 
                                         onClick={() => setActiveTab('done')}
                                         className={`flex items-center gap-2 px-6 py-2.5 text-[11px] font-black rounded-xl transition-all ${activeTab === 'done' ? 'bg-background text-emerald-600 shadow-lg' : 'text-muted-foreground hover:text-foreground'}`}
                                     >
-                                        <ListChecks size={14} /> PROCESSED ({doneCount})
+                                        <ListChecks size={14} /> DONE ({doneCount})
                                     </button>
                                 </div>
                             </div>
@@ -229,8 +229,8 @@ const AccountDashboard: React.FC = () => {
                             <table className="w-full text-left">
                                 <thead className="bg-muted/30 text-[10px] uppercase font-black text-muted-foreground tracking-[0.2em]">
                                     <tr>
-                                        <th className="px-8 py-5">Customer & Asset</th>
-                                        <th className="px-8 py-5">Value details</th>
+                                        <th className="px-8 py-5">Customer & Car</th>
+                                        <th className="px-8 py-5">Price Details</th>
                                         <th className="px-8 py-5">Verification</th>
                                         <th className="px-8 py-5 text-right">Status</th>
                                     </tr>
@@ -257,7 +257,7 @@ const AccountDashboard: React.FC = () => {
                                             <td className="px-8 py-6">
                                                 <p className="text-[14px] font-mono font-black">{item.amt}</p>
                                                 <p className="text-[10px] text-emerald-600 font-extrabold flex items-center gap-1 mt-0.5">
-                                                    <Wallet size={10} /> Paid: {item.booking}
+                                                    <Wallet size={10} /> Paid Money: {item.booking}
                                                 </p>
                                             </td>
                                             <td className="px-8 py-6">
@@ -274,7 +274,7 @@ const AccountDashboard: React.FC = () => {
                                                     ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' 
                                                     : 'bg-amber-500/10 text-amber-600 border-amber-500/20'
                                                 }`}>
-                                                    {item.status === 'done' ? 'SETTLED' : 'PENDING ACTION'}
+                                                    {item.status === 'done' ? 'FINISHED' : 'WAITING'}
                                                 </span>
                                             </td>
                                         </tr>
@@ -304,11 +304,11 @@ const AccountDashboard: React.FC = () => {
                         <div className="bg-card border border-border rounded-[32px] p-8 shadow-sm">
                             <div className="flex justify-between items-center mb-8">
                                 <div className="space-y-1">
-                                    <h3 className="font-black text-xl tracking-tight">Institutional Performance</h3>
-                                    <p className="text-[12px] text-muted-foreground font-medium italic">Revenue (Cr) vs Operational Expenditure</p>
+                                    <h3 className="font-black text-xl tracking-tight">Shop Profit</h3>
+                                    <p className="text-[12px] text-muted-foreground font-medium italic">Money Made vs Total Shop Bill</p>
                                 </div>
                                 <button className="px-4 py-2 bg-muted text-[11px] text-primary font-black rounded-xl hover:bg-primary/10 transition-all border border-transparent hover:border-primary/20 flex items-center gap-2">
-                                    <History size={14} /> Full Audit Report
+                                    <History size={14} /> Full History Book
                                 </button>
                             </div>
                             <div className="h-72">
@@ -354,7 +354,7 @@ const AccountDashboard: React.FC = () => {
                                 <div className="space-y-1">
                                     <div className="flex items-center gap-2">
                                         <h3 className="font-black text-2xl group-hover:text-primary transition-colors">
-                                            {selectedLead.status === 'done' ? 'Processed' : 'Settlement'}
+                                            {selectedLead.status === 'done' ? 'Processed' : 'Final Payment'}
                                         </h3>
                                         <span className={`px-2 py-0.5 rounded-md text-[8px] font-black uppercase tracking-tighter ${selectedLead.status === 'done' ? 'bg-emerald-500 text-white' : 'bg-primary text-white'}`}>
                                             {selectedLead.id}
@@ -402,22 +402,22 @@ const AccountDashboard: React.FC = () => {
                                             onClick={() => handleMarkAsDone(selectedLead.id)}
                                             className="w-full py-5 bg-primary text-primary-foreground rounded-[20px] font-black text-[13px] tracking-widest flex items-center justify-center gap-3 shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all group"
                                         >
-                                            <ReceiptText size={20} className="group-hover:rotate-12 transition-transform" /> COMPLETE SETTLEMENT
+                                            <ReceiptText size={20} className="group-hover:rotate-12 transition-transform" /> FINISH FINAL BILL
                                         </button>
                                         <button className="w-full py-5 bg-background text-foreground border border-border rounded-[20px] font-black text-[13px] tracking-widest flex items-center justify-center gap-3 hover:bg-muted/80 transition-all">
-                                            <Send size={18} /> NOTIFY SALES EXEC.
+                                            <Send size={18} /> TELL SALES PERSON
                                         </button>
                                     </>
                                 ) : (
                                     <>
                                         <div className="p-5 bg-emerald-500/10 border border-emerald-500/20 rounded-[20px] text-emerald-600 flex flex-col items-center gap-3">
                                             <CheckCircle2 size={32} />
-                                            <p className="font-black text-sm tracking-tight text-center">Lead Processed Successfully</p>
+                                            <p className="font-black text-sm tracking-tight text-center">Customer Work Done</p>
                                             <button 
                                                 onClick={() => handleMarkAsPending(selectedLead.id)}
                                                 className="text-[10px] font-black underline underline-offset-4 mt-2 hover:text-emerald-700 transition-colors"
                                             >
-                                                Undo Settlement
+                                                Undo Payment
                                             </button>
                                         </div>
                                         <button className="w-full py-5 bg-background text-foreground border border-border rounded-[20px] font-black text-[13px] tracking-widest flex items-center justify-center gap-3 hover:bg-muted transition-all">
@@ -426,7 +426,7 @@ const AccountDashboard: React.FC = () => {
                                     </>
                                 )}
                                 <button className="w-full py-2 text-[10px] text-destructive font-black tracking-widest opacity-50 hover:opacity-100 transition-opacity">
-                                    ESCALATE TO DISCREPANCY MANAGER
+                                    TELL BIG BOSS ABOUT PROBLEM
                                 </button>
                             </div>
                         </div>

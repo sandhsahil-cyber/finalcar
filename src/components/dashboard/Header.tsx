@@ -15,18 +15,18 @@ import {
 } from 'lucide-react';
 
 const roles: { value: UserRole; label: string; sublabel: string; icon: React.ElementType; color: string }[] = [
-  { value: 'salesmanager', label: 'Sales Manager', sublabel: 'Vikash Oberoi', icon: Briefcase, color: '#ff6b35' },
-  { value: 'teamleader', label: 'Team Leader', sublabel: 'Rajesh Kumar (Alpha Squad)', icon: Shield, color: '#8b5cf6' },
-  { value: 'salesperson', label: 'Sales Executive', sublabel: 'Vikram Singh', icon: UserCircle, color: '#3b82f6' },
-  { value: 'accounts', label: 'Accounts & Finance', sublabel: 'Mehta Ji (Fin-Head)', icon: Wallet, color: '#10b981' },
-  { value: 'rto', label: 'RTO Department', sublabel: 'Sharma Ji (Reg. Specialist)', icon: ClipboardList, color: '#6366f1' },
-  { value: 'insurance', label: 'Insurance Dept.', sublabel: 'Verma Ji (Policy Expert)', icon: ShieldCheck, color: '#0ea5e9' },
-  { value: 'accessories', label: 'Accessories Dept.', sublabel: 'Suresh Pal (Fit-Lead)', icon: Package, color: '#f43f5e' },
-  { value: 'finance', label: 'Finance Dept.', sublabel: 'HDFC & SBI Partners', icon: Landmark, color: '#8b5cf6' },
-  { value: 'pdi', label: 'PDI Workshop', sublabel: 'Quality Assurance', icon: Truck, color: '#10b981' },
-  { value: 'ceo', label: 'Brand CEO', sublabel: 'Brand Executive', icon: TrendingUp, color: '#1a202c' },
-  { value: 'groupceo', label: 'Group CEO', sublabel: 'Group Executive', icon: Globe, color: '#0ea5e9' },
-  { value: 'owner', label: 'Group Owner', sublabel: 'Portfolio Visionary', icon: ShieldCheck, color: '#f59e0b' }
+  { value: 'salesmanager', label: 'Sales Manager', sublabel: 'Team Strategy Lead', icon: Briefcase, color: '#ff6b35' },
+  { value: 'teamleader', label: 'Team Leader', sublabel: 'Squad Leader', icon: Shield, color: '#8b5cf6' },
+  { value: 'salesperson', label: 'Sales Executive', sublabel: 'Customer Relations', icon: UserCircle, color: '#3b82f6' },
+  { value: 'accounts', label: 'Accounts', sublabel: 'Financial Controller', icon: Wallet, color: '#10b981' },
+  { value: 'rto', label: 'RTO', sublabel: 'Registration Specialist', icon: ClipboardList, color: '#6366f1' },
+  { value: 'insurance', label: 'Insurance', sublabel: 'Policy Expert', icon: ShieldCheck, color: '#0ea5e9' },
+  { value: 'accessories', label: 'Accessories', sublabel: 'Fitment Lead', icon: Package, color: '#f43f5e' },
+  { value: 'finance', label: 'Finance', sublabel: 'Bank Relations', icon: Landmark, color: '#8b5cf6' },
+  { value: 'pdi', label: 'PDI', sublabel: 'QA Specialist', icon: Truck, color: '#10b981' },
+  { value: 'ceo', label: 'Brand CEO', sublabel: 'Brand Strategy', icon: TrendingUp, color: '#1a202c' },
+  { value: 'groupceo', label: 'Group CEO', sublabel: 'Portfolio Lead', icon: Globe, color: '#0ea5e9' },
+  { value: 'owner', label: 'Owner', sublabel: 'Strategic Visionary', icon: ShieldCheck, color: '#f59e0b' }
 ];
 
 const Header: React.FC = () => {
@@ -95,7 +95,7 @@ const Header: React.FC = () => {
           </button>
           <div className="relative hidden sm:block max-w-md flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-            <input type="text" placeholder="Search deals, customers, cars..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
+            <input type="text" placeholder="Search bookings, customers, cars..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-400 transition-all" />
             {searchQuery && (
               <button onClick={() => setSearchQuery('')} className="absolute right-3 top-1/2 -translate-y-1/2">

@@ -4,9 +4,9 @@ import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Toolti
 
 const PAYROLL_DATA = [
   { brand: 'Toyota', headcount: 480, incentive: 12.4, efficiency: 94 },
-  { brand: 'BMW', headcount: 220, incentive: 45.8, efficiency: 82 },
-  { brand: 'Audi', headcount: 180, incentive: 32.1, efficiency: 88 },
-  { brand: 'Tesla', headcount: 140, incentive: 18.5, efficiency: 75 },
+  { brand: 'MG', headcount: 320, incentive: 28.6, efficiency: 91 },
+  { brand: 'TATA Motors', headcount: 540, incentive: 42.1, efficiency: 96 },
+  { brand: 'Ashok Leyland', headcount: 210, incentive: 15.5, efficiency: 89 },
 ];
 
 const GCEOHRPayroll: React.FC = () => {

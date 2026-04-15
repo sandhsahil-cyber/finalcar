@@ -121,19 +121,18 @@ const TeamLeaderDashboard: React.FC = () => {
 
             <div className="flex flex-wrap items-center gap-8 sm:gap-12">
               <div className="space-y-1">
-                <p className="text-[10px] text-purple-200 font-black uppercase tracking-widest">Team Target</p>
-                <p className="text-2xl font-black flex items-baseline gap-1">
-                  {Math.round(CAR_TARGET)} <span className="text-xs font-bold text-purple-200 ml-1">Units</span>
-                </p>
-              </div>
-              <div className="space-y-1">
-                <p className="text-[10px] text-purple-200 font-black uppercase tracking-widest">Cars Sold</p>
-                <p className="text-2xl font-black flex items-baseline gap-1">
-                  {totalDeliveries} <span className="text-xs font-bold text-purple-200 ml-1">Units</span>
+                <p className="text-[10px] text-purple-200 font-black uppercase tracking-widest">Car Target</p>
+                <p className="text-2xl font-black">
+                  63 Units
                 </p>
               </div>
               <div className="flex-1 min-w-[200px] space-y-2">
-                <p className="text-[10px] text-purple-200 font-black uppercase tracking-widest">Month Progress</p>
+                <div className="flex items-center justify-between">
+                  <p className="text-[10px] text-purple-200 font-black uppercase tracking-widest">Team Car Sales</p>
+                  <p className="text-[10px] text-purple-100 font-bold uppercase tracking-tight">
+                    {totalDeliveries} Sold of 63 Goal
+                  </p>
+                </div>
                 <div className="flex items-center gap-4">
                   <div className="flex-1 h-3 bg-white/10 rounded-full overflow-hidden border border-white/10 p-0.5">
                     <div
@@ -152,14 +151,13 @@ const TeamLeaderDashboard: React.FC = () => {
               <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
                 <Award className="w-20 h-20 text-white" />
               </div>
-              <p className="text-[10px] text-purple-100 font-black uppercase tracking-widest mb-4">Total Team Incentive ({totalIncentiveUnits} Units)</p>
+              <p className="text-[10px] text-purple-100 font-black uppercase tracking-widest mb-4">Team Cash Points ({totalIncentiveUnits} Units)</p>
               <div className="flex items-baseline gap-2 mb-2">
-                <span className="text-xl font-bold text-purple-200">₹</span>
-                <span className="text-5xl font-black tracking-tighter">{formatCurrency(totalEarnedIncentive).replace('₹', '')}</span>
+                <span className="text-5xl font-black tracking-tighter">{totalEarnedIncentive / 1000} Pts</span>
               </div>
               <div className="flex items-center gap-2 text-[10px] font-bold text-purple-100 bg-white/10 w-fit px-3 py-1.5 rounded-full border border-white/10">
                 <Zap className="w-3 h-3 text-yellow-300 fill-yellow-300" />
-                <span>Unlocked by Sales Excellence</span>
+                <span>Paid after target achieved</span>
               </div>
             </div>
           </div>
@@ -168,31 +166,31 @@ const TeamLeaderDashboard: React.FC = () => {
 
       {/* Summary Row */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {/* Car Sales Funnel */}
+        {/* My Sales Summary */}
         <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm hover:shadow-md transition-all">
-          <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-6">Car Sales Funnel</p>
+          <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-6">Total Sales Check</p>
           <div className="flex items-center justify-between relative">
             <div className="text-center relative z-10">
               <p className="text-2xl font-black text-gray-900">{totalLeads}</p>
-              <p className="text-[9px] font-bold text-gray-400 uppercase">All Leads</p>
+              <p className="text-[9px] font-bold text-gray-400 uppercase">All Customers</p>
             </div>
             <ArrowRight className="w-4 h-4 text-gray-200" />
             <div className="text-center relative z-10">
               <p className="text-2xl font-black text-blue-600">{totalBookings}</p>
-              <p className="text-[9px] font-bold text-gray-400 uppercase">Bookings</p>
+              <p className="text-[9px] font-bold text-gray-400 uppercase">Active Booked</p>
             </div>
             <ArrowRight className="w-4 h-4 text-gray-200" />
             <div className="text-center relative z-10">
               <p className="text-2xl font-black text-emerald-500">{totalDeliveries}</p>
-              <p className="text-[9px] font-bold text-gray-400 uppercase">Deliveries</p>
+              <p className="text-[9px] font-bold text-gray-400 uppercase">Cars Delivered</p>
             </div>
           </div>
         </div>
 
-        {/* Finance Processing */}
+        {/* Loans Processing */}
         <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm hover:shadow-md transition-all">
           <div className="flex items-center justify-between mb-4">
-            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Finance Processing</p>
+            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Team Car Loans</p>
             <div className="bg-blue-50 p-2 rounded-xl">
               <Shield className="w-4 h-4 text-blue-500" />
             </div>
@@ -205,8 +203,8 @@ const TeamLeaderDashboard: React.FC = () => {
                 <span className="text-xl font-bold text-gray-400">{String(finance3rdParty).padStart(2, '0')}</span>
               </div>
               <div className="flex items-center gap-4 text-[9px] font-black uppercase tracking-tight text-gray-400">
-                <span>In-house</span>
-                <span>3rd Party</span>
+                <span>From Shop</span>
+                <span>Outside Bank</span>
               </div>
             </div>
             <div className="text-right">
@@ -216,22 +214,22 @@ const TeamLeaderDashboard: React.FC = () => {
           </div>
         </div>
 
-        {/* Accessories Revenue */}
+        {/* Accessories Sales */}
         <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm hover:shadow-md transition-all">
           <div className="flex items-center justify-between mb-2">
-            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Accessories Revenue</p>
+            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Car Fittings Sold</p>
             <div className="bg-orange-50 p-2 rounded-xl">
               <Package className="w-4 h-4 text-orange-500" />
             </div>
           </div>
           <div className="flex items-center justify-between mb-4">
-            <h4 className="text-2xl font-black text-gray-900">{formatCurrency(accessoriesTotal)}</h4>
-            <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Goal: {formatCurrency(accessoriesGoal)}</p>
+            <h4 className="text-2xl font-black text-gray-900">{teamDeals.filter(d => (d.accessoriesAmount || 0) > 0).length} Cars</h4>
+            <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Goal: 60 Units</p>
           </div>
           <div className="h-2 bg-gray-50 rounded-full overflow-hidden border border-gray-100">
             <div
               className="h-full bg-gradient-to-r from-orange-400 to-orange-500 rounded-full transition-all"
-              style={{ width: `${accessoriesProgress}%` }}
+              style={{ width: `${Math.min(100, (teamDeals.filter(d => (d.accessoriesAmount || 0) > 0).length / 60) * 100)}%` }}
             />
           </div>
         </div>
@@ -240,7 +238,7 @@ const TeamLeaderDashboard: React.FC = () => {
       {/* Detailed Counting Panel */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <MetricsCard
-          title="All Leads"
+          title="All Customers"
           value={String(totalLeads)}
           subtitle="Team total"
           icon={<Users className="w-5 h-5" />}
@@ -263,30 +261,38 @@ const TeamLeaderDashboard: React.FC = () => {
           color="#10b981"
         />
         <MetricsCard
-          title="Exchange"
+          title="Car Exchange"
           value={String(exchangeCount)}
-          subtitle="Old car intake"
+          subtitle="Old car taken"
           trend={5}
           icon={<TrendingUp className="w-5 h-5" />}
           color="#f59e0b"
         />
         <MetricsCard
           title="Insurance"
-          value={`In-house: ${insuranceInHouseCount}`}
+          /* We wrap the value in a span to override the default large font size */
+          value={<span className="text-sm font-medium">{`In-house: ${insuranceInHouseCount}`}</span>}
           subtitle={`Self: ${insuranceSelfCount}`}
           trend={5}
           icon={<ShieldCheck className="w-5 h-5" />}
           color="#ec4899"
         />
         <MetricsCard
-          title="RTO / EW"
-          value={`${rtoDoneCount} / ${ewCount}`}
-          subtitle="RTO Done / Ext. Warranty"
+          title="RTO (Plates issued)"
+          value={`${rtoDoneCount}`}
+          subtitle="Ready for delivery"
           icon={<Layers className="w-5 h-5" />}
           color="#ff6b35"
         />
         <MetricsCard
-          title="Conversion"
+          title="Warranty (Warranty sold)"
+          value={`${ewCount}`}
+          subtitle="Extended coverage"
+          icon={<ShieldCheck className="w-5 h-5" />}
+          color="#10b981"
+        />
+        <MetricsCard
+          title="Team sale Win %"
           value={`${conversionRate}%`}
           subtitle="Leads to Retail"
           trend={2}
@@ -294,7 +300,7 @@ const TeamLeaderDashboard: React.FC = () => {
           color="#3b82f6"
         />
         <MetricsCard
-          title="Month Progress"
+          title="Car sell progress"
           value={`${progressPercent}%`}
           subtitle="Target Achievement"
           icon={<BarChart3 className="w-5 h-5" />}
@@ -307,7 +313,7 @@ const TeamLeaderDashboard: React.FC = () => {
         <div className="bg-amber-50 border border-amber-200 rounded-2xl p-5">
           <h3 className="text-sm font-bold text-amber-800 mb-3 flex items-center gap-2">
             <Target className="w-4 h-4" />
-            Pending Approvals & Blocked Deals
+            Approval Needed & Blocked Deals
           </h3>
           <div className="space-y-2">
             {pendingApprovals.map(deal => (
@@ -345,7 +351,7 @@ const TeamLeaderDashboard: React.FC = () => {
           {/* Deals */}
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
             <h3 className="text-xl font-black text-gray-900 flex items-center gap-2">
-              My Leads <span className="text-xs font-bold px-2 py-0.5 bg-blue-50 text-blue-600 rounded-full">{filteredDeals.length}</span>
+              My Team Customers <span className="text-xs font-bold px-2 py-0.5 bg-blue-50 text-blue-600 rounded-full">{filteredDeals.length}</span>
             </h3>
             <div className="flex items-center gap-2">
               <div className="flex items-center gap-1 bg-gray-50 rounded-xl p-1 overflow-x-auto scrollbar-hide">
@@ -361,7 +367,7 @@ const TeamLeaderDashboard: React.FC = () => {
                   className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-all whitespace-nowrap ${stageFilter === 'Booking' ? 'bg-white shadow-sm text-gray-900 border border-gray-100' : 'text-gray-500'
                     }`}
                 >
-                  Booking Leads
+                  Booked
                 </button>
                 <div className="w-px h-4 bg-gray-200 mx-1" />
                 {DEAL_STAGES.filter(s => s !== 'General').map(stage => (
@@ -381,14 +387,14 @@ const TeamLeaderDashboard: React.FC = () => {
                   className="flex items-center gap-2 px-4 py-2 bg-indigo-50 text-indigo-600 text-xs font-bold rounded-xl hover:bg-indigo-100 transition-all border border-indigo-100"
                 >
                   <QrCode className="w-4 h-4" />
-                  <span className="hidden sm:inline">Walking Lead</span>
+                  <span className="hidden sm:inline">Walk-in Customer</span>
                 </button>
                 <button
                   onClick={() => setShowNewDealForm(true)}
                   className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white text-xs font-bold rounded-xl hover:bg-blue-700 transition-all shadow-lg shadow-blue-200"
                 >
                   <Plus className="w-4 h-4" />
-                  <span>Add Lead</span>
+                  <span>Add Customer</span>
                 </button>
               </div>
             </div>
@@ -416,7 +422,7 @@ const TeamLeaderDashboard: React.FC = () => {
                           <p className="text-[11px] text-gray-400 font-medium">{deal.customerPhone || deal.id}</p>
                         </td>
                         <td className="px-6 py-5">
-                          <p className="text-sm font-bold text-blue-600">TATA {deal.carModel.replace('Hyundai ', '')}</p>
+                          <p className="text-sm font-bold text-blue-600">{deal.carModel}</p>
                           <p className="text-[11px] text-gray-500 font-medium">{deal.carVariant} • {deal.color}</p>
                         </td>
                         <td className="px-6 py-5">
@@ -491,7 +497,7 @@ const TeamLeaderDashboard: React.FC = () => {
           {/* Team Leaderboard */}
           <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
             <h3 className="text-lg font-bold text-gray-900 mb-1">Team Leaderboard</h3>
-            <p className="text-sm text-gray-500 mb-4">Performance ranking for April 2026</p>
+            <p className="text-sm text-gray-500 mb-4">Units Sold ranking for April 2026</p>
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
               {sortedMembers.map((member, i) => (
                 <TeamMemberCard key={member.id} member={member} rank={i + 1} />

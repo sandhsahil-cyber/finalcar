@@ -142,11 +142,11 @@ const SalesPersonDashboard: React.FC = () => {
 
             <div className="flex flex-wrap gap-8 items-end">
               <div>
-                <p className="text-blue-100/60 text-[10px] font-bold uppercase tracking-widest mb-1">Car Target</p>
+                <p className="text-blue-100/60 text-[10px] font-bold uppercase tracking-widest mb-1">Monthly Goal</p>
                 <p className="text-2xl font-black">{CAR_TARGET} <span className="text-sm font-medium opacity-60">Units</span></p>
               </div>
               <div>
-                <p className="text-blue-100/60 text-[10px] font-bold uppercase tracking-widest mb-1">Cars Sold</p>
+                <p className="text-blue-100/60 text-[10px] font-bold uppercase tracking-widest mb-1">Cars Sold So Far</p>
                 <p className="text-2xl font-black">{currentStats.dealsCount} <span className="text-sm font-medium opacity-60">Units</span></p>
               </div>
               {teamManaged && (
@@ -156,9 +156,14 @@ const SalesPersonDashboard: React.FC = () => {
                 </div>
               )}
               <div>
-                <p className="text-blue-100/60 text-[10px] font-bold uppercase tracking-widest mb-1">Month Progress</p>
+                <div className="flex items-center justify-between mb-1">
+                  <p className="text-blue-100/60 text-[10px] font-bold uppercase tracking-widest">My Progress</p>
+                  <p className="text-[10px] text-blue-100 font-bold uppercase tracking-tight">
+                    {currentStats.dealsCount} Sold of {CAR_TARGET} Goal
+                  </p>
+                </div>
                 <div className="flex items-center gap-3 mt-1 bg-white/10 px-3 py-2 rounded-xl border border-white/10">
-                  <div className="w-24 h-1.5 bg-white/20 rounded-full overflow-hidden">
+                  <div className="flex-1 h-1.5 bg-white/20 rounded-full overflow-hidden">
                     <div className="h-full bg-white rounded-full" style={{ width: `${progressPercent}%` }} />
                   </div>
                   <span className="text-xs font-black">{progressPercent}%</span>
@@ -171,14 +176,14 @@ const SalesPersonDashboard: React.FC = () => {
             <div className="absolute top-2 right-2">
               <div className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
             </div>
-            <p className="text-blue-100/80 text-[10px] font-black uppercase tracking-widest mb-2">Total Incentive Earned ({totalIncentiveUnits} Units)</p>
+            <p className="text-blue-100/80 text-[10px] font-black uppercase tracking-widest mb-2">Live Earnings ({totalIncentiveUnits} Units)</p>
             <div className="flex items-baseline gap-1">
               <span className="text-sm font-bold text-emerald-400">₹</span>
               <span className="text-4xl font-black text-white tracking-tighter">
                 {formatCurrency(totalEarnedIncentive).replace('₹', '').replace('.00', '')}
               </span>
             </div>
-            <p className="text-[9px] text-blue-200/60 mt-2 font-medium">Unlocked by RTO completion</p>
+            <p className="text-[9px] text-blue-200/60 mt-2 font-medium">Paid after target achieved</p>
           </div>
         </div>
       </div>
@@ -187,21 +192,21 @@ const SalesPersonDashboard: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         {/* Block 1: Sales Funnel Summary */}
         <div className="bg-white rounded-3xl border border-gray-100 p-5 shadow-sm hover:shadow-md transition-shadow">
-          <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-4">Car Sales Funnel</p>
+          <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-4">Car Sale Progress</p>
           <div className="flex items-center justify-between">
             <div className="text-center flex-1">
               <p className="text-2xl font-black text-gray-900">{totalLeads}</p>
-              <p className="text-[10px] text-gray-500 font-bold">ALL LEADS</p>
+              <p className="text-[10px] text-gray-500 font-bold">ALL CUSTOMERS</p>
             </div>
             <ArrowRight className="w-4 h-4 text-gray-200" />
             <div className="text-center flex-1">
               <p className="text-2xl font-black text-blue-600">{totalBookings}</p>
-              <p className="text-[10px] text-gray-500 font-bold">BOOKINGS</p>
+              <p className="text-[10px] text-gray-500 font-bold">BOOKED</p>
             </div>
             <ArrowRight className="w-4 h-4 text-gray-200" />
             <div className="text-center flex-1">
               <p className="text-2xl font-black text-emerald-600">{totalDeliveries}</p>
-              <p className="text-[10px] text-gray-500 font-bold">DELIVERIES</p>
+              <p className="text-[10px] text-gray-500 font-bold">DELIVERED</p>
             </div>
           </div>
         </div>
@@ -212,16 +217,16 @@ const SalesPersonDashboard: React.FC = () => {
             <Shield className="w-6 h-6 text-indigo-500" />
           </div>
           <div className="flex-1">
-            <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-1">Finance Processing</p>
+            <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-1">Car Loans</p>
             <div className="flex items-center gap-4 mt-2">
               <div>
                 <p className="text-xl font-black text-indigo-700">{String(financeInHouse).padStart(2, '0')}</p>
-                <p className="text-[9px] font-bold text-gray-500 uppercase">In-House</p>
+                <p className="text-[9px] font-bold text-gray-500 uppercase">From Shop</p>
               </div>
               <div className="h-8 w-px bg-gray-100" />
               <div>
                 <p className="text-xl font-black text-gray-400">{String(finance3rdParty).padStart(2, '0')}</p>
-                <p className="text-[9px] font-bold text-gray-500 uppercase">3rd Party</p>
+                <p className="text-[9px] font-bold text-gray-500 uppercase">Outside Bank</p>
               </div>
               <div className="ml-auto text-right">
                 <p className="text-xs font-black text-gray-900">{financeApprovalRate}%</p>
@@ -237,13 +242,13 @@ const SalesPersonDashboard: React.FC = () => {
             <Package className="w-6 h-6 text-orange-500" />
           </div>
           <div className="flex-1">
-            <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-1">Accessories Revenue</p>
+            <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-1">Car Fittings Sold</p>
             <div className="flex items-center justify-between mt-1">
-              <p className="text-xl font-black text-orange-600">₹{formatCurrency(accessoriesTotal).replace('₹', '')}</p>
-              <span className="text-[9px] font-bold text-gray-400 uppercase tracking-tighter">Goal: {formatCurrency(accessoriesTarget).replace('₹', '')}</span>
+              <p className="text-xl font-black text-orange-600">{myDeals.filter(d => (d.accessoriesAmount || 0) > 0).length} Cars</p>
+              <span className="text-[9px] font-bold text-gray-400 uppercase tracking-tighter">Goal: 12 Units</span>
             </div>
             <div className="w-full h-1.5 bg-gray-100 rounded-full mt-2 overflow-hidden">
-              <div className="h-full bg-orange-500 rounded-full" style={{ width: `${accessoriesProgress}%` }} />
+              <div className="h-full bg-orange-500 rounded-full" style={{ width: `${Math.min(100, (myDeals.filter(d => (d.accessoriesAmount || 0) > 0).length / 12) * 100)}%` }} />
             </div>
           </div>
         </div>
@@ -252,7 +257,7 @@ const SalesPersonDashboard: React.FC = () => {
       {/* Individual Lead Metrics */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <MetricsCard
-          title="All Leads"
+          title="All Customers"
           value={String(myDeals.length)}
           subtitle="Total enquiries"
           trend={15}
@@ -260,17 +265,17 @@ const SalesPersonDashboard: React.FC = () => {
           color="#6366f1"
         />
         <MetricsCard
-          title="Bookings"
+          title="Booked Customers"
           value={String(myDeals.filter(d => d.stage !== 'General').length)}
-          subtitle="Units booked"
+          subtitle="Cars booked"
           trend={12}
           icon={<ClipboardList className="w-5 h-5" />}
           color="#8b5cf6"
         />
         <MetricsCard
-          title="Deliveries"
+          title="Units Delivered"
           value={String(totalDeliveries)}
-          subtitle="Units completed"
+          subtitle="Finalized sales"
           trend={5}
           icon={<Car className="w-5 h-5" />}
           color="#10b981"
@@ -308,7 +313,7 @@ const SalesPersonDashboard: React.FC = () => {
           color="#f43f5e"
         />
         <MetricsCard
-          title="Conversion"
+          title="My Money Track"
           value={`${currentStats.conversionRate}%`}
           subtitle="Lead to sale"
           trend={5}
@@ -316,7 +321,7 @@ const SalesPersonDashboard: React.FC = () => {
           color="#f59e0b"
         />
         <MetricsCard
-          title="Month Progress"
+          title="My Progress"
           value={`${progressPercent}%`}
           subtitle={`${CAR_TARGET - currentStats.dealsCount} cars remaining`}
           trend={-3}
@@ -336,7 +341,7 @@ const SalesPersonDashboard: React.FC = () => {
 
           {/* TITLE SECTION (Always Row 1) */}
           <div className="flex items-center gap-3">
-            <h3 className="text-2xl font-black text-gray-900 tracking-tight">My Leads</h3>
+            <h3 className="text-2xl font-black text-gray-900 tracking-tight">My Customers</h3>
             <span className="px-3 py-1 bg-blue-50 text-blue-600 text-xs font-black rounded-full border border-blue-100 shadow-sm">
               {filteredDeals.length}
             </span>
@@ -393,20 +398,20 @@ const SalesPersonDashboard: React.FC = () => {
             {/* ROW 2: ACTION BUTTON GROUP */}
             {!teamManaged && (
               <div className="flex items-center gap-2 w-full md:w-auto justify-end">
-                <button
-                  onClick={() => setShowQRModal(true)}
-                  className="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-2.5 bg-indigo-50 text-indigo-600 text-sm font-bold rounded-xl hover:bg-indigo-100 transition-all border border-indigo-100 shadow-sm"
-                >
-                  <QrCode className="w-4 h-4" />
-                  <span className="whitespace-nowrap">Walking Lead</span>
-                </button>
-                <button
-                  onClick={() => setShowNewDealForm(true)}
-                  className="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-2.5 bg-blue-600 text-white text-sm font-bold rounded-xl hover:bg-blue-700 transition-all shadow-lg shadow-blue-200"
-                >
-                  <Plus className="w-4 h-4" />
-                  <span className="whitespace-nowrap">Add Lead</span>
-                </button>
+                  <button
+                    onClick={() => setShowQRModal(true)}
+                    className="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-2.5 bg-indigo-50 text-indigo-600 text-sm font-bold rounded-xl hover:bg-indigo-100 transition-all border border-indigo-100 shadow-sm"
+                  >
+                    <QrCode className="w-4 h-4" />
+                    <span className="whitespace-nowrap">Walk-in Customer</span>
+                  </button>
+                  <button
+                    onClick={() => setShowNewDealForm(true)}
+                    className="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-2.5 bg-blue-600 text-white text-sm font-bold rounded-xl hover:bg-blue-700 transition-all shadow-lg shadow-blue-200"
+                  >
+                    <Plus className="w-4 h-4" />
+                    <span className="whitespace-nowrap">Add Customer</span>
+                  </button>
               </div>
             )}
           </div>
@@ -495,7 +500,7 @@ const SalesPersonDashboard: React.FC = () => {
         </div>
       </div>
 
-      {/* Walking Lead QR Modal */}
+      {/* Walk-in Customer QR Modal */}
       {showQRModal && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm transition-all duration-300">
           <div className="bg-white rounded-[2.5rem] w-full max-w-sm overflow-hidden shadow-2xl relative animate-in fade-in zoom-in duration-300">
@@ -632,9 +637,9 @@ const SalesPersonDashboard: React.FC = () => {
           <div className="bg-white rounded-3xl border border-gray-100 p-6 shadow-sm overflow-hidden h-fit">
             <div className="flex items-center justify-between mb-6">
               <h3 className="font-bold text-gray-900 flex items-center gap-2">
-                <TrendingUp className="w-5 h-5 text-emerald-500" /> Incentive Earnings
+                <TrendingUp className="w-5 h-5 text-emerald-500" /> Cash Rewards Earnings
               </h3>
-              <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full">LIVE TRACKING</span>
+              <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full">MONEY TRACKING</span>
             </div>
 
             <div className="space-y-4">
@@ -659,17 +664,20 @@ const SalesPersonDashboard: React.FC = () => {
 
               <div className="space-y-3 pt-4">
                 <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Model-wise Deliveries</p>
-                {['TATA Safari', 'TATA Nexon', 'TATA Punch'].map((model, i) => {
-                  const count = myDeals.filter(d => d.carModel === model && d.status === 'completed').length;
-                  const colors = ['blue', 'indigo', 'orange'];
+                {[
+                  { name: 'Toyota Fortuner', brand: 'Toyota', color: 'blue' },
+                  { name: 'MG Hector', brand: 'MG', color: 'indigo' },
+                  { name: 'TATA Safari', brand: 'TATA', color: 'orange' }
+                ].map((item, i) => {
+                  const count = myDeals.filter(d => d.carModel === item.name && d.status === 'completed').length;
                   return (
                     <div key={i} className="flex items-center justify-between p-3 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors">
                       <div className="flex items-center gap-3">
-                        <div className={`w-8 h-8 rounded-lg bg-${colors[i]}-100 flex items-center justify-center`}>
-                          <Car className={`w-4 h-4 text-${colors[i]}-600`} />
+                        <div className={`w-8 h-8 rounded-lg bg-${item.color}-100 flex items-center justify-center`}>
+                          <Car className={`w-4 h-4 text-${item.color}-600`} />
                         </div>
                         <div>
-                          <p className="text-xs font-bold text-gray-900">{model}</p>
+                          <p className="text-xs font-bold text-gray-900">{item.name}</p>
                           <p className="text-[9px] text-gray-500">{count} Units Delivered</p>
                         </div>
                       </div>

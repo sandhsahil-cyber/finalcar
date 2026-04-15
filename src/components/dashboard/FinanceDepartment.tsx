@@ -17,10 +17,10 @@ const FinanceDashboard = () => {
             {/* Finance Funnel */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                 {[
-                    { label: 'Cases Logged', value: logged, color: 'blue' },
-                    { label: 'Sanctioned', value: sanctioned, color: 'purple' },
-                    { label: 'Disbursed', value: disbursed, color: 'emerald' },
-                    { label: 'Rejected', value: rejected, color: 'red' }
+                    { label: 'Loan Started', value: logged, color: 'blue' },
+                    { label: 'Loan Ok', value: sanctioned, color: 'purple' },
+                    { label: 'Money in Bank', value: disbursed, color: 'emerald' },
+                    { label: 'Loan Not Done', value: rejected, color: 'red' }
                 ].map((stat, i) => (
                     <div key={i} className="bg-white p-5 rounded-3xl border border-gray-100 shadow-sm transition-all hover:scale-[1.02]">
                         <p className="text-gray-400 text-[10px] font-black uppercase tracking-widest">{stat.label}</p>
@@ -32,11 +32,11 @@ const FinanceDashboard = () => {
             <div className="bg-white rounded-3xl border border-gray-100 p-6 shadow-sm">
                 <div className="flex justify-between items-center mb-6">
                     <div>
-                        <h3 className="text-lg font-bold">Loan Processing Portal</h3>
-                        <p className="text-xs text-gray-400 font-medium">Tracking {financeDeals.length} active loan applications</p>
+                        <h3 className="text-lg font-bold">Bank Loan Area</h3>
+                        <p className="text-xs text-gray-400 font-medium">Checking {financeDeals.length} active bank loans</p>
                     </div>
                     <button className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-xl text-xs font-bold hover:bg-blue-700 transition-colors">
-                        <UserPlus className="w-4 h-4" /> New Bank Login
+                        <UserPlus className="w-4 h-4" /> Add New Bank
                     </button>
                 </div>
 
@@ -45,7 +45,7 @@ const FinanceDashboard = () => {
                         <thead>
                             <tr className="text-[10px] font-bold text-gray-400 uppercase border-b border-gray-50">
                                 <th className="pb-4">Customer</th>
-                                <th className="pb-4">Financier (Bank)</th>
+                                <th className="pb-4">Bank Name</th>
                                 <th className="pb-4">Loan Amount</th>
                                 <th className="pb-4">Status</th>
                                 <th className="pb-4 text-right">Details</th>
@@ -85,7 +85,7 @@ const FinanceDashboard = () => {
                                                 onClick={() => updateDepartmentStatus(deal.id, 'Finance', 'Completed')}
                                                 className="px-3 py-1.5 bg-emerald-50 text-emerald-600 hover:bg-emerald-100 rounded-lg text-xs font-bold transition-all"
                                             >
-                                                Mark Done
+                                                Finish Loan
                                             </button>
                                         </td>
                                     </tr>
