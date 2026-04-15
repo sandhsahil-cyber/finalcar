@@ -216,8 +216,8 @@ const GroupCEOdashboard = () => {
                                 </p>
                             </div>
                             <div className="text-right">
-                                <p className="text-[10px] font-bold text-red-400 uppercase tracking-widest mb-1">Blocked / Booked</p>
-                                <p className="text-2xl font-black text-gray-700">84 <span className="text-xs text-gray-400">Locked</span></p>
+                                <p className="text-[10px] font-bold text-red-400 uppercase tracking-widest mb-1">Booked / Hold</p>
+                                <p className="text-2xl font-black text-gray-700">84 <span className="text-xs text-gray-400">Cars</span></p>
                             </div>
                         </div>
 

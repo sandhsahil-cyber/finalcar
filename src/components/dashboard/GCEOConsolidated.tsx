@@ -40,12 +40,12 @@ const GCEOConsolidated: React.FC = () => {
                         <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
                         <input 
                             type="text" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)}
-                            placeholder="Global Search (Chassis, Customer, Brand)..." 
+                            placeholder="Search customer, car, showroom..." 
                             className="w-full pl-12 pr-4 py-4 bg-slate-900 border border-slate-800 rounded-2xl text-[11px] font-black outline-none focus:ring-4 ring-blue-500/10 text-white placeholder:text-slate-600 shadow-xl" 
                         />
                         {searchTerm && (
                             <div className="absolute top-full left-0 right-0 mt-2 bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-2xl z-50 animate-in slide-in-from-top-2">
-                                <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-4 px-2">Global Results</p>
+                                <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-4 px-2">Search Results</p>
                                 <div className="space-y-2">
                                     <div className="p-3 hover:bg-slate-800 rounded-xl cursor-not-allowed">
                                         <p className="text-xs font-black text-white">VIN: TATA-NX-2024-X112</p>
@@ -124,7 +124,7 @@ const GCEOConsolidated: React.FC = () => {
                                                 </div>
                                                 <div>
                                                     <p className="text-sm font-black text-white group-hover:text-blue-400 transition-colors uppercase">{item.brand}</p>
-                                                    <p className="text-[9px] text-slate-500 uppercase tracking-[0.1em]">{item.efficiency}% Efficiency</p>
+                                                    <p className="text-[9px] text-slate-500 uppercase tracking-[0.1em]">{item.efficiency}% Score</p>
                                                 </div>
                                             </div>
                                         </td>
@@ -142,11 +142,11 @@ const GCEOConsolidated: React.FC = () => {
                                         </td>
                                         <td className="px-8 py-6 text-center">
                                             <p className="text-sm font-black text-white">₹{(item.ppu / 1000).toFixed(0)}K</p>
-                                            <p className="text-[9px] font-black text-slate-500 uppercase mt-0.5">Net Margin</p>
+                                            <p className="text-[9px] font-black text-slate-500 uppercase mt-0.5">Per Car</p>
                                         </td>
                                         <td className="px-8 py-6 text-center">
                                             <p className="text-sm font-black text-emerald-500">{item.stockTurnRatio}x</p>
-                                            <p className="text-[9px] font-black text-slate-500 uppercase mt-0.5">Turns / Month</p>
+                                            <p className="text-[9px] font-black text-slate-500 uppercase mt-0.5">Times / Month</p>
                                         </td>
                                         <td className="px-8 py-6 text-right">
                                             <button className="px-5 py-2.5 bg-slate-800 text-slate-400 rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-slate-700 hover:text-white transition-all">
@@ -175,7 +175,7 @@ const GCEOConsolidated: React.FC = () => {
                                 </PieChart>
                             </ResponsiveContainer>
                             <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                                <span className="text-sm font-black text-slate-500 uppercase tracking-widest">Aggregate</span>
+                                <span className="text-sm font-black text-slate-500 uppercase tracking-widest">Total</span>
                                 <span className="text-2xl font-black text-white">100%</span>
                             </div>
                         </div>
@@ -184,7 +184,7 @@ const GCEOConsolidated: React.FC = () => {
                     <div className="bg-slate-900 border border-slate-800 p-10 rounded-[40px] shadow-sm relative overflow-hidden">
                         <div className="absolute -top-10 -right-10 w-40 h-40 bg-rose-500/10 blur-[80px] rounded-full pointer-events-none" />
                         <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-rose-400 mb-8 flex items-center gap-2">
-                            <Zap size={14} className="animate-pulse" /> Critical Group Alerts
+                            <Zap size={14} className="animate-pulse" /> Important Alerts
                         </h4>
                         <div className="space-y-4">
                             {[
@@ -240,18 +240,18 @@ const GCEOConsolidated: React.FC = () => {
                     <div className="relative z-10 h-full flex flex-col justify-between">
                         <div>
                             <div className="flex items-center gap-3 mb-8">
-                                <div className="px-3 py-1 bg-indigo-500 rounded-full text-[9px] font-black uppercase tracking-[0.2em]">High Authority</div>
+                                <div className="px-3 py-1 bg-indigo-500 rounded-full text-[9px] font-black uppercase tracking-[0.2em]">Needs Your OK</div>
                                 <Activity className="text-indigo-400 animate-pulse" size={20} />
                             </div>
-                            <h3 className="text-4xl font-black tracking-tighter mb-4 italic">Group Expense Control</h3>
+                            <h3 className="text-4xl font-black tracking-tighter mb-4 italic">Big Approvals Pending</h3>
                             <p className="text-sm font-medium opacity-70 leading-relaxed mb-10 max-w-md">
                                 You have **3 group-level approval requests** pending for buying assets and marketing expansion.
                             </p>
                         </div>
                         <div className="space-y-4">
                             {[
-                                { req: 'New Yard Plot (Ahmedabad)', value: '₹4.2 Cr', by: 'Consolidated Ops' },
-                                { req: 'Q4 National Campaign', value: '₹85.0L', by: 'Group Marketing' },
+                                { req: 'New Yard Plot (Ahmedabad)', value: '₹4.2 Cr', by: 'Operations Team' },
+                                { req: 'Marketing Campaign (All India)', value: '₹85.0L', by: 'Marketing Team' },
                             ].map((task, i) => (
                                 <div key={i} className="p-6 bg-white/5 border border-white/10 rounded-[32px] flex items-center justify-between group-hover:border-indigo-500/30 transition-all">
                                     <div>
