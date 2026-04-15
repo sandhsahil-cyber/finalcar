@@ -65,8 +65,8 @@ const TeamMemberCard: React.FC<TeamMemberCardProps> = ({ member, rank, onClick }
             />
           </div>
           <div className="flex items-center justify-between mt-1">
-            <span className="text-[10px] text-gray-400">{formatCurrency(member.achieved)}</span>
-            <span className="text-[10px] text-gray-400">{formatCurrency(member.monthlyTarget)}</span>
+            <span className="text-[10px] text-gray-400">Achieved: {member.dealsCount}</span>
+            <span className="text-[10px] text-gray-400">Goal: {(member.monthlyTarget / 80000).toFixed(0)} Units</span>
           </div>
         </div>
 
@@ -80,9 +80,9 @@ const TeamMemberCard: React.FC<TeamMemberCardProps> = ({ member, rank, onClick }
             <p className="text-xs font-bold text-emerald-700">{member.conversionRate}%</p>
             <p className="text-[10px] text-emerald-500">Conv.</p>
           </div>
-          <div className="bg-purple-50 rounded-lg p-2 text-center">
-            <p className="text-xs font-bold text-purple-700">{formatCurrency(member.achieved)}</p>
-            <p className="text-[10px] text-purple-500">Revenue</p>
+          <div className="bg-purple-50 rounded-lg p-2 text-center col-span-1">
+            <p className="text-xs font-bold text-purple-700">{progressPercent}%</p>
+            <p className="text-[10px] text-purple-500">Progress</p>
           </div>
         </div>
       </div>

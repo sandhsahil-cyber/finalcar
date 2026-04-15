@@ -6,16 +6,16 @@ import { BrandPerformance } from '@/types/gceo';
 
 const BRAND_DATA: BrandPerformance[] = [
   { id: '1', brand: 'Toyota', logo: 'https://www.carlogos.org/car-logos/toyota-logo.png', mtdRevenue: 42000000, mtdRevenueTarget: 38000000, ppu: 45000, stockTurnRatio: 4.2, efficiency: 94 },
-  { id: '2', brand: 'BMW', logo: 'https://www.carlogos.org/car-logos/bmw-logo.png', mtdRevenue: 68000000, mtdRevenueTarget: 75000000, ppu: 142000, stockTurnRatio: 2.1, efficiency: 82 },
-  { id: '3', brand: 'Audi', logo: 'https://www.carlogos.org/car-logos/audi-logo.png', mtdRevenue: 54000000, mtdRevenueTarget: 50000000, ppu: 128000, stockTurnRatio: 2.5, efficiency: 88 },
-  { id: '4', brand: 'Tesla', logo: 'https://www.carlogos.org/car-logos/tesla-logo.png', mtdRevenue: 31000000, mtdRevenueTarget: 40000000, ppu: 95000, stockTurnRatio: 3.8, efficiency: 75 },
+  { id: '2', brand: 'MG', logo: 'https://www.carlogos.org/car-logos/mg-logo.png', mtdRevenue: 38000000, mtdRevenueTarget: 35000000, ppu: 38000, stockTurnRatio: 3.5, efficiency: 91 },
+  { id: '3', brand: 'TATA Motors', logo: 'https://www.carlogos.org/car-logos/tata-motors-logo.png', mtdRevenue: 54000000, mtdRevenueTarget: 50000000, ppu: 32000, stockTurnRatio: 5.1, efficiency: 96 },
+  { id: '4', brand: 'Ashok Leyland', logo: 'https://www.carlogos.org/car-logos/ashok-leyland-logo.png', mtdRevenue: 31000000, mtdRevenueTarget: 30000000, ppu: 28000, stockTurnRatio: 3.2, efficiency: 89 },
 ];
 
 const CONTRIBUTION_DATA = [
   { name: 'Toyota', value: 42, fill: '#eb0a1e' },
-  { name: 'BMW', value: 68, fill: '#0066b1' },
-  { name: 'Audi', value: 54, fill: '#000000' },
-  { name: 'Tesla', value: 31, fill: '#cc0000' },
+  { name: 'MG', value: 38, fill: '#6366f1' },
+  { name: 'TATA Motors', value: 54, fill: '#3b82f6' },
+  { name: 'Ashok Leyland', value: 31, fill: '#10b981' },
 ];
 
 const GCEOConsolidated: React.FC = () => {
@@ -28,10 +28,10 @@ const GCEOConsolidated: React.FC = () => {
                 <div>
                     <div className="flex items-center gap-3 mb-2">
                         <div className="p-2 bg-blue-500/20 rounded-lg text-blue-400"><LayoutGrid size={24}/></div>
-                        <h2 className="text-4xl font-black tracking-tighter uppercase text-white">All Showrooms Overview</h2>
+                        <h2 className="text-4xl font-black tracking-tighter uppercase text-white">All Brands Control Center</h2>
                     </div>
                     <p className="text-sm font-medium text-slate-400 flex items-center gap-2">
-                         <Globe size={16} className="text-emerald-500" /> See how all your showrooms are doing
+                         <Globe size={16} className="text-emerald-500" /> Total Sales & Money Management for All Brands
                     </p>
                 </div>
 
@@ -60,13 +60,13 @@ const GCEOConsolidated: React.FC = () => {
                             onClick={() => setViewMode('revenue')}
                             className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${viewMode === 'revenue' ? 'bg-blue-600 text-white shadow-lg' : 'text-slate-500 hover:text-white'}`}
                         >
-                            Sales View
+                            Money Made Mode
                         </button>
                         <button 
                             onClick={() => setViewMode('volume')}
                             className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${viewMode === 'volume' ? 'bg-blue-600 text-white shadow-lg' : 'text-slate-500 hover:text-white'}`}
                         >
-                            Cars Sold View
+                            Cars Sold Mode
                         </button>
                     </div>
                 </div>
@@ -74,10 +74,10 @@ const GCEOConsolidated: React.FC = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                 {[
-                    { label: 'Total Sales', value: '₹195.4 Cr', change: '+18.2%', icon: <DollarSign />, color: 'text-emerald-400' },
-                    { label: 'Avg Profit Per Car', value: '₹1.05L', change: '+4.5%', icon: <TrendingUp />, color: 'text-blue-400' },
-                    { label: 'Total Car Stock Value', value: '₹842 Cr', change: '-2.1%', icon: <Box />, color: 'text-purple-400' },
-                    { label: 'Total Staff', value: '1,242', change: '+14 New', icon: <UserCheck />, color: 'text-amber-400' },
+                    { label: 'Total Money Collected', value: '₹195.4 Cr', change: '+18.2%', icon: <DollarSign />, color: 'text-emerald-400' },
+                    { label: 'Average Profit per Car', value: '₹1.05L', change: '+4.5%', icon: <TrendingUp />, color: 'text-blue-400' },
+                    { label: 'Total Cars in Stock', value: '₹842 Cr', change: '-2.1%', icon: <Box />, color: 'text-purple-400' },
+                    { label: 'Total Staff Working', value: '1,242', change: '+14 New', icon: <UserCheck />, color: 'text-amber-400' },
                 ].map((stat, i) => (
                     <div key={i} className="bg-slate-900/50 border border-slate-800 p-8 rounded-[40px] shadow-2xl relative overflow-hidden group">
                         <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:scale-125 transition-transform duration-700">{stat.icon}</div>
@@ -95,8 +95,8 @@ const GCEOConsolidated: React.FC = () => {
                 <div className="xl:col-span-2 bg-slate-900 border border-slate-800 rounded-[40px] shadow-sm overflow-hidden flex flex-col">
                     <div className="p-8 border-b border-slate-800 bg-slate-800/20 flex justify-between items-center">
                         <div>
-                            <h3 className="font-black text-xl tracking-tight uppercase text-white">Brand-wise Performance</h3>
-                            <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mt-1">How each brand showroom is performing</p>
+                            <h3 className="font-black text-xl tracking-tight uppercase text-white">Performance of All Brands</h3>
+                            <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mt-1">Sales Speed & Shop Performance</p>
                         </div>
                         <div className="flex gap-2">
                              <button className="p-2.5 bg-slate-800 text-slate-400 rounded-xl hover:text-white transition-all"><Filter size={18}/></button>
@@ -107,10 +107,10 @@ const GCEOConsolidated: React.FC = () => {
                         <table className="w-full text-left">
                             <thead className="bg-slate-800/30 text-[10px] uppercase font-black text-slate-500 tracking-[0.2em]">
                                 <tr>
-                                    <th className="px-8 py-6">Brand</th>
-                                    <th className="px-8 py-6">Monthly Sales</th>
+                                    <th className="px-8 py-6">Brand Name</th>
+                                    <th className="px-8 py-6">This Month Money Index</th>
                                     <th className="px-8 py-6 text-center">Avg Profit</th>
-                                    <th className="px-8 py-6 text-center">Stock Speed</th>
+                                    <th className="px-8 py-6 text-center">Sale Speed</th>
                                     <th className="px-8 py-6 text-right">Action</th>
                                 </tr>
                             </thead>
@@ -150,7 +150,7 @@ const GCEOConsolidated: React.FC = () => {
                                         </td>
                                         <td className="px-8 py-6 text-right">
                                             <button className="px-5 py-2.5 bg-slate-800 text-slate-400 rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-slate-700 hover:text-white transition-all">
-                                                View Details
+                                                Full Business Check
                                             </button>
                                         </td>
                                     </tr>
@@ -163,7 +163,7 @@ const GCEOConsolidated: React.FC = () => {
                 <div className="space-y-8">
                     <div className="bg-[#1e293b] rounded-[40px] p-10 border border-slate-700 shadow-2xl relative overflow-hidden group">
                         <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 via-transparent to-transparent pointer-events-none" />
-                        <h4 className="text-xl font-black text-white uppercase tracking-tight mb-8 relative z-10">Brand Share</h4>
+                        <h4 className="text-xl font-black text-white uppercase tracking-tight mb-8 relative z-10">Money Share by Brand</h4>
                         <div className="h-[280px] w-full relative z-10">
                             <ResponsiveContainer width="100%" height="100%">
                                 <PieChart>
@@ -188,8 +188,8 @@ const GCEOConsolidated: React.FC = () => {
                         </h4>
                         <div className="space-y-4">
                             {[
-                                { title: 'Delivery Delay', msg: 'Tesla (City A) is taking 4.2 days more than average to deliver cars.', color: 'rose' },
-                                { title: 'Checking Due', msg: 'BMW showroom accounts need to be checked this quarter.', color: 'amber' },
+                                { title: 'Slow Sale Warning', msg: 'Ashok Leyland (City A) avg delivery time exceeded group avg by 4.2 days.', color: 'rose' },
+                                { title: 'Rule Check Due', msg: 'MG Dealership is due for Q3 money check audit.', color: 'amber' },
                             ].map((alert, i) => (
                                 <div key={i} className={`p-5 bg-${alert.color}-500/5 border border-${alert.color}-500/10 rounded-2xl`}>
                                     <p className={`text-[11px] font-black text-${alert.color}-400 mb-1`}>{alert.title}</p>
@@ -208,25 +208,25 @@ const GCEOConsolidated: React.FC = () => {
                     </div>
                     <div className="relative z-10">
                         <div className="flex justify-between items-center mb-10">
-                             <h4 className="text-xl font-black text-white uppercase tracking-tight mb-10">City-wise Car Stock</h4>
-                             <button className="px-4 py-2 bg-slate-800 text-[9px] font-black uppercase tracking-widest text-slate-400 rounded-xl hover:text-white hover:bg-slate-700 transition-all">Map View</button>
+                             <h4 className="text-xl font-black text-white uppercase tracking-tight">Total Car Stock Distribution</h4>
+                             <button className="px-4 py-2 bg-slate-800 text-[9px] font-black uppercase tracking-widest text-slate-400 rounded-xl hover:text-white hover:bg-slate-700 transition-all">Switch to Map View</button>
                         </div>
                         <div className="h-[300px] w-full">
                              <ResponsiveContainer width="100%" height="100%">
                                 <BarChart data={[
-                                    { city: 'Mumbai', toyota: 42, bmw: 12, audi: 18, tesla: 8 },
-                                    { city: 'Delhi', toyota: 38, bmw: 24, audi: 14, tesla: 12 },
-                                    { city: 'Bangalore', toyota: 24, bmw: 8, audi: 31, tesla: 24 },
-                                    { city: 'Rajkot', toyota: 64, bmw: 4, audi: 2, tesla: 0 },
+                                    { city: 'Mumbai', toyota: 42, mg: 12, tata: 18, ashok: 8 },
+                                    { city: 'Delhi', toyota: 38, mg: 24, tata: 14, ashok: 12 },
+                                    { city: 'Bangalore', toyota: 24, mg: 8, tata: 31, ashok: 24 },
+                                    { city: 'Rajkot', toyota: 64, mg: 4, tata: 2, ashok: 0 },
                                 ]}>
                                     <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
                                     <XAxis dataKey="city" stroke="rgba(255,255,255,0.3)" fontSize={11} fontWeight="900" axisLine={false} tickLine={false} />
                                     <YAxis stroke="rgba(255,255,255,0.3)" fontSize={11} fontWeight="900" axisLine={false} tickLine={false} />
                                     <Tooltip contentStyle={{ backgroundColor: '#0f172a', border: 'none', borderRadius: '20px' }} />
                                     <Bar dataKey="toyota" stackId="a" fill="#eb0a1e" barSize={40} />
-                                    <Bar dataKey="bmw" stackId="a" fill="#0066b1" />
-                                    <Bar dataKey="audi" stackId="a" fill="#64748b" />
-                                    <Bar dataKey="tesla" stackId="a" fill="#cc0000" radius={[10, 10, 0, 0]} />
+                                    <Bar dataKey="mg" stackId="a" fill="#6366f1" />
+                                    <Bar dataKey="tata" stackId="a" fill="#3b82f6" />
+                                    <Bar dataKey="ashok" stackId="a" fill="#10b981" radius={[10, 10, 0, 0]} />
                                 </BarChart>
                              </ResponsiveContainer>
                         </div>
@@ -245,7 +245,7 @@ const GCEOConsolidated: React.FC = () => {
                             </div>
                             <h3 className="text-4xl font-black tracking-tighter mb-4 italic">Big Approvals Pending</h3>
                             <p className="text-sm font-medium opacity-70 leading-relaxed mb-10 max-w-md">
-                                You have **3 approval requests** waiting — new land purchase and marketing budget.
+                                You have **3 group-level approval requests** pending for buying assets and marketing expansion.
                             </p>
                         </div>
                         <div className="space-y-4">

@@ -19,10 +19,7 @@ import OwnerDeliveryFunnel from './dashboard/OwnerDeliveryFunnel';
 import OwnerDiscountApprovals from './dashboard/OwnerDiscountApprovals';
 import OwnerCSAT from './dashboard/OwnerCSAT';
 import DealsView from './dashboard/DealsView';
-import PipelineView from './dashboard/PipelineView';
 import TeamView from './dashboard/TeamView';
-import TargetsView from './dashboard/TargetsView';
-import ReportsView from './dashboard/ReportsView';
 import TodayTasksView from './dashboard/TodayTasksView';
 import AccSalesLeads from './dashboard/AccSalesLeads';
 import AccShowroomExpenses from './dashboard/AccShowroomExpenses';
@@ -101,14 +98,8 @@ const AppLayout: React.FC = () => {
         return renderDashboard();
       case 'deals':
         return <DealsView />;
-      case 'pipeline':
-        return <PipelineView />;
       case 'team':
         return <TeamView />;
-      case 'targets':
-        return <TargetsView />;
-      case 'reports':
-        return <ReportsView />;
       case 'today_tasks':
         return <TodayTasksView />;
       case 'acc_sales_leads':
@@ -183,10 +174,8 @@ const AppLayout: React.FC = () => {
         return <OwnerCommandCenter />;
       case 'owner_profit':
         return <OwnerProfitability />;
-      case 'owner_funnel':
-        return <OwnerDeliveryFunnel />;
-      case 'owner_discounts':
-        return <OwnerDiscountApprovals />;
+      case 'owner_inventory':
+        return <CEOInventoryValuation />;
       case 'owner_csat':
         return <OwnerCSAT />;
       default:

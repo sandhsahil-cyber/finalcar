@@ -4,9 +4,9 @@ import { ResponsiveContainer, PieChart as ReChartsPie, Pie, Cell, Tooltip, Legen
 
 const AUDIT_STATS = [
   { name: 'Toyata Rajkot', score: 92, csat: 9.4, status: 'Healthy' },
-  { name: 'BMW India', score: 74, csat: 8.2, status: 'Warning' },
-  { name: 'Audi Mumbai', score: 88, csat: 9.1, status: 'Healthy' },
-  { name: 'Tesla City A', score: 62, csat: 7.5, status: 'Critical' },
+  { name: 'MG India', score: 74, csat: 8.2, status: 'Warning' },
+  { name: 'TATA Motors Mumbai', score: 88, csat: 9.1, status: 'Healthy' },
+  { name: 'Ashok Leyland City A', score: 62, csat: 7.5, status: 'Critical' },
 ];
 
 const GCEORiskCompliance: React.FC = () => {
@@ -100,7 +100,7 @@ const GCEORiskCompliance: React.FC = () => {
                                 <span className="text-[10px] font-black uppercase tracking-[0.2em]">Needs Quick Action</span>
                             </div>
                             <p className="text-sm font-bold leading-relaxed">
-                                Tesla City A showroom has failed the money checking for 3 months in a row. Please look into this.
+                                Ashok Leyland City A has failed the "Financial Payout Reconciliation" audit for 3 consecutive months.
                             </p>
                             <div className="pt-6 border-t border-white/20">
                                  <button className="w-full py-4 bg-white text-rose-500 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-rose-50 shadow-lg">

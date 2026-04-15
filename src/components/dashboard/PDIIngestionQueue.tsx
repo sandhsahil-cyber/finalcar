@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Truck, Search, Filter, ShieldCheck, CheckCircle, AlertTriangle, Camera, Clock, ChevronRight, Hash, ShieldAlert, BadgeCheck } from 'lucide-react';
+import { Truck, Search, Filter, ShieldCheck, CheckCircle, AlertTriangle, Camera, Clock, ChevronRight, Hash, ShieldAlert, BadgeCheck, Car } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { PDITask, PDIStage } from '@/types/pdi';
 

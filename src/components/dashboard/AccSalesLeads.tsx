@@ -1,22 +1,37 @@
-import React from 'react';
-import { Users2, ArrowUpRight, ArrowDownRight, Search, Filter, MoreHorizontal, ReceiptText, Clock, Wallet, Send } from 'lucide-react';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
-
-const TEAM_LEADS_DATA = [
-  { name: 'Team Alpha', leads: 45, conversion: '12%', color: '#3b82f6' },
-  { name: 'Team Beta', leads: 32, conversion: '10%', color: '#8b5cf6' },
-  { name: 'Team Gamma', leads: 58, conversion: '15%', color: '#10b981' },
-  { name: 'Team Delta', leads: 28, conversion: '8%', color: '#f59e0b' },
-];
-
-const SALES_PERSON_PERFORMANCE = [
-  { id: 'SP-001', name: 'Vikram Singh', leads: 12, hot: 4, warm: 5, cold: 3, target: '85%', pendingBill: 2, inProgress: 4, pendingDP: 1 },
-  { id: 'SP-002', name: 'Anita Desai', leads: 15, hot: 7, warm: 6, cold: 2, target: '92%', pendingBill: 5, inProgress: 6, pendingDP: 3 },
-  { id: 'SP-003', name: 'Rahul Verma', leads: 10, hot: 3, warm: 4, cold: 3, target: '78%', pendingBill: 1, inProgress: 3, pendingDP: 2 },
-  { id: 'SP-004', name: 'Meera Joshi', leads: 14, hot: 6, warm: 5, cold: 3, target: '88%', pendingBill: 3, inProgress: 5, pendingDP: 2 },
-];
+import { useDashboard } from '@/contexts/DashboardContext';
 
 const AccSalesLeads: React.FC = () => {
+  const { deals, salespeople, teams } = useDashboard();
+
+  // Dynamic calculations
+  const pendingBills = deals.filter(d => d.stage === 'Account' && d.status === 'pending').length;
+  const flowInProgress = deals.filter(d => d.status === 'active' && d.stage !== 'General').length;
+  const totalLeads = deals.length;
+  const pendingDP = deals.reduce((sum, d) => sum + (d.status === 'active' ? (d.amount * 0.1) : 0), 0);
+
+  const teamLeadsData = teams.slice(0, 4).map(team => ({
+    name: team.name,
+    leads: deals.filter(d => d.teamId === team.id).length,
+    conversion: `${Math.round((deals.filter(d => d.teamId === team.id && d.status === 'completed').length / (deals.filter(d => d.teamId === team.id).length || 1)) * 100)}%`,
+    color: team.color
+  }));
+
+  const salespersonPerformance = salespeople.slice(0, 5).map(sp => {
+    const spDeals = deals.filter(d => d.salespersonId === sp.id);
+    return {
+      id: sp.id,
+      name: sp.name,
+      leads: spDeals.length,
+      hot: spDeals.filter(d => d.stage === 'RTO' || d.stage === 'PDI' || d.stage === 'Accessories').length,
+      warm: spDeals.filter(d => d.stage === 'Finance' || d.stage === 'Insurance').length,
+      cold: spDeals.filter(d => d.stage === 'General' || d.stage === 'Account').length,
+      target: `${Math.round((sp.achieved / (sp.monthlyTarget || 1)) * 100)}%`,
+      pendingBill: spDeals.filter(d => d.stage === 'Account' && d.status === 'pending').length,
+      inProgress: spDeals.filter(d => d.status === 'active' && d.stage !== 'General').length,
+      pendingDP: spDeals.filter(d => d.status === 'active' && d.stage === 'Account').length,
+    };
+  });
+
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
       <div className="flex justify-between items-center">
@@ -43,7 +58,7 @@ const AccSalesLeads: React.FC = () => {
                  <span className="text-[10px] font-black text-blue-600 bg-blue-500/10 px-2 py-1 rounded-full">ACTION REQUIRED</span>
              </div>
              <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Bills Pending</p>
-             <h3 className="text-3xl font-black mt-1">11 <span className="text-xs font-medium text-muted-foreground tracking-normal block mt-1 italic">Awaiting verification</span></h3>
+             <h3 className="text-3xl font-black mt-1">{pendingBills} <span className="text-xs font-medium text-muted-foreground tracking-normal block mt-1 italic">Awaiting verification</span></h3>
           </div>
           <div className="bg-card border border-border p-6 rounded-[32px] shadow-sm hover:shadow-md transition-all border-b-4 border-b-amber-500">
              <div className="flex justify-between items-start mb-4">
@@ -53,7 +68,7 @@ const AccSalesLeads: React.FC = () => {
                  <span className="text-[10px] font-black text-amber-600 bg-amber-500/10 px-2 py-1 rounded-full">IN PROGRESS</span>
              </div>
              <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Flow In-Progress</p>
-             <h3 className="text-3xl font-black mt-1">18 <span className="text-xs font-medium text-muted-foreground tracking-normal block mt-1 italic">Dept transitions active</span></h3>
+             <h3 className="text-3xl font-black mt-1">{flowInProgress} <span className="text-xs font-medium text-muted-foreground tracking-normal block mt-1 italic">Dept transitions active</span></h3>
           </div>
           <div className="bg-card border border-border p-6 rounded-[32px] shadow-sm hover:shadow-md transition-all border-b-4 border-b-emerald-500">
              <div className="flex justify-between items-start mb-4">
@@ -63,7 +78,7 @@ const AccSalesLeads: React.FC = () => {
                  <span className="text-[10px] font-black text-emerald-600 bg-emerald-500/10 px-2 py-1 rounded-full">COLLECTIONS</span>
              </div>
              <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Pending DP</p>
-             <h3 className="text-3xl font-black mt-1">₹8.5 L <span className="text-xs font-medium text-muted-foreground tracking-normal block mt-1 italic">8 items overdue</span></h3>
+             <h3 className="text-3xl font-black mt-1">₹{(pendingDP / 100000).toFixed(1)} L <span className="text-xs font-medium text-muted-foreground tracking-normal block mt-1 italic">From active accounts</span></h3>
           </div>
           <div className="bg-[#0f172a] p-6 rounded-[32px] shadow-xl text-white">
              <div className="flex justify-between items-start mb-4">
@@ -73,7 +88,7 @@ const AccSalesLeads: React.FC = () => {
                  <span className="text-[10px] font-black text-primary bg-primary/20 px-2 py-1 rounded-full">GLOBAL INFLOW</span>
              </div>
              <p className="text-[10px] font-black opacity-60 uppercase tracking-widest">Total Sales Leads</p>
-             <h3 className="text-3xl font-black mt-1">163 <span className="text-[10px] font-bold text-emerald-400 block mt-1 italic">+12 this week</span></h3>
+             <h3 className="text-3xl font-black mt-1">{totalLeads} <span className="text-[10px] font-bold text-emerald-400 block mt-1 italic">Active Pipeline</span></h3>
           </div>
       </div>
 
@@ -87,13 +102,13 @@ const AccSalesLeads: React.FC = () => {
           </div>
           <div className="h-72">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={TEAM_LEADS_DATA}>
+              <BarChart data={teamLeadsData}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" opacity={0.5} />
                 <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 11, fontWeight: 800, fill: 'hsl(var(--muted-foreground))' }} />
                 <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 11, fontWeight: 800, fill: 'hsl(var(--muted-foreground))' }} />
                 <Tooltip cursor={{ fill: 'hsl(var(--muted))', opacity: 0.1 }} />
                 <Bar dataKey="leads" radius={[8, 8, 8, 8]} barSize={32}>
-                  {TEAM_LEADS_DATA.map((entry, index) => (
+                  {teamLeadsData.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={entry.color} />
                   ))}
                 </Bar>
@@ -108,7 +123,7 @@ const AccSalesLeads: React.FC = () => {
             </div>
             <div className="max-h-[300px] overflow-y-auto">
                 <div className="grid grid-cols-1 divide-y divide-border">
-                    {SALES_PERSON_PERFORMANCE.map((person, i) => (
+                    {salespersonPerformance.map((person, i) => (
                         <div key={i} className="p-6 hover:bg-muted/30 transition-all group flex justify-between items-center">
                             <div className="flex flex-col">
                                 <span className="text-sm font-black group-hover:text-primary transition-colors">{person.name}</span>
@@ -162,7 +177,7 @@ const AccSalesLeads: React.FC = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
-              {SALES_PERSON_PERFORMANCE.map((person, i) => (
+              {salespersonPerformance.map((person, i) => (
                 <tr key={i} className="hover:bg-muted/20 transition-all group">
                   <td className="px-8 py-6">
                     <div className="flex items-center gap-4">

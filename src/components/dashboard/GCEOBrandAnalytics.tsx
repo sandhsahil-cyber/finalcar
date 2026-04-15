@@ -4,9 +4,9 @@ import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Toolti
 
 const BRAND_COMPARISON = [
   { brand: 'Toyota', profit: 4.8, volume: 142, ppu: 45000, efficiency: 94 },
-  { brand: 'BMW', profit: 12.4, volume: 88, ppu: 142000, efficiency: 82 },
-  { brand: 'Audi', profit: 9.6, volume: 75, ppu: 128000, efficiency: 88 },
-  { brand: 'Tesla', profit: 5.2, volume: 54, ppu: 95000, efficiency: 75 },
+  { brand: 'MG', profit: 8.4, volume: 110, ppu: 38000, efficiency: 91 },
+  { brand: 'TATA Motors', profit: 12.6, volume: 165, ppu: 32000, efficiency: 96 },
+  { brand: 'Ashok Leyland', profit: 6.2, volume: 54, ppu: 28000, efficiency: 89 },
 ];
 
 const GCEOBrandAnalytics: React.FC = () => {
@@ -65,10 +65,10 @@ const GCEOBrandAnalytics: React.FC = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           {[
-            { label: 'Most Profit', value: 'BMW India', sub: '₹142K Per Car', icon: <DollarSign />, color: 'blue' },
-            { label: 'Best Speed', value: 'Toyota (City A)', sub: '94% Delivery Speed', icon: <Pulse />, color: 'emerald' },
-            { label: 'Fastest Selling', value: 'Toyota (City B)', sub: '5.2x Monthly', icon: <Zap />, color: 'amber' },
-            { label: 'Best Customer Rating', value: 'Audi Mumbai', sub: '9.8 / 10', icon: <Target />, color: 'purple' },
+            { label: 'Most Profitable', value: 'TATA India', sub: '₹32K PPU', icon: <DollarSign />, color: 'blue' },
+            { label: 'Best Efficiency', value: 'Toyota (City A)', sub: '94% TAT Score', icon: <Pulse />, color: 'emerald' },
+            { label: 'Fastest Stock Turn', value: 'TATA Motors', sub: '5.2x Monthly', icon: <Zap />, color: 'amber' },
+            { label: 'Highest CSAT', value: 'MG Mumbai', sub: '9.8 / 10', icon: <Target />, color: 'purple' },
           ].map((card, i) => (
               <div key={i} className={`bg-slate-900/50 border border-slate-800 p-8 rounded-[40px] shadow-2xl relative overflow-hidden group`}>
                    <div className={`p-3 bg-${card.color}-500/10 rounded-2xl w-fit ${card.color === 'blue' ? 'text-blue-400' : card.color === 'emerald' ? 'text-emerald-400' : card.color === 'amber' ? 'text-amber-400' : 'text-purple-400'} mb-6`}>{card.icon}</div>

@@ -19,27 +19,27 @@ const ExecutiveDashboard = () => {
 
     return (
         <div className="space-y-6">
-            {/* 1. TOP PERFORMANCE METRICS */}
+            {/* 1. KEY BUSINESS NUMBERS */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <div className="bg-gradient-to-br from-gray-900 to-gray-800 p-6 rounded-3xl text-white shadow-xl">
-                    <p className="text-gray-400 text-xs font-bold uppercase">Total Group Revenue</p>
+                    <p className="text-gray-400 text-xs font-bold uppercase">Total Collection</p>
                     <p className="text-2xl font-black">{formatCurrency(totalRevenue)}</p>
                     <div className="mt-2 flex items-center gap-1 text-emerald-400 text-[10px] font-bold">
-                        <TrendingUp className="w-3 h-3" /> Monthly Projected
+                        <TrendingUp className="w-3 h-3" /> Monthly Target Estimate
                     </div>
                 </div>
                 <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm">
-                    <p className="text-gray-500 text-xs font-bold uppercase">Conversion Ratio</p>
+                    <p className="text-gray-500 text-xs font-bold uppercase">Sales Success Rate</p>
                     <p className="text-2xl font-black text-gray-900">{conversionRatio}%</p>
-                    <p className="text-[10px] text-gray-400">Lead to Booking</p>
+                    <p className="text-[10px] text-gray-400">Leads and Bookings</p>
                 </div>
                 <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm">
-                    <p className="text-gray-500 text-xs font-bold uppercase">Total Deliveries</p>
+                    <p className="text-gray-500 text-xs font-bold uppercase">Total Delivery</p>
                     <p className="text-2xl font-black text-emerald-600">{totalDeliveries} Units</p>
-                    <p className="text-[10px] text-gray-400 font-bold">Units out of showroom</p>
+                    <p className="text-[10px] text-gray-400 font-bold">Cars Delivered to Customer</p>
                 </div>
                 <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm">
-                    <p className="text-gray-500 text-xs font-bold uppercase">Group Target</p>
+                    <p className="text-gray-500 text-xs font-bold uppercase">Overall Goal</p>
                     <p className="text-2xl font-black text-indigo-600">{targetPercent}%</p>
                     <div className="w-full bg-gray-100 h-1 rounded-full mt-2">
                         <div className="bg-indigo-600 h-full transition-all duration-1000" style={{ width: `${targetPercent}%` }} />
@@ -48,7 +48,7 @@ const ExecutiveDashboard = () => {
             </div>
 
             <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-                {/* 2. OUTLET PERFORMANCE ANALYSIS */}
+                {/* 2. TEAM PERFORMANCE LIST */}
                 <div className="bg-white rounded-3xl border border-gray-100 p-6 shadow-sm">
                     <div className="flex justify-between items-center mb-6">
                         <h3 className="font-bold text-gray-900 flex items-center gap-2"><MapPin className="w-5 h-5 text-red-500" /> Team Performance</h3>
@@ -62,7 +62,7 @@ const ExecutiveDashboard = () => {
                             <div key={i} className="flex items-center justify-between p-4 bg-gray-50 rounded-2xl">
                                 <div>
                                     <p className="text-sm font-bold">{team.name}</p>
-                                    <p className="text-[10px] text-gray-500">{team.units} Units in Pipeline</p>
+                                    <p className="text-[10px] text-gray-500">{team.units} Units Active</p>
                                 </div>
                                 <div className="text-right text-xs font-black text-gray-900">{formatCurrency(team.val)}</div>
                             </div>
@@ -70,25 +70,25 @@ const ExecutiveDashboard = () => {
                     </div>
                 </div>
 
-                {/* 3. DEPARTMENTAL REVENUE SLICE */}
+                {/* 3. EXTRA INCOME SOURCES */}
                 <div className="bg-white rounded-3xl border border-gray-100 p-6 shadow-sm">
-                    <h3 className="font-bold text-gray-900 mb-6 flex items-center gap-2"><Layers className="w-5 h-5 text-indigo-500" /> Dept. Revenue Contribution</h3>
+                    <h3 className="font-bold text-gray-900 mb-6 flex items-center gap-2"><Layers className="w-5 h-5 text-indigo-500" /> Dept. Money Contribution</h3>
                     <div className="space-y-6">
                         <div className="grid grid-cols-2 gap-4">
                             <div className="p-4 bg-indigo-50 rounded-2xl">
                                 <p className="text-[10px] font-bold text-indigo-400 uppercase">Accessories</p>
-                                <p className="text-lg font-black text-indigo-700">₹84.50 L</p>
+                                <p className="text-lg font-black text-indigo-700">{formatCurrency(deals.reduce((sum, d) => sum + (d.accessoriesAmount || 0), 0))}</p>
                             </div>
                             <div className="p-4 bg-emerald-50 rounded-2xl">
-                                <p className="text-[10px] font-bold text-emerald-400 uppercase">Insurance Comm.</p>
-                                <p className="text-lg font-black text-emerald-700">₹12.20 L</p>
+                                <p className="text-[10px] font-bold text-emerald-400 uppercase">Insurance Profit</p>
+                                <p className="text-lg font-black text-emerald-700">{formatCurrency(deals.filter(d => d.insurancePartner).length * 15000)}</p>
                             </div>
                         </div>
-                        {/* INVENTORY AGEING BAR */}
+                        {/* STOCK DURATION BAR */}
                         <div className="space-y-2">
                             <div className="flex justify-between text-[10px] font-black text-gray-400 uppercase">
-                                <span>Stock Ageing Analysis</span>
-                                <span>Total: 240 Units</span>
+                                <span>Old/New Stock Analysis</span>
+                                <span>Total Pipeline: {deals.length} Units</span>
                             </div>
                             <div className="flex h-3 w-full rounded-full overflow-hidden">
                                 <div className="bg-emerald-400 w-[60%]" title="0-30 Days" />

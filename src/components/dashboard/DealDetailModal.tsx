@@ -19,7 +19,7 @@ const DealDetailModal: React.FC = () => {
     active: 'bg-emerald-500',
     completed: 'bg-blue-500',
     pending: 'bg-amber-500',
-    blocked: 'bg-red-500',
+    blocked: 'bg-red-500', // Stuck
   };
 
   return (
@@ -40,7 +40,7 @@ const DealDetailModal: React.FC = () => {
           <div className="flex items-center gap-2 mb-2">
             <span className="text-sm font-mono text-gray-500">{selectedDeal.id}</span>
             <div className={`w-2 h-2 rounded-full ${statusColors[selectedDeal.status]}`} />
-            <span className="text-sm font-medium text-gray-600 capitalize">{selectedDeal.status}</span>
+            <span className="text-sm font-medium text-gray-600 capitalize">{selectedDeal.status === 'blocked' ? 'stuck' : selectedDeal.status}</span>
           </div>
           <h2 className="text-2xl font-bold text-gray-900">{selectedDeal.customerName}</h2>
           <p className="text-gray-500 flex items-center gap-1 mt-1">
@@ -83,7 +83,7 @@ const DealDetailModal: React.FC = () => {
                       className="mt-1 w-full py-1.5 px-2 rounded text-[10px] font-bold uppercase transition-colors text-white"
                       style={{ backgroundColor: color }}
                     >
-                      Send Lead
+                      Process Lead
                     </button>
                   )}
                 </div>

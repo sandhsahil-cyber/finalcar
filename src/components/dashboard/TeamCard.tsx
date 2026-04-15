@@ -50,8 +50,8 @@ const TeamCard: React.FC<TeamCardProps> = ({ team, onClick }) => {
             />
           </div>
           <div className="flex items-center justify-between mt-1">
-            <span className="text-[10px] text-gray-400">{formatCurrency(team.achieved)}</span>
-            <span className="text-[10px] text-gray-400">{formatCurrency(team.monthlyTarget)}</span>
+            <span className="text-[10px] text-gray-400">Achieved: {completedDeals}</span>
+            <span className="text-[10px] text-gray-400">Goal: {Math.round(team.monthlyTarget / 80000)} Units</span>
           </div>
         </div>
 

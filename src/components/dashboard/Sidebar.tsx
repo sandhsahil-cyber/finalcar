@@ -14,73 +14,69 @@ const roleConfig = {
   salesperson: { label: 'Sales Executive', color: '#3b82f6', icon: UserCircle },
   teamleader: { label: 'Team Leader', color: '#8b5cf6', icon: Shield },
   salesmanager: { label: 'Sales Manager', color: '#ff6b35', icon: Briefcase },
-  accounts: { label: 'Accounts & Finance', color: '#10b981', icon: Wallet },
-  rto: { label: 'RTO Department', color: '#6366f1', icon: Gavel },
-  insurance: { label: 'Insurance Dept.', color: '#0ea5e9', icon: ShieldCheck },
-  accessories: { label: 'Accessories Dept.', color: '#f43f5e', icon: Package },
-  finance: { label: 'Finance Dept.', color: '#8b5cf6', icon: Landmark },
-  pdi: { label: 'PDI Workshop', color: '#10b981', icon: ShieldCheck },
-  ceo: { label: 'CEO & Owner', color: '#1a202c', icon: Globe },
+  accounts: { label: 'Money & Accounts', color: '#10b981', icon: Wallet },
+  rto: { label: 'RTO (Plates & Paperwork)', color: '#6366f1', icon: Gavel },
+  insurance: { label: 'Insurance Center', color: '#0ea5e9', icon: ShieldCheck },
+  accessories: { label: 'Accessories & Fittings', color: '#f43f5e', icon: Package },
+  finance: { label: 'Loan Department', color: '#8b5cf6', icon: Landmark },
+  pdi: { label: 'Quality Check (PDI)', color: '#10b981', icon: ShieldCheck },
+  ceo: { label: 'Brand CEO', color: '#1a202c', icon: Globe },
   groupceo: { label: 'Group CEO', color: '#1a202c', icon: LayoutGrid },
-  owner: { label: 'Dealer Principal', color: '#0f172a', icon: Shield },
+  owner: { label: 'Owner', color: '#0f172a', icon: Shield },
 };
 
 const menuItems = [
   { id: 'today_tasks', label: 'Today Tasks', icon: ClipboardList },
   { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  { id: 'deals', label: 'Leads', icon: Car },
-  { id: 'pipeline', label: 'Pipeline', icon: TrendingUp },
-  { id: 'team', label: 'Team', icon: Users },
-  { id: 'targets', label: 'Targets', icon: Target },
-  { id: 'reports', label: 'Reports', icon: BarChart3 },
+  { id: 'deals', label: 'Customers', icon: Car },
+  { id: 'team', label: 'Team Members', icon: Users },
   // Account Specific
-  { id: 'acc_sales_leads', label: 'Sales Lead', icon: Users2 },
-  { id: 'acc_showroom_expenses', label: 'Showroom Expenses', icon: Wallet },
-  { id: 'acc_sales_reports', label: 'Sales Report', icon: ReceiptText },
-  { id: 'acc_stock_inventory', label: 'Stock Inventory', icon: PackageSearch },
+  { id: 'acc_sales_leads', label: 'New Payments', icon: Users2 },
+  { id: 'acc_showroom_expenses', label: 'Monthly Office Bills', icon: Wallet },
+  { id: 'acc_sales_reports', label: 'Monthly Sale Bills', icon: ReceiptText },
+  { id: 'acc_stock_inventory', label: 'Total Car Stock', icon: PackageSearch },
   // RTO Specific
-  { id: 'rto_workspace', label: 'RTO Workspace', icon: ClipboardList },
-  { id: 'rto_tax', label: 'Tax & Challans', icon: CreditCard },
-  { id: 'rto_hsrp', label: 'HSRP Tracker', icon: Hash },
-  { id: 'rto_vault', label: 'Document Vault', icon: FileCheck },
+  { id: 'rto_workspace', label: 'RTO Tasks', icon: ClipboardList },
+  { id: 'rto_tax', label: 'RTO Fees & Payments', icon: CreditCard },
+  { id: 'rto_hsrp', label: 'Car Plate Status', icon: Hash },
+  { id: 'rto_vault', label: 'Old Paperwork Store', icon: FileCheck },
   // Insurance Specific
-  { id: 'ins_issuance', label: 'Policy Issuance', icon: ShieldCheck },
-  { id: 'ins_calculator', label: 'Premium Calculator', icon: Calculator },
-  { id: 'ins_renewals', label: 'Renewals', icon: History },
-  { id: 'ins_claims', label: 'Claims Desk', icon: Umbrella },
+  { id: 'ins_issuance', label: 'Make Insurance Paper', icon: ShieldCheck },
+  { id: 'ins_calculator', label: 'Insurance Price Check', icon: Calculator },
+  { id: 'ins_renewals', label: 'Old Policy Renewal', icon: History },
+  { id: 'ins_claims', label: 'Insurance Claim Desk', icon: Umbrella },
   // Accessories Specific
-  { id: 'acc_fitment_queue', label: 'Fitment Queue', icon: Wrench },
-  { id: 'acc_inventory', label: 'Inventory Stock', icon: Package },
-  { id: 'acc_combos', label: 'Combo Packages', icon: Layers },
-  { id: 'acc_procurement', label: 'Stock Procurement', icon: ShoppingCart },
+  { id: 'acc_fitment_queue', label: 'Fitting Wait List', icon: Wrench },
+  { id: 'acc_inventory', label: 'Small Parts Stock', icon: Package },
+  { id: 'acc_combos', label: 'Full Fitting Sets', icon: Layers },
+  { id: 'acc_procurement', label: 'Buying New Stock', icon: ShoppingCart },
   // Finance Specific
-  { id: 'fin_loans', label: 'Loan Applications', icon: FileSignature },
-  { id: 'fin_schemes', label: 'Bank Schemes', icon: Landmark },
-  { id: 'fin_payouts', label: 'Payout Tracker', icon: PieChart },
-  { id: 'fin_noc', label: 'NOC & Closure', icon: Banknote },
+  { id: 'fin_loans', label: 'Customer Loan Paper', icon: FileSignature },
+  { id: 'fin_schemes', label: 'Bank Offers', icon: Landmark },
+  { id: 'fin_payouts', label: 'Commission Track', icon: PieChart },
+  { id: 'fin_noc', label: 'Finished Loan (NOC)', icon: Banknote },
   // PDI Specific
-  { id: 'pdi_queue', label: 'Inspection Queue', icon: Truck },
-  { id: 'pdi_checklist', label: '100-Point Checklist', icon: ClipboardList },
-  { id: 'pdi_rectification', label: 'Rectification Log', icon: Wrench },
-  { id: 'pdi_ready_delivery', label: 'Ready for Delivery', icon: CheckCircle },
+  { id: 'pdi_queue', label: 'Car Quality Check List', icon: Truck },
+  { id: 'pdi_checklist', label: 'Full Car Checkup', icon: ClipboardList },
+  { id: 'pdi_rectification', label: 'Fix Problems List', icon: Wrench },
+  { id: 'pdi_ready_delivery', label: 'Car Ready to Deliver', icon: CheckCircle },
   // CEO Specific
-  { id: 'ceo_summary', label: 'Executive Summary', icon: LayoutDashboard },
-  { id: 'ceo_inventory', label: 'Inventory Valuation', icon: DollarSign },
-  { id: 'ceo_throughput', label: 'Department Throughput', icon: BarChart3 },
-  { id: 'ceo_marketing', label: 'Marketing & ROI', icon: Zap },
-  { id: 'ceo_audit', label: 'Audit Logs', icon: FileText },
+  { id: 'ceo_summary', label: 'Showroom Main View', icon: LayoutDashboard },
+  { id: 'ceo_inventory', label: 'Value of Cars in Stock', icon: DollarSign },
+  { id: 'ceo_throughput', label: 'Work Speed', icon: BarChart3 },
+  { id: 'ceo_marketing', label: 'Marketing Results', icon: Zap },
+  { id: 'ceo_audit', label: 'History Logs', icon: FileText },
   // Group CEO Specific
-  { id: 'gceo_consolidated', label: 'All Showrooms', icon: LayoutGrid },
-  { id: 'gceo_analytics', label: 'Brand Comparison', icon: BarChartHorizontal },
-  { id: 'gceo_funds', label: 'Paisa In-Out', icon: DollarSign },
-  { id: 'gceo_hr', label: 'Staff & Salary', icon: UserCheck },
-  { id: 'gceo_risk', label: 'Checking & Reports', icon: ShieldCheck },
+  { id: 'gceo_consolidated', label: 'All Brands Total View', icon: LayoutGrid },
+  { id: 'gceo_analytics', label: 'Brand Portfolio', icon: BarChartHorizontal },
+  { id: 'gceo_funds', label: 'Group Money Flow', icon: DollarSign },
+  { id: 'gceo_hr', label: 'Team Performance', icon: UserCheck },
+  { id: 'gceo_risk', label: 'Rules & Safety', icon: ShieldCheck },
   // Owner Specific
-  { id: 'owner_command', label: 'CEO Command Center', icon: LayoutDashboard },
-  { id: 'owner_profit', label: 'Profitability Analytics', icon: BarChart3 },
-  { id: 'owner_funnel', label: 'Delivery Funnel', icon: Activity },
-  { id: 'owner_discounts', label: 'Discount Approvals', icon: Flame },
-  { id: 'owner_csat', label: 'Customer Satisfaction', icon: Target },
+  { id: 'owner_command', label: 'Main View', icon: LayoutDashboard },
+  { id: 'owner_profit', label: 'Net Profit', icon: BarChart3 },
+  { id: 'owner_inventory', label: 'Stock Value', icon: DollarSign },
+  { id: 'owner_csat', label: 'Customer Mood', icon: Target },
 ];
 
 const Sidebar: React.FC = () => {
@@ -176,21 +172,21 @@ const Sidebar: React.FC = () => {
               const isCEOItem = item.id.startsWith('ceo_');
               // 7. CEO Role Logic
               if (currentRole === 'ceo') {
-                if (isCEOItem || item.id === 'dashboard' || item.id === 'reports') return true;
+                if (isCEOItem || item.id === 'dashboard') return true;
                 return false;
               }
 
               const isGCEOItem = item.id.startsWith('gceo_');
               // 8. Group CEO Role Logic
               if (currentRole === 'groupceo') {
-                if (isGCEOItem || item.id === 'dashboard' || item.id === 'reports') return true;
+                if (isGCEOItem || item.id === 'dashboard') return true;
                 return false;
               }
 
               const isOwnerItem = item.id.startsWith('owner_');
               // 9. Owner Role Logic
               if (currentRole === 'owner') {
-                if (isOwnerItem || item.id === 'dashboard' || item.id === 'reports') return true;
+                if (isOwnerItem) return true;
                 return false;
               }
 
@@ -204,7 +200,7 @@ const Sidebar: React.FC = () => {
 
               // 12. Salesperson exclusions
               if (currentRole === 'salesperson') {
-                return !['team', 'targets', 'reports'].includes(item.id);
+                return !['team'].includes(item.id);
               }
 
               // 13. Default visibility for all other roles (TL, SM, etc.)
@@ -223,7 +219,7 @@ const Sidebar: React.FC = () => {
                     } ${sidebarCollapsed ? 'justify-center' : ''}`}
                 >
                   <Icon className={`w-5 h-5 flex-shrink-0 ${isActive ? 'text-orange-400' : ''}`} />
-                  {!sidebarCollapsed && <span>{item.label}</span>}
+                  {!sidebarCollapsed && <span>{(currentRole === 'salesmanager' && item.id === 'deals') ? 'Deal Pipeline' : item.label}</span>}
                 </button>
               );
             })}

@@ -47,30 +47,30 @@ const RTODashboard: React.FC = () => {
             {/* 1. RTO KPI METRICS */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 <MetricsCard
-                    title="Total RTO Leads"
+                    title="Cars at RTO"
                     value={rtoLeads.length.toString()}
                     subtitle="Active files this month"
                     icon={<ClipboardList className="w-5 h-5" />}
                     color="#6366f1"
                 />
                 <MetricsCard
-                    title="Pending Registration"
-                    value="12"
-                    subtitle="Awaiting HSRP Plate"
+                    title="Wait for Number"
+                    value={String(rtoLeads.filter(d => d.status === 'active').length).padStart(2, '0')}
+                    subtitle="Waiting for Plate"
                     icon={<Clock className="w-5 h-5" />}
                     color="#f59e0b"
                 />
                 <MetricsCard
-                    title="Completed Cases"
-                    value="28"
-                    subtitle="RC Dispatched"
+                    title="Plates Ready"
+                    value={String(deals.filter(d => d.departmentStatus?.['RTO'] === 'Completed').length).padStart(2, '0')}
+                    subtitle="Paperwork Sent"
                     icon={<CheckCircle2 className="w-5 h-5" />}
                     color="#10b981"
                 />
                 <MetricsCard
-                    title="RTO Tax Collected"
-                    value={formatCurrency(4280000)}
-                    subtitle="Net Paid to Govt"
+                    title="Total Govt Fees"
+                    value={formatCurrency(rtoLeads.reduce((sum, d) => sum + d.taxAmount, 0))}
+                    subtitle="Money Paid to Govt"
                     icon={<ShieldCheck className="w-5 h-5" />}
                     color="#3b82f6"
                 />
@@ -82,8 +82,8 @@ const RTODashboard: React.FC = () => {
                 <div className="xl:col-span-3 bg-white border border-gray-100 rounded-3xl overflow-hidden shadow-sm">
                     <div className="p-6 border-b border-gray-50 flex flex-col md:flex-row justify-between items-center gap-4">
                         <div>
-                            <h3 className="text-lg font-bold text-gray-900">Vehicle Registration Track</h3>
-                            <p className="text-xs text-gray-500 font-medium">Manage High Security Registration Plates (HSRP) & RC Files</p>
+                            <h3 className="text-lg font-bold text-gray-900">Check Car Paper status</h3>
+                            <p className="text-xs text-gray-500 font-medium">Track Number Plates & Paperwork</p>
                         </div>
 
                         <div className="flex gap-2">
@@ -104,11 +104,11 @@ const RTODashboard: React.FC = () => {
                         <table className="w-full text-left">
                             <thead className="bg-gray-50/50 text-[10px] uppercase tracking-widest font-bold text-gray-400">
                                 <tr>
-                                    <th className="px-6 py-4">Vehicle & Chassis</th>
-                                    <th className="px-6 py-4">Customer Info</th>
-                                    <th className="px-6 py-4">Reg Type</th>
-                                    <th className="px-6 py-4">Tax Payable</th>
-                                    <th className="px-6 py-4 text-center">RTO Status</th>
+                                    <th className="px-6 py-4">Car & Part Number</th>
+                                    <th className="px-6 py-4">Customer Name</th>
+                                    <th className="px-6 py-4">Reg. Type</th>
+                                    <th className="px-6 py-4">Govt Fees</th>
+                                    <th className="px-6 py-4 text-center">Paper Status</th>
                                     <th className="px-6 py-4 text-right">Action</th>
                                 </tr>
                             </thead>
@@ -146,9 +146,9 @@ const RTODashboard: React.FC = () => {
                                             <div className="flex flex-col items-center gap-1">
                                                 <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold ${item.status === 'active' ? 'bg-amber-50 text-amber-600' : 'bg-emerald-50 text-emerald-600'
                                                     }`}>
-                                                    {item.rtoStatus}
+                                                    {item.status === 'active' ? 'Check Paper' : 'Number Ready'}
                                                 </span>
-                                                {item.status === 'active' && <p className="text-[9px] text-red-400 animate-pulse font-bold">Docs Missing</p>}
+                                                {item.status === 'active' && <p className="text-[9px] text-red-400 animate-pulse font-bold">Paper Missing</p>}
                                             </div>
                                         </td>
                                         <td className="px-6 py-4 text-right">
@@ -170,17 +170,17 @@ const RTODashboard: React.FC = () => {
                 <div className="space-y-6">
                     <div className="bg-gradient-to-br from-indigo-600 to-violet-700 rounded-3xl p-6 text-white shadow-xl">
                         <h4 className="font-bold flex items-center gap-2 mb-4">
-                            <FileCheck className="w-5 h-5" /> Quick RTO Action
+                            <FileCheck className="w-5 h-5" /> Quick Work Action
                         </h4>
                         <div className="space-y-4">
                             <div className="p-4 bg-white/10 rounded-2xl border border-white/10">
-                                <p className="text-[11px] text-indigo-200 font-bold uppercase tracking-wider mb-1">Next HSRP Batch</p>
+                                <p className="text-[11px] text-indigo-200 font-bold uppercase tracking-wider mb-1">Next Plate Making</p>
                                 <p className="text-xl font-black">Tomorrow, 10:00 AM</p>
                             </div>
 
                             <div className="space-y-2">
                                 <button className="w-full py-3 bg-white text-indigo-600 rounded-xl text-xs font-black shadow-lg hover:bg-indigo-50 transition-all flex items-center justify-center gap-2">
-                                    Upload RTO Receipt
+                                    Save RTO Bill
                                     <ChevronRight className="w-4 h-4" />
                                 </button>
                                 <button 
@@ -203,18 +203,24 @@ const RTODashboard: React.FC = () => {
                     {/* DOCUMENT ALERT CARD */}
                     <div className="bg-white border border-red-100 rounded-3xl p-6 shadow-sm">
                         <h4 className="font-bold text-gray-900 flex items-center gap-2 mb-4">
-                            <AlertCircle className="w-5 h-5 text-red-500" /> Discrepancy Found
+                            <AlertCircle className="w-5 h-5 text-red-500" /> Problem Paperwork
                         </h4>
                         <div className="space-y-3">
-                            {[1, 2].map((_, i) => (
-                                <div key={i} className="flex items-start gap-3 p-3 bg-red-50/50 rounded-2xl border border-red-50">
-                                    <div className="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center flex-shrink-0 text-red-600 font-bold text-xs italic">!</div>
-                                    <div>
-                                        <p className="text-xs font-bold text-gray-800">Sign. Mismatch: Manoj S.</p>
-                                        <p className="text-[10px] text-gray-500">Form 20 rejected by RTO inspector.</p>
+                            {deals.filter(d => d.status === 'blocked' && d.stage === 'RTO').length > 0 ? (
+                                deals.filter(d => d.status === 'blocked' && d.stage === 'RTO').map((deal, i) => (
+                                    <div key={i} className="flex items-start gap-3 p-3 bg-red-50/50 rounded-2xl border border-red-50">
+                                        <div className="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center flex-shrink-0 text-red-600 font-bold text-xs italic">!</div>
+                                        <div>
+                                            <p className="text-xs font-bold text-gray-800">{deal.notes || 'Paper missing'}: {deal.customerName}</p>
+                                            <p className="text-[10px] text-gray-500">Paper rejected by Govt.</p>
+                                        </div>
                                     </div>
+                                ))
+                            ) : (
+                                <div className="p-4 text-center bg-gray-50 rounded-2xl border border-dashed border-gray-200">
+                                    <p className="text-[10px] text-gray-400 font-medium italic">No pending paperwork issues</p>
                                 </div>
-                            ))}
+                            )}
                         </div>
                     </div>
                 </div>
